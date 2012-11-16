@@ -7,9 +7,7 @@ exports.toTopo = function(geoJson) {
     coordinates: []
   };
 
-  var points = pointStore(Object.keys(geoJson).map(function(k) { return geoJson[k]; }));
-
-  return topo;
+  return pointStore(Object.keys(geoJson).map(function(k) { return geoJson[k]; }));
 };
 
 exports.toGeo = function(topoJson) {
