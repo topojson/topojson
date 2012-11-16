@@ -1,5 +1,7 @@
 # TopoJSON
 
+<img src="/mbostock/topojson/wiki/example.png" width="960" height="500" alt="U.S. County mesh">
+
 TopoJSON is an extension of GeoJSON that encodes topology. It is designed to facilitate geometry simplification while preserving topology for control points that are shared by adjacent features. It is also designed to be a more compact representation because shared control points are not duplicated.
 
 TopoJSON also allows polygons and boundaries to be stored very efficiently in the same file; for example, a single TopoJSON file could be used to fill polygons with one color and then stroke boundaries with another color, without stroking shared boundaries multiple times. TopoJSON also allows ensures consistent simplification of boundaries and polygons, so that boundaries do not detach from polygons post-simplification. A single TopoJSON file could also be used to represent and simplify overlapping geometries efficiently, for example state and county boundaries.
