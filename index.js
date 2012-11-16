@@ -1,9 +1,5 @@
-var topology = require("./lib/topojson/topology");
+var topology = require("./lib/topojson/topology"),
+    simplify = require("./lib/topojson/simplify");
 
-exports.toTopo = function(geoJson) {
-  return topology(Object.keys(geoJson).map(function(k) { return geoJson[k]; }));
-};
-
-exports.toGeo = function(topoJson) {
-  throw new Error("Not yet implemented.");
-};
+exports.topology = topology;
+exports.simplify = simplify;
