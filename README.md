@@ -1,6 +1,6 @@
 # TopoJSON
 
-<img src="/mbostock/topojson/wiki/example.png" width="960" height="500" alt="U.S. County mesh">
+<a href="http://bl.ocks.org/4090870"><img src="/mbostock/topojson/wiki/example.png" width="960" height="500" alt="U.S. County mesh"></a>
 
 TopoJSON is an extension of GeoJSON that encodes topology. It is designed to facilitate geometry simplification while preserving topology for control points that are shared by adjacent features. It is also designed to be a more compact representation because shared control points are not duplicated. For example, the above shapefile of U.S. counties is 2.2M as a GeoJSON file, but only [628K](http://bl.ocks.org/4090870) as a boundary mesh.
 
