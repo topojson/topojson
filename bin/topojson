@@ -10,10 +10,6 @@ var argv = optimist
       alias: "out",
       default: "/dev/stdout",
     })
-    .options("r", {
-      alias: "round",
-      default: 4,
-    })
     .argv
 
 var files = {};
@@ -24,8 +20,6 @@ argv._.forEach(function(file) {
   files[name] = json;
 });
 
-var json = topojson.toTopo(files);
-if (+argv.r >= 0) json = topojson.round(json, +argv.r);
-json = JSON.stringify(json);
+var json = JSON.stringify(topojson.toTopo(files));
 if (argv.o === "/dev/stdout") fs.appendFileSync(argv.o, json, "utf8");
 else fs.writeFileSync(argv.o, json, "utf8");
