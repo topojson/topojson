@@ -1,0 +1,26 @@
+#!/usr/bin/env node
+
+var path = require("path"),
+    fs = require("fs"),
+    optimist = require("optimist"),
+    topojson = require("../");
+
+var argv = optimist
+    .options("o", {
+      alias: "out",
+      default: "/dev/stdout",
+    })
+    .argv
+
+var files = {};
+
+argv._.forEach(function(file) {
+  var name = path.basename(file, ".json"),
+      json = JSON.parse(fs.readFileSync(file, "utf-8"));
+  files[name] = json;
+});
+
+var json = JSON.stringify(topojson.toTopo(files));
+
+if (argv.o === "/dev/stdout") fs.appendFileSync(argv.o, json, "utf8");
+else fs.writeFileSync(argv.o, json, "utf8");
