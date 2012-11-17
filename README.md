@@ -2,7 +2,7 @@
 
 <a href="http://bl.ocks.org/4090870"><img src="/mbostock/topojson/wiki/example.png" width="960" height="500" alt="U.S. County mesh"></a>
 
-TopoJSON is an extension of GeoJSON that encodes topology. It facilitates geometry simplification that preserves topology (connectedness) for adjacent features using a technique inspired by [Matt Bloch’s MapShaper](http://mapshaper.com/test/MapShaper.swf). Moreover, by eliminating redundancy, TopoJSON is substantially more compact than GeoJSON. For example, the above shapefile of U.S. counties is 2.2M as a GeoJSON file, but only [436K](http://bl.ocks.org/4090870) as a boundary mesh, a reduction of 80.4%—without additional simplification.
+TopoJSON is an extension of GeoJSON that encodes topology. It facilitates geometry simplification while preserving topology (connectedness) for adjacent features, using a technique inspired by [Matt Bloch’s MapShaper](http://mapshaper.com/test/MapShaper.swf). Moreover, by eliminating redundancy, TopoJSON is substantially more compact than GeoJSON. For example, the above shapefile of U.S. counties is 2.2M as a GeoJSON file, but only [436K](http://bl.ocks.org/4090870) as a boundary mesh, a reduction of 80.4%—without additional simplification.
 
 TopoJSON allows related geometries to be stored efficiently in the same file; for example, a single TopoJSON file can contain both state and county polygons without duplicating coordinates for each. Furthermore, if the TopoJSON file is simplified, the state and county boundaries will remain consistent. As another example, a TopoJSON file can efficiently represent both polygons (for fill) and internal boundaries (for stroke) as two feature collections that share the same coordinate mesh.
 
