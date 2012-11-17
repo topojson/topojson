@@ -7,8 +7,8 @@ var topojson = {
         y0 = topology.transform.translate[1];
     return {
       type: "MultiLineString",
-      coordinates: topology.coordinates.map(function(lineString) {
-        return lineString.map(function(point) {
+      coordinates: topology.arcs.map(function(arc) {
+        return arc.map(function(point) {
           return [point[0] * kx + x0, point[1] * ky + y0];
         });
       })
