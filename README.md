@@ -11,7 +11,7 @@ As such, TopoJSON is substantially more compact than GeoJSON. The above shapefil
 
 To further reduce file size, TopoJSON uses fixed-precision delta-encoding for integer coordinates rather than floats. This eliminates the need to round the precision of coordinate values (e.g., [LilJSON](https://github.com/migurski/LilJSON)), without sacrificing accuracy. Like GeoJSON, TopoJSON files are easily modified in a text editor and amenable to gzip compression.
 
-Lastly, encoding topology has numerous useful applications. It facilitates geometry simplification that preserves the connectedness of adjacent features. This applies even across feature collections, such as simultaneous consistent simplification of state and county boundaries. Topology can also be used for visualization, as with [Dorling cartograms](http://www.ncgia.ucsb.edu/projects/Cartogram_Central/types.html).
+Lastly, encoding topology has numerous useful applications for maps and visualization. It facilitates geometry simplification that preserves the connectedness of adjacent features; this applies even across feature collections, such as simultaneous consistent simplification of state and county boundaries. Topology can also be used for [Dorling cartograms](http://www.ncgia.ucsb.edu/projects/Cartogram_Central/types.html) and other techniques that need shared boundary information.
 
 ## Implementation
 
