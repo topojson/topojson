@@ -10,6 +10,11 @@ var argv = optimist
       alias: "out",
       default: "/dev/stdout",
     })
+    .options("q", {
+      alias: "quantization",
+      describe: "maximum number of differentiable points in one dimension",
+      default: 1e4,
+    })
     .options("s", {
       alias: "simplify",
       default: 0,
@@ -22,7 +27,7 @@ argv._.forEach(function(file) {
   files.push(JSON.parse(fs.readFileSync(file, "utf-8")));
 });
 
-var json = topojson.topology(files);
+var json = topojson.topology(files, +argv.q);
 if (+argv.s > 0) topojson.simplify(json, +argv.s);
 json = JSON.stringify(json);
 if (argv.o === "/dev/stdout") fs.appendFileSync(argv.o, json, "utf8");
