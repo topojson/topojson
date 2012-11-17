@@ -2,13 +2,15 @@
 
 <a href="http://bl.ocks.org/4090870"><img src="/mbostock/topojson/wiki/example.png" width="960" height="500" alt="U.S. County mesh"></a>
 
-TopoJSON is an extension of GeoJSON that encodes topology. It is designed to facilitate geometry simplification while preserving topology for control points that are shared by adjacent features. It is also designed to be a more compact representation because shared control points are not duplicated. For example, the above shapefile of U.S. counties is 2.2M as a GeoJSON file, but only [436K](http://bl.ocks.org/4090870) as a boundary mesh, a reduction of 80.4%.
+TopoJSON is an extension of GeoJSON that encodes topology. It facilitates geometry simplification that preserves topology (connectedness) for adjacent features using a technique inspired by [Matt Bloch’s MapShaper](http://mapshaper.com/test/MapShaper.swf). Moreover, by eliminating redundancy, TopoJSON is substantially more compact than GeoJSON. For example, the above shapefile of U.S. counties is 2.2M as a GeoJSON file, but only [436K](http://bl.ocks.org/4090870) as a boundary mesh, a reduction of 80.4%—without additional simplification.
 
-TopoJSON allows polygons and boundaries to be stored very efficiently in the same file; for example, a single TopoJSON file can be used to fill polygons with one color and then stroke boundaries with another color, without stroking shared boundaries multiple times. TopoJSON ensures consistent simplification of boundaries and polygons, so that boundaries do not detach from polygons post-simplification. A single TopoJSON file can also be used to represent and simplify overlapping geometries efficiently, for example state and county boundaries.
+TopoJSON allows related geometries to be stored efficiently in the same file; for example, a single TopoJSON file can contain both state and county polygons without duplicating coordinates for each. Furthermore, if the TopoJSON file is simplified, the state and county boundaries will remain consistent. As another example, a TopoJSON file can efficiently represent both polygons (for fill) and internal boundaries (for stroke) as two feature collections that share the same coordinate mesh.
+
+TopoJSON uses fixed-precision delta-encoding for integer coordinates, rather than floats. This reduces file size, eliminating the need to round the precision of coordinate values, without sacrificing accuracy. Like GeoJSON, TopoJSON files are easily modified in a text editor and amenable to gzip compression.
 
 ## Implementation
 
-TopoJSON introduces a new object type, "Topology". A Topology has an array `objects` which can contain either features or geometry objects, and an array `arcs`. Each *arc* is a sequence of coordinates; thus, a single arc is equivalent to a LineString's coordinates, and the entire arcs array is equivalent to a MultiLineString's coordinates. The arcs are stitched together to form the geometry, rather than storing the geometry on each object separately.
+TopoJSON introduces a new object type, "Topology". A Topology has an array `objects` which can contain either features or geometry objects, and an array `arcs`. Each *arc* is a sequence of coordinates; thus, a single arc is equivalent to a LineString's coordinates, and the array of arcs is equivalent to a MultiLineString's coordinates. The arcs are stitched together to form the geometry, rather than storing the geometry on each object separately.
 
 As such, geometry objects differ from the GeoJSON specification in terms of how their coordinates are specified. Any geometry object contained inside a Topology defines its coordinates in terms of a sequence of the Topology's arcs, referenced by zero-based index. For example, a LineString geometry might be defined as
 
