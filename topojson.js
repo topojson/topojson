@@ -20,21 +20,21 @@ topojson = (function() {
       return object;
     }
 
-    function arc(index, coordinates, next) {
+    function arc(index, coordinates) {
       var arc = arcs[index < 0 ? ~index : index],
           i = -1,
           n = arc.length,
           x = 0,
           y = 0,
           p;
-      // TODO next
+      if (coordinates.length) coordinates.pop();
       while (++i < n) coordinates.push([(x += (p = arc[i])[0]) * kx + dx, (y += p[1]) * ky + dy]);
       if (index < 0) reverse(coordinates, coordinates.length - n, coordinates.length);
     }
 
     function line(arcs) {
       var coordinates = [];
-      for (var i = 0, n = arcs.length; i < n; ++i) arc(arcs[i], coordinates, i < n - 1);
+      for (var i = 0, n = arcs.length; i < n; ++i) arc(arcs[i], coordinates);
       return coordinates;
     }
 
