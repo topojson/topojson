@@ -1,23 +1,80 @@
-var topojson = {
-  version: "0.0.1",
-  mesh: function(topology) {
-    var kx = topology.transform.scale[0],
-        ky = topology.transform.scale[1],
-        dx = topology.transform.translate[0],
-        dy = topology.transform.translate[1];
-    return {
-      type: "MultiLineString",
-      coordinates: topology.arcs.map(function(arc) {
-        var y0 = 0,
-            x0 = 0;
-        return arc.map(function(point) {
-          var x1 = x0 + point[0],
-              y1 = y0 + point[1];
-          x0 = x1;
-          y0 = y1;
-          return [x1 * kx + dx, y1 * ky + dy];
-        });
-      })
-    };
+topojson = (function() {
+
+  function mesh(topology) {
+    var arcs = [], i = -1, n = topology.arcs.length;
+    while (++i < n) arcs.push([i]);
+    return object(topology, {type: "MultiLineString", arcs: arcs});
   }
-};
+
+  function object(topology, object) {
+    var tf = topology.transform,
+        kx = tf.scale[0],
+        ky = tf.scale[1],
+        dx = tf.translate[0],
+        dy = tf.translate[1],
+        arcs = topology.arcs;
+
+    function geometry(object) {
+      object = Object.create(object);
+      object.coordinates = type[object.type](object.arcs);
+      return object;
+    }
+
+    function arc(index, coordinates, next) {
+      var arc = arcs[index < 0 ? ~index : index],
+          i = -1,
+          n = arc.length,
+          x = 0,
+          y = 0,
+          p;
+      // TODO next
+      while (++i < n) coordinates.push([(x += (p = arc[i])[0]) * kx + dx, (y += p[1]) * ky + dy]);
+      if (index < 0) reverse(coordinates, coordinates.length - n, coordinates.length);
+    }
+
+    function line(arcs) {
+      var coordinates = [];
+      for (var i = 0, n = arcs.length; i < n; ++i) arc(arcs[i], coordinates, i < n - 1);
+      return coordinates;
+    }
+
+    function polygon(arcs) {
+      var coordinates = [];
+      for (var i = 0, n = arcs.length; i < n; ++i) coordinates.push(line(arcs[i]));
+      return coordinates;
+    }
+
+    function multiPolygon(arcs) {
+      var coordinates = [];
+      for (var i = 0, n = arcs.length; i < n; ++i) coordinates.push(polygon(arcs[i]));
+      return coordinates;
+    }
+
+    var type = {
+      LineString: line,
+      MultiLineString: polygon,
+      Polygon: polygon,
+      MultiPolygon: multiPolygon
+    };
+
+    return object.type === "GeometryCollection"
+        ? (object = Object.create(object), object.geometries = object.geometries.map(geometry), object)
+        : geometry(object);
+  }
+
+  function reverse(array, i, j) {
+    var t;
+    while (i < --j) {
+      t = array[i];
+      array[i] = array[j];
+      array[j] = t;
+      ++i;
+    }
+  }
+
+  return {
+    version: "0.0.2",
+    mesh: mesh,
+    object: object
+  };
+})();
