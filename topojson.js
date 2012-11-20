@@ -14,30 +14,23 @@ topojson = (function() {
         dy = tf.translate[1],
         arcs = topology.arcs;
 
-    function arc(index, coordinates) {
-      var arc = arcs[index < 0 ? ~index : index],
-          i = -1,
-          n = arc.length,
-          x = 0,
-          y = 0,
-          p;
-      if (coordinates.length) coordinates.pop();
-      while (++i < n) coordinates.push([(x += (p = arc[i])[0]) * kx + dx, (y += p[1]) * ky + dy]);
-      if (index < 0) reverse(coordinates, coordinates.length - n, coordinates.length);
+    function arc(i, points) {
+      if (points.length) points.pop();
+      for (var a = arcs[i < 0 ? ~i : i], k = 0, n = a.length, x = 0, y = 0, p; k < n; ++k) points.push([
+        (x += (p = a[k])[0]) * kx + dx,
+        (y += p[1]) * ky + dy
+      ]);
+      if (i < 0) reverse(points, n);
     }
 
     function line(arcs) {
-      var coordinates = [];
-      for (var i = 0, n = arcs.length; i < n; ++i) arc(arcs[i], coordinates);
-      return coordinates;
+      var points = [];
+      for (var i = 0, n = arcs.length; i < n; ++i) arc(arcs[i], points);
+      return points;
     }
 
     function polygon(arcs) {
       return arcs.map(line);
-    }
-
-    function multiPolygon(arcs) {
-      return arcs.map(polygon);
     }
 
     function geometry(o) {
@@ -50,7 +43,7 @@ topojson = (function() {
       LineString: line,
       MultiLineString: polygon,
       Polygon: polygon,
-      MultiPolygon: multiPolygon
+      MultiPolygon: function(arcs) { return arcs.map(polygon); }
     };
 
     return o.type === "GeometryCollection"
@@ -58,8 +51,8 @@ topojson = (function() {
         : geometry(o);
   }
 
-  function reverse(array, i, j) {
-    var t; while (i < --j) t = array[i], array[i++] = array[j], array[j] = t;
+  function reverse(array, n) {
+    var t, j = array.length, i = j - n; while (i < --j) t = array[i], array[i++] = array[j], array[j] = t;
   }
 
   return {
