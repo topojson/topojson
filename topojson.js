@@ -6,19 +6,13 @@ topojson = (function() {
     return object(topology, {type: "MultiLineString", arcs: arcs});
   }
 
-  function object(topology, object) {
+  function object(topology, o) {
     var tf = topology.transform,
         kx = tf.scale[0],
         ky = tf.scale[1],
         dx = tf.translate[0],
         dy = tf.translate[1],
         arcs = topology.arcs;
-
-    function geometry(object) {
-      object = Object.create(object);
-      object.coordinates = type[object.type](object.arcs);
-      return object;
-    }
 
     function arc(index, coordinates) {
       var arc = arcs[index < 0 ? ~index : index],
@@ -39,37 +33,33 @@ topojson = (function() {
     }
 
     function polygon(arcs) {
-      var coordinates = [];
-      for (var i = 0, n = arcs.length; i < n; ++i) coordinates.push(line(arcs[i]));
-      return coordinates;
+      return arcs.map(line);
     }
 
     function multiPolygon(arcs) {
-      var coordinates = [];
-      for (var i = 0, n = arcs.length; i < n; ++i) coordinates.push(polygon(arcs[i]));
-      return coordinates;
+      return arcs.map(polygon);
     }
 
-    var type = {
+    function geometry(o) {
+      o = Object.create(o);
+      o.coordinates = geometryType[o.type](o.arcs);
+      return o;
+    }
+
+    var geometryType = {
       LineString: line,
       MultiLineString: polygon,
       Polygon: polygon,
       MultiPolygon: multiPolygon
     };
 
-    return object.type === "GeometryCollection"
-        ? (object = Object.create(object), object.geometries = object.geometries.map(geometry), object)
-        : geometry(object);
+    return o.type === "GeometryCollection"
+        ? (o = Object.create(o), o.geometries = o.geometries.map(geometry), o)
+        : geometry(o);
   }
 
   function reverse(array, i, j) {
-    var t;
-    while (i < --j) {
-      t = array[i];
-      array[i] = array[j];
-      array[j] = t;
-      ++i;
-    }
+    var t; while (i < --j) t = array[i], array[i++] = array[j], array[j] = t;
   }
 
   return {
