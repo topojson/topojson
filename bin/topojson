@@ -19,12 +19,19 @@ var argv = optimist
       alias: "simplify",
       default: 0,
     })
+    .options("id-property", {
+      default: null
+    })
     .argv
 
-var files = [];
+var files = [],
+    id = argv["id-property"],
+    idType = /^\+/.test(id) ? (id = id.substring(1), Number) : String;
 
 argv._.forEach(function(file) {
-  files.push(JSON.parse(fs.readFileSync(file, "utf-8")));
+  var object = JSON.parse(fs.readFileSync(file, "utf-8"));
+  files.push(object);
+  if (id) object.features.forEach(function(f) { f.id = idType(f.properties[id]); });
 });
 
 var json = topojson.topology(files, +argv.q);
