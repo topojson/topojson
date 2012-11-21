@@ -15,24 +15,24 @@ Lastly, encoding topology has numerous useful applications for maps and visualiz
 
 ## Implementation
 
-TopoJSON introduces a new object type, "Topology". A Topology has an array `objects` which can contain either features or geometry objects, and an array `arcs`. Each *arc* is a sequence of coordinates; thus, a single arc is equivalent to a LineString's coordinates, and the array of arcs is equivalent to a MultiLineString's coordinates. The arcs are stitched together to form the geometry, rather than storing the geometry on each object separately.
+TopoJSON introduces a new object type, "Topology". A Topology has an array `objects` which can contain either features or geometry objects, and an array `arcs`. Each *arc* is a sequence of points; thus, a single arc is equivalent to a LineString's coordinates, and the array of arcs is equivalent to a MultiLineString's coordinates. The arcs are stitched together to form the geometry, rather than storing the geometry on each object separately.
 
 As such, geometry objects differ from the GeoJSON specification in terms of how their coordinates are specified. Any geometry object contained inside a Topology defines its coordinates in terms of a sequence of the Topology's arcs, referenced by zero-based index. For example, a LineString geometry might be defined as
 
 ```js
-{"type": "LineString", "coordinates": [42]}
+{"type": "LineString", "arcs": [42]}
 ```
 
 where *42* refers to the arc `topology.arcs[42]`. If multiple arcs need to be concatenated:
 
 ```js
-{"type": "LineString", "coordinates": [42, 43]}
+{"type": "LineString", "arcs": [42, 43]}
 ```
 
 Similarly, a Polygon with a hole might be defined as
 
 ```js
-{"type": "Polygon", "coordinates": [[42, 43], [44]]}
+{"type": "Polygon", "arcs": [[42, 43], [44]]}
 ```
 
 When stitching together arcs to form geometries, the last coordinate of the arc must be the same as the first coordinate of the subsequent arc, if any. Thus, for all arcs except the last arc, the last coordinate of the arc should be skipped while rendering. For example, if arc 42 represents the point sequence A → B → C, and arc 43 represents the point sequence C → D → E, then the line string [42, 43] represents the point sequence A → B → C → D → E.
