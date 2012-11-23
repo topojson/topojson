@@ -98,17 +98,16 @@ topojson = (function() {
     return fragments;
   }
 
-  function mesh(topology, o, internalOnly) {
+  function mesh(topology, o, filter) {
     var arcs = [];
 
     if (arguments.length > 1) {
-      var countByArc = [];
-
-      if (arguments.length < 3) internalOnly = false;
+      var geomsByArc = [],
+          geom;
 
       function arc(i) {
         if (i < 0) i = ~i;
-        countByArc[i] = (countByArc[i] || 0) + 1;
+        (geomsByArc[i] || (geomsByArc[i] = [])).push(geom);
       }
 
       function line(arcs) {
@@ -120,6 +119,7 @@ topojson = (function() {
       }
 
       function geometry(o) {
+        geom = o;
         geometryType[o.type](o.arcs);
       }
 
@@ -134,7 +134,8 @@ topojson = (function() {
           ? o.geometries.forEach(geometry)
           : geometry(o);
 
-      for (var i in countByArc) if (countByArc[i] > internalOnly) arcs.push([i]);
+      if (arguments.length < 3) for (var i in geomsByArc) arcs.push([i]);
+      else for (var i in geomsByArc) if (filter((geom = geomsByArc[i])[0], geom[geom.length - 1])) arcs.push([i]);
     } else {
       for (var i = 0, n = topology.arcs.length; i < n; ++i) arcs.push([i]);
     }
