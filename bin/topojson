@@ -24,18 +24,25 @@ var argv = optimist
     })
     .argv
 
-var files = [],
+var objects = {},
+    object,
     id = argv["id-property"],
     idType = /^\+/.test(id) ? (id = id.substring(1), Number) : String;
 
+// Create a map from basename to JSON object.
 argv._.forEach(function(file) {
-  var object = JSON.parse(fs.readFileSync(file, "utf-8"));
-  files.push(object);
+  object = JSON.parse(fs.readFileSync(file, "utf-8"));
   if (id) object.features.forEach(function(f) { f.id = idType(f.properties[id]); });
+  objects[path.basename(file, ".json")] = object;
 });
 
-var json = topojson.topology(files, +argv.q);
-if (+argv.s > 0) topojson.simplify(json, +argv.s);
-json = JSON.stringify(json);
+// Convert GeoJSON to TopoJSON. TODO merge TopoJSONs
+if (argv._.length !== 1 || object.type !== "Topology") object = topojson.topology(objects, +argv.q);
+
+// Simplify.
+if (+argv.s > 0) topojson.simplify(object, +argv.s);
+
+// Output JSON.
+var json = JSON.stringify(object);
 if (argv.o === "/dev/stdout") fs.appendFileSync(argv.o, json, "utf8");
 else fs.writeFileSync(argv.o, json, "utf8");
