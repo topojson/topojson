@@ -49,7 +49,11 @@ var objects = {},
 argv._.forEach(function(file) {
   object = JSON.parse(fs.readFileSync(file, "utf-8"));
   if (object.type === "Topology") {
-    for (var key in object.objects) objects[key] = topojson.object(object, object.objects[key]);
+    var keys = [];
+    for (var key in object.objects) keys.push(key);
+    keys.sort().forEach(function(key) {
+      objects[key] = topojson.object(object, object.objects[key]);
+    });
   } else {
     if (id) object.features.forEach(function(f) { f.id = idType(f.properties[id]); });
     objects[path.basename(file, ".json")] = object;
