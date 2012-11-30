@@ -45,6 +45,7 @@ var objects = {},
     idType = /^\+/.test(id) ? (id = id.substring(1), Number) : String;
 
 // Create a map from basename to JSON object.
+// Convert TopoJSON back to GeoJSON in preparation for merge, as needed.
 argv._.forEach(function(file) {
   object = JSON.parse(fs.readFileSync(file, "utf-8"));
   if (object.type === "Topology") {
@@ -56,7 +57,7 @@ argv._.forEach(function(file) {
 });
 
 // Convert GeoJSON to TopoJSON.
-if (argv._.length !== 1 || object.type !== "Topology") object = topojson.topology(objects, +argv.q);
+object = topojson.topology(objects, +argv.q);
 
 // Simplify.
 if (+argv.s > 0) topojson.simplify(object, +argv.s);
