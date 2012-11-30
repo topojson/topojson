@@ -18,7 +18,13 @@
   "dependencies": {
     "optimist": "0.3.5"
   },
+  "devDependencies": {
+    "vows": "0.6.x"
+  },
   "bin": {
     "topojson": "./bin/topojson"
+  },
+  "scripts": {
+    "test": "./node_modules/vows/bin/vows test/*-test.js"
   }
 }
