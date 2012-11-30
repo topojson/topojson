@@ -1,5 +1,3 @@
-var topology = require("./lib/topojson/topology"),
-    simplify = require("./lib/topojson/simplify");
-
-exports.topology = topology;
-exports.simplify = simplify;
+exports.topology = require("./lib/topojson/topology");
+exports.simplify = require("./lib/topojson/simplify");
+exports.clockwise = require("./lib/topojson/clockwise");

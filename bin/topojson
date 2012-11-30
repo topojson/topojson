@@ -6,23 +6,44 @@ var path = require("path"),
     topojson = require("../");
 
 var argv = optimist
+    .usage("Usage: \033[1mtopojson\033[0m [options] [file …]\n\n"
+
++ "Converts the specified input GeoJSON objects to TopoJSON, outputting a\n"
++ "single TopoJSON topology object. The `objects` property of the output\n"
++ "topology is a map from input file name to geometry object. If the input\n"
++ "file is already in TopoJSON format, then only one input file is allowed;\n"
++ "this can be used to transform existing TopoJSON files.")
+
     .options("o", {
       alias: "out",
+      describe: "output TopoJSON file name",
       default: "/dev/stdout",
     })
     .options("q", {
       alias: "quantization",
-      describe: "maximum number of differentiable points in one dimension",
+      describe: "max. differentiable points in one dimension",
       default: 1e4,
     })
     .options("s", {
       alias: "simplify",
+      describe: "precision threshold for Visvalingam simplification",
       default: 0,
     })
     .options("id-property", {
+      describe: "name of feature property to promote to geometry id",
       default: null
     })
-    .argv
+    .options("force-clockwise", {
+      describe: "force linear rings to be clockwise (sub-hemisphere)",
+      default: true
+    })
+    .options("help", {
+      describe: "display this helpful message",
+      default: false
+    })
+    .argv;
+
+if (!argv._.length || argv.help) return optimist.showHelp();
 
 var objects = {},
     object,
@@ -38,6 +59,9 @@ argv._.forEach(function(file) {
 
 // Convert GeoJSON to TopoJSON. TODO merge TopoJSONs
 if (argv._.length !== 1 || object.type !== "Topology") object = topojson.topology(objects, +argv.q);
+
+// Fix winding order of rings such that all rings are clockwise (sub-hemisphere).
+if (argv["force-clockwise"]) topojson.clockwise(object);
 
 // Simplify.
 if (+argv.s > 0) topojson.simplify(object, +argv.s);
