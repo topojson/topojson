@@ -23,7 +23,7 @@ topojson = (function() {
         f.end = end;
         if (g = fragmentByStart[end]) {
           delete fragmentByStart[g.start];
-          var fg = f.concat(g);
+          var fg = g === f ? f : f.concat(g);
           fragmentByStart[fg.start = f.start] = fragmentByEnd[fg.end = g.end] = fg;
         } else if (g = fragmentByEnd[end]) {
           delete fragmentByStart[g.start];
@@ -39,7 +39,7 @@ topojson = (function() {
         f.start = start;
         if (g = fragmentByEnd[start]) {
           delete fragmentByEnd[g.end];
-          var gf = g.concat(f);
+          var gf = g === f ? f : g.concat(f);
           fragmentByStart[gf.start = g.start] = fragmentByEnd[gf.end = f.end] = gf;
         } else if (g = fragmentByStart[start]) {
           delete fragmentByStart[g.start];
@@ -55,7 +55,7 @@ topojson = (function() {
         f.start = end;
         if (g = fragmentByEnd[end]) {
           delete fragmentByEnd[g.end];
-          var gf = g.concat(f);
+          var gf = g === f ? f : g.concat(f);
           fragmentByStart[gf.start = g.start] = fragmentByEnd[gf.end = f.end] = gf;
         } else if (g = fragmentByStart[end]) {
           delete fragmentByStart[g.start];
@@ -71,7 +71,7 @@ topojson = (function() {
         f.end = start;
         if (g = fragmentByEnd[start]) {
           delete fragmentByStart[g.start];
-          var fg = f.concat(g);
+          var fg = g === f ? f : f.concat(g);
           fragmentByStart[fg.start = f.start] = fragmentByEnd[fg.end = g.end] = fg;
         } else if (g = fragmentByStart[start]) {
           delete fragmentByStart[g.start];
