@@ -192,9 +192,41 @@ topojson = (function() {
     var t, j = array.length, i = j - n; while (i < --j) t = array[i], array[i++] = array[j], array[j] = t;
   }
 
+  function topology(topology, objects) {
+    var arcs = topology.arcs,
+        objectsByArc = [];
+
+    function line(arcs) {
+      for (var i = 0, n = arcs.length, arc; i < n; ++i) {
+        if ((arc = arcs[i]) < 0) arc = ~arc;
+        if (!objectsByArc[arc]) objectsByArc[arc] = [];
+        objectsByArc[arc].push(this);
+      }
+    }
+
+    function polygon(arcs) {
+      arcs.forEach(line, this);
+    }
+
+    function geometry(o) {
+      geometryType[o.type].call(o, o.arcs);
+    }
+
+    var geometryType = {
+      LineString: line,
+      MultiLineString: polygon,
+      Polygon: polygon,
+      MultiPolygon: function(arcs) { arcs.forEach(polygon, this); }
+    };
+
+    objects.forEach(geometry);
+    return objectsByArc.filter(function(d) { return d.length > 1; });
+  }
+
   return {
     version: "0.0.3",
     mesh: mesh,
-    object: object
+    object: object,
+    topology: topology
   };
 })();
