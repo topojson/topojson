@@ -192,41 +192,48 @@ topojson = (function() {
     var t, j = array.length, i = j - n; while (i < --j) t = array[i], array[i++] = array[j], array[j] = t;
   }
 
-  function topology(topology, objects) {
-    var arcs = topology.arcs,
-        objectsByArc = [];
+  function neighbors(topology, objects) {
+    var objectsByArc = topology.arcs.map(function() { return []; });
 
-    function line(arcs) {
+    function line(arcs, index) {
       for (var i = 0, n = arcs.length, arc; i < n; ++i) {
         if ((arc = arcs[i]) < 0) arc = ~arc;
-        if (!objectsByArc[arc]) objectsByArc[arc] = [];
-        objectsByArc[arc].push(this);
+        objectsByArc[arc].push(index);
       }
     }
 
-    function polygon(arcs) {
-      arcs.forEach(line, this);
+    function polygon(arcs, i) {
+      arcs.forEach(function(arc) { line(arc, i); });
     }
 
-    function geometry(o) {
-      geometryType[o.type].call(o, o.arcs);
+    function geometry(o, i) {
+      geometryType[o.type](o.arcs, i);
     }
 
     var geometryType = {
       LineString: line,
       MultiLineString: polygon,
       Polygon: polygon,
-      MultiPolygon: function(arcs) { arcs.forEach(polygon, this); }
+      MultiPolygon: function(arcs, i) { arcs.forEach(function(arc) { polygon(arc, i); }); }
     };
 
     objects.forEach(geometry);
-    return objectsByArc.filter(function(d) { return d.length > 1; });
+
+    var neighbors = [];
+    objectsByArc.forEach(function(d) {
+      if (d.length < 2) return;
+      if (!neighbors[d[0]]) neighbors[d[0]] = [];
+      if (!neighbors[d[1]]) neighbors[d[1]] = [];
+      neighbors[d[0]].push(objects[d[1]]);
+      neighbors[d[1]].push(objects[d[0]]);
+    });
+    return neighbors;
   }
 
   return {
     version: "0.0.3",
     mesh: mesh,
     object: object,
-    topology: topology
+    neighbors: neighbors
   };
 })();
