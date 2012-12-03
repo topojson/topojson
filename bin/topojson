@@ -31,8 +31,14 @@ var argv = optimist
       describe: "name of feature property to promote to geometry id",
       default: null
     })
+    .options("force-clockwise", {
+      describe: "force exterior rings to be clockwise, and interior rings to be counterclockwise",
+      type: "boolean",
+      default: true
+    })
     .options("help", {
       describe: "display this helpful message",
+      type: "boolean",
       default: false
     })
     .argv;
@@ -57,7 +63,10 @@ argv._.forEach(function(file) {
 });
 
 // Convert GeoJSON to TopoJSON.
-object = topojson.topology(objects, +argv.q);
+object = topojson.topology(objects, {
+  "quantization": +argv.q,
+  "force-clockwise": !!argv["force-clockwise"]
+});
 
 // Simplify.
 if (+argv.s > 0) topojson.simplify(object, +argv.s);
