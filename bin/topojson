@@ -36,6 +36,11 @@ var argv = optimist
       type: "boolean",
       default: true
     })
+    .options("p", {
+      alias: "properties",
+      describe: "feature properties to preserve; no name preserves all properties",
+      default: null
+    })
     .options("help", {
       describe: "display this helpful message",
       type: "boolean",
@@ -65,7 +70,10 @@ argv._.forEach(function(file) {
 // Convert GeoJSON to TopoJSON.
 object = topojson.topology(objects, {
   "quantization": +argv.q,
-  "force-clockwise": !!argv["force-clockwise"]
+  "force-clockwise": !!argv["force-clockwise"],
+  "property-filter": argv.properties === true ? function(d) { return d; }
+      : argv.properties === false ? function() { return null }
+      : (function() { var o = {}; [].concat(argv.properties).forEach(function(k) { var i = k.indexOf("="), v = k; if (i >= 0) v = k.slice(i + 1), k = k.slice(0, i); o[k] = v; }); return function(d) { return o[d]; }; })()
 });
 
 // Simplify.

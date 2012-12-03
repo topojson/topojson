@@ -38,9 +38,25 @@ suite.addBatch({
       assert.equal(topology.objects.collection.geometries[1].type, "Polygon");
     },
     "converting a feature to a geometry preserves its id": function() {
-      var topology = topojson.topology({foo: {id: "Foo", type: "Feature", geometry: {type: "LineString", coordinates: [[.1, .2], [.3, .4]]}}});
+      var topology = topojson.topology({foo: {type: "Feature", id: "Foo", properties: {}, geometry: {type: "LineString", coordinates: [[.1, .2], [.3, .4]]}}});
       assert.equal(topology.objects.foo.type, "LineString");
       assert.equal(topology.objects.foo.id, "Foo");
+    },
+    "converting a feature to a geometry does not preserve its properties by default": function() {
+      var topology = topojson.topology({foo: {type: "Feature", id: "Foo", properties: {name: "George"}, geometry: {type: "LineString", coordinates: [[.1, .2], [.3, .4]]}}});
+      assert.isUndefined(topology.objects.foo.properties);
+    },
+    "a properties filter may be specified to preserve and rename properties": function() {
+      var topology = topojson.topology({foo: {type: "Feature", id: "Foo", properties: {UNREASONABLY_LONG_NAME: "George"}, geometry: {type: "LineString", coordinates: [[.1, .2], [.3, .4]]}}}, {"property-filter": function(d) { return d; }});
+      assert.deepEqual(topology.objects.foo.properties, {UNREASONABLY_LONG_NAME: "George"});
+      var topology = topojson.topology({foo: {type: "Feature", id: "Foo", properties: {UNREASONABLY_LONG_NAME: "George"}, geometry: {type: "LineString", coordinates: [[.1, .2], [.3, .4]]}}}, {"property-filter": function(d) { return d.replace(/^UNREASONABLY_LONG_/, "").toLowerCase(); }});
+      assert.deepEqual(topology.objects.foo.properties, {name: "George"});
+    },
+    "if no properties are specified, no properties are emitted": function() {
+      var topology = topojson.topology({foo: {type: "Feature", id: "Foo", properties: {name: "George", demeanor: "curious"}, geometry: {type: "LineString", coordinates: [[.1, .2], [.3, .4]]}}}, {"property-filter": function(d) { return d === "name" ? d : null; }});
+      assert.deepEqual(topology.objects.foo.properties, {name: "George"});
+      var topology = topojson.topology({foo: {type: "Feature", id: "Foo", properties: {demeanor: "curious"}, geometry: {type: "LineString", coordinates: [[.1, .2], [.3, .4]]}}}, {"property-filter": function(d) { return d === "name" ? d : null; }});
+      assert.deepEqual(topology.objects.foo.properties);
     },
     "the returned transform exactly encompasses the input geometry": function() {
       var topology = topojson.topology({foo: {type: "LineString", coordinates: [[1/8, 1/16], [1/2, 1/4]]}}, {quantization: 2});
