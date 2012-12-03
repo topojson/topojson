@@ -25,6 +25,6 @@
     "topojson": "./bin/topojson"
   },
   "scripts": {
-    "test": "./node_modules/vows/bin/vows test/*-test.js"
+    "test": "./node_modules/vows/bin/vows"
   }
 }
