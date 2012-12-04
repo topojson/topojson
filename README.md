@@ -17,15 +17,9 @@ Lastly, encoding topology has numerous useful applications for maps and visualiz
 
 TopoJSON introduces a new container type: "Topology". A *topology* contains a map of named `objects`, which represent GeoJSON geometry objects such as polygons and multi-polygons, as well as geometry collections. The coordinates for these geometries are stored in the topology's `arcs` array. An *arc* is a sequence of points, similar to a line string's coordinates; the arcs are stitched together to form the geometry, rather than storing the coordinates for each object separately.
 
-### Geometry Objects
+### Example
 
-Geometry objects in TopoJSON are identical to those in GeoJSON, except that a TopoJSON geometry object defines its coordinates as a sequence of the containing topology's arcs, referenced by zero-based index. For example, a line string might be defined as
-
-```js
-{"type": "LineString", "arcs": [42]}
-```
-
-where *42* refers to the arc `topology.arcs[42]`. As a more realistic example, here is a complete TopoJSON file with a single geometry object representing [Aruba](http://en.wikipedia.org/wiki/Aruba):
+Here is a complete TopoJSON file with a single geometry object representing [Aruba](http://en.wikipedia.org/wiki/Aruba):
 
 ```js
 {
@@ -47,7 +41,15 @@ where *42* refers to the arc `topology.arcs[42]`. As a more realistic example, h
 }
 ```
 
-A line string's coordinates are defined as an array of arcs, rather than a single arc, so that multiple arcs can be concatenated to form the line string as necessary:
+### Geometry Objects
+
+Geometry objects in TopoJSON are identical to those in GeoJSON, except that a TopoJSON geometry object defines its coordinates as a sequence of the containing topology's arcs, referenced by zero-based index. For example, a line string might be defined as
+
+```js
+{"type": "LineString", "arcs": [42]}
+```
+
+where *42* refers to the arc `topology.arcs[42]`. Note that a line string's coordinates are defined as an array of arcs, rather than a single arc, so that multiple arcs can be concatenated to form the line string as necessary:
 
 ```js
 {"type": "LineString", "arcs": [42, 43]}
