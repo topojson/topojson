@@ -46,11 +46,12 @@ suite.addBatch({
       assert.equal(topology.objects.collection.geometries[1].type, "Polygon");
     },
 
-    // To know what a geometry object represents, specify an id.
+    // To know what a geometry object represents, specify an id. I prefer
+    // numeric identifiers, such as ISO 3166-1 numeric, but strings work too.
     "converting a feature to a geometry preserves its id": function() {
-      var topology = topojson.topology({foo: {type: "Feature", id: "Foo", properties: {}, geometry: {type: "LineString", coordinates: [[.1, .2], [.3, .4]]}}});
+      var topology = topojson.topology({foo: {type: "Feature", id: 42, properties: {}, geometry: {type: "LineString", coordinates: [[.1, .2], [.3, .4]]}}});
       assert.equal(topology.objects.foo.type, "LineString");
-      assert.equal(topology.objects.foo.id, "Foo");
+      assert.equal(topology.objects.foo.id, 42);
     },
 
     // I prefer to store properties in separate files (such as CSV), so that it
