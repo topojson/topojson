@@ -15,7 +15,7 @@ Lastly, encoding topology has numerous useful applications for maps and visualiz
 
 ## Implementation
 
-TopoJSON introduces a new container type, "Topology". A Topology contains a map of named `objects`, which represent GeoJSON geometry objects such as polygons and multi-polygons, as well as geometry collections. The coordinates for these geometries are stored in the topology's `arcs` array. An *arc* is a sequence of points, similar to a line string's coordinates; the arcs are then stitched together to form the geometry, rather than storing the coordinates for each object separately.
+TopoJSON introduces a new container type, "Topology". A Topology contains a map of named `objects`, which represent GeoJSON geometry objects such as polygons and multi-polygons, as well as geometry collections. The coordinates for these geometries are stored in the topology's `arcs` array. An *arc* is a sequence of points, similar to a line string's coordinates; the arcs are stitched together to form the geometry, rather than storing the coordinates for each object separately.
 
 As such, geometry objects in TopoJSON differ from GeoJSON in terms of how their coordinates are specified: any geometry inside a Topology defines its coordinates as a sequence of the Topology's arcs, referenced by zero-based index. For example, a line string might be defined as
 
