@@ -41,7 +41,7 @@ Here is a complete TopoJSON file with a single polygon geometry object represent
 }
 ```
 
-See the [topology test suite](blob/master/test/topology-test.js) for more examples.
+See the [topology test suite](/mbostock/topojson/blob/master/test/topology-test.js) for more examples.
 
 ### Geometry Objects
 
