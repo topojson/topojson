@@ -15,9 +15,11 @@ Lastly, encoding topology has numerous useful applications for maps and visualiz
 
 ## Implementation
 
-TopoJSON introduces a new container type, "Topology". A Topology contains a map of named `objects`, which represent GeoJSON geometry objects such as polygons and multi-polygons, as well as geometry collections. The coordinates for these geometries are stored in the topology's `arcs` array. An *arc* is a sequence of points, similar to a line string's coordinates; the arcs are stitched together to form the geometry, rather than storing the coordinates for each object separately.
+TopoJSON introduces a new container type: "Topology". A *topology* contains a map of named `objects`, which represent GeoJSON geometry objects such as polygons and multi-polygons, as well as geometry collections. The coordinates for these geometries are stored in the topology's `arcs` array. An *arc* is a sequence of points, similar to a line string's coordinates; the arcs are stitched together to form the geometry, rather than storing the coordinates for each object separately.
 
-As such, geometry objects in TopoJSON differ from GeoJSON in terms of how their coordinates are specified: any geometry inside a Topology defines its coordinates as a sequence of the Topology's arcs, referenced by zero-based index. For example, a line string might be defined as
+### Geometry Objects
+
+Geometry objects in TopoJSON are identical to those in GeoJSON, except that a TopoJSON geometry object defines its coordinates as a sequence of the containing topology's arcs, referenced by zero-based index. For example, a line string might be defined as
 
 ```js
 {"type": "LineString", "arcs": [42]}
@@ -45,7 +47,7 @@ where *42* refers to the arc `topology.arcs[42]`. As a more realistic example, h
 }
 ```
 
-Note that a line string is an array of arcs rather than a single arc. This is so that multiple arcs can be concatenated to form the line string if necessary:
+A line string's coordinates are defined as an array of arcs, rather than a single arc, so that multiple arcs can be concatenated to form the line string as necessary:
 
 ```js
 {"type": "LineString", "arcs": [42, 43]}
@@ -57,11 +59,15 @@ Similarly, a polygon with a hole might be defined as
 {"type": "Polygon", "arcs": [[42, 43], [44]]}
 ```
 
-When stitching together arcs to form geometries, the last coordinate of the arc must be the same as the first coordinate of the subsequent arc, if any. Thus, for all arcs except the last arc, the last coordinate of the arc can be skipped while rendering. For example, if arc 42 represents the point sequence A → B → C, and arc 43 represents the point sequence C → D → E, then the line string [42, 43] represents the point sequence A → B → C → D → E.
+When stitching together arcs to form geometries, the last coordinate of the arc must be the same as the first coordinate of the subsequent arc, if any. (Thus, for all arcs except the last arc, the last coordinate of the arc can be skipped while rendering.) For example, if arc 42 represents the point sequence A → B → C, and arc 43 represents the point sequence C → D → E, then the line string [42, 43] represents the point sequence A → B → C → D → E.
 
-In some cases, a shared arc may need to be reversed. For example, the shared border between California and Nevada proceeds southwards on the California side, but northwards on the Nevada side. (All sub-hemisphere polygons must be in clockwise winding order; counterclockwise winding order indicates the polygon that covers an area greater than one hemisphere.) A negative index indicates that the sequence of coordinates in the arc should be reversed before stitching. To avoid ambiguity with zero, the two's complement is used; -1 (~0) represents the reversed arc 0, -2 (~1) represents the reversed arc 1, and so on.
+In some cases, a shared arc may need to be reversed. For example, the shared border between California and Nevada proceeds southwards on the California side, but northwards on the Nevada side. A negative index indicates that the sequence of coordinates in the arc should be reversed before stitching. To avoid ambiguity with zero, the two's complement is used; -1 (~0) represents the reversed arc 0, -2 (~1) represents the reversed arc 1, and so on.
 
-A Topology has an array `arcs` which is an array of line strings. Each point in the line string is specified at least two dimensions: x and y. Each coordinate is represented as an integer value relative to the previous point, or relative to the origin ⟨0,0⟩ for the first point. To convert to latitude and longitude (or absolute coordinates), the topology defines a `transform`. For example:
+Points and multi-point geometry objects are represented directly with coordinates, as in GeoJSON, rather than arcs. (In effect, points are not part of the topology.) However, these coordinates are still represented as fixed integers, and should be converted in the same fashion as arcs, as described next.
+
+### Arcs and Coordinates
+
+The topology's' `arcs` array is effectively an array of line strings. As in GeoJSON, each point in the line string is specified by at least two dimensions: *x* and *y*. However, unlike GeoJSON, each coordinate in TopoJSON is represented as an *integer* value relative to the previous point. The first point is relative to the origin, ⟨0,0⟩. To convert to latitude and longitude (or absolute coordinates), the topology defines a simple linear `transform` consisting of a scale and translate. For example:
 
 ```js
 "transform": {
@@ -70,17 +76,24 @@ A Topology has an array `arcs` which is an array of line strings. Each point in 
 }
 ```
 
-To convert from relative integer coordinates to fixed integer coordinates, keep a running sum while iterating over the arc. To convert from fixed integer coordinates to absolute coordinates, use the following expression:
+To convert from relative integer coordinates to fixed integer coordinates, keep a running sum while iterating over the arc. To convert from fixed integer coordinates to absolute coordinates, scale each coordinate, and then add the appropriate translation. In code:
 
 ```js
-function fixedToAbsolute(point) {
-  return [
-    point[0] * transform.scale[0] + transform.translate[0],
-    point[1] * transform.scale[1] + transform.translate[1]
-  ];
+function arcToCoordinates(topology, arc) {
+  var x = 0, y = 0;
+  return arc.map(function(point) {
+    return [
+      (x += point[0]) * topology.transform.scale[0] + topology.transform.translate[0],
+      (y += point[1]) * topology.transform.scale[1] + topology.transform.translate[1]
+    ];
+  });
 }
 ```
 
-An optional z-dimension can be used for dynamic simplification; the visual importance of the given control point as computed by the simplification algorithm (e.g., Visvalingham) is stored in TopoJSON so that the geometry can be rapidly simplified as needed for different zoom levels.
+Arc coordinates may have additional dimensions. For example, to support for dynamic simplification at different zoom levels, the visual importance of each point as computed by a simplification algorithm (e.g., Visvalingham) can be stored along with each point so that arcs can be rapidly filtered as needed.
 
-Points and MultiPoints are represented with coordinates, rather than arcs. (In effect, points are not part of the topology.) However, these coordinates are still represented as fixed integers, and should be converted in the same fashion as arcs.
+While GeoJSON is agnostic about winding order, TopoJSON requires that all sub-hemisphere polygons be in clockwise winding order; counterclockwise winding order indicates the polygon that covers an area greater than one hemisphere.
+
+### Features
+
+TopoJSON does not support GeoJSON features, nor feature collections. Instead, these objects are converted to their respective geometries and geometry collections. In addition, TopoJSON allows optional identifiers (`id`) and properties to be stored directly on geometry objects. This simplified representation is equivalent but can be encoded more efficiently.
