@@ -1,6 +1,6 @@
 {
   "name": "topojson",
-  "version": "0.0.2",
+  "version": "0.0.4",
   "description": "An extension to GeoJSON that encodes topology.",
   "keywords": [
     "geojson",
