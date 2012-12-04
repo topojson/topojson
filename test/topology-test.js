@@ -105,9 +105,9 @@ suite.addBatch({
     // that prevents you from using exact match to determine shared points. The
     // default quantization, 1e4, allows for 10,000 differentiable points in
     // both dimensions. If you're using TopoJSON to represent especially high-
-    // precision geometry, you might want to increase the quantization. However,
-    // this will increase the output size and also increase the likelihood of
-    // seams between contiguous geometry after simplification. The quantization
+    // precision geometry, you might want to increase the precision; however,
+    // this necessarily increases the output size and the likelihood of seams
+    // between contiguous geometry after simplification. The quantization factor
     // should be a power of ten for the most efficient representation, since
     // JSON uses base-ten encoding for numbers.
     "precision of quantization is configurable": function() {
