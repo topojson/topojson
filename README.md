@@ -15,15 +15,37 @@ Lastly, encoding topology has numerous useful applications for maps and visualiz
 
 ## Implementation
 
-TopoJSON introduces a new container type, "Topology". A Topology contains a map of named `objects`, which represent GeoJSON geometry objects such as polygons and multi-polygons, and an array `arcs`. An *arc* is a sequence of points, similar to a line string's coordinates. The arcs are stitched together to form the geometry, rather than storing the coordinates for each object separately.
+TopoJSON introduces a new container type, "Topology". A Topology contains a map of named `objects`, which represent GeoJSON geometry objects such as polygons and multi-polygons, as well as geometry collections. The coordinates for these geometries are stored in the topology's `arcs` array. An *arc* is a sequence of points, similar to a line string's coordinates; the arcs are then stitched together to form the geometry, rather than storing the coordinates for each object separately.
 
-As such, geometry objects in TopoJSON differ from GeoJSON in terms of how their coordinates are specified: any geometry inside a Topology defines its coordinates in terms of a sequence of the Topology's arcs, referenced by zero-based index. For example, a line string might be defined as
+As such, geometry objects in TopoJSON differ from GeoJSON in terms of how their coordinates are specified: any geometry inside a Topology defines its coordinates as a sequence of the Topology's arcs, referenced by zero-based index. For example, a line string might be defined as
 
 ```js
 {"type": "LineString", "arcs": [42]}
 ```
 
-where *42* refers to the arc `topology.arcs[42]`. If multiple arcs need to be concatenated to form the line string:
+where *42* refers to the arc `topology.arcs[42]`. As a more realistic example, here is a complete TopoJSON file with a single geometry object representing [Aruba](http://en.wikipedia.org/wiki/Aruba):
+
+```js
+{
+  "type": "Topology",
+  "transform": {
+    "scale": [0.036003600360036005, 0.017361589674592462],
+    "translate": [-180, -89.99892578124998]
+  },
+  "objects": {
+    "aruba": {
+      "type": "Polygon",
+      "arcs": [[0]],
+      "id": 533
+    }
+  },
+  "arcs": [
+    [[3058, 5901], [0, -2], [-2, 1], [-1, 3], [-2, 3], [0, 3], [1, 1], [1, -3], [2, -5], [1, -1]]
+  ]
+}
+```
+
+Note that a line string is an array of arcs rather than a single arc. This is so that multiple arcs can be concatenated to form the line string if necessary:
 
 ```js
 {"type": "LineString", "arcs": [42, 43]}
