@@ -192,14 +192,30 @@ topojson = (function() {
     var t, j = array.length, i = j - n; while (i < --j) t = array[i], array[i++] = array[j], array[j] = t;
   }
 
-  function neighbors(topology, objects) {
-    var objectsByArc = topology.arcs.map(function() { return []; });
+  function bisect(a, x) {
+    var lo = 0, hi = a.length;
+    while (lo < hi) {
+      var mid = lo + hi >>> 1;
+      if (a[mid] < x) lo = mid + 1;
+      else hi = mid;
+    }
+    return lo;
+  }
 
-    function line(arcs, index) {
-      for (var i = 0, n = arcs.length, arc; i < n; ++i) {
-        if ((arc = arcs[i]) < 0) arc = ~arc;
-        objectsByArc[arc].push(index);
-      }
+  function neighbors(topology, objects) {
+    var objectsByArc = [],
+        neighbors = objects.map(function() { return []; });
+
+    function line(arcs, i) {
+      arcs.forEach(function(a) {
+        if (a < 0) a = ~a;
+        var o = objectsByArc[a] || (objectsByArc[a] = []);
+        if (!o[i]) o.forEach(function(j) {
+          var n, k;
+          k = bisect(n = neighbors[i], j); if (n[k] !== j) n.splice(k, 0, j);
+          k = bisect(n = neighbors[j], i); if (n[k] !== i) n.splice(k, 0, i);
+        }), o[i] = i;
+      });
     }
 
     function polygon(arcs, i) {
@@ -218,13 +234,6 @@ topojson = (function() {
     };
 
     objects.forEach(geometry);
-
-    var neighbors = objects.map(function() { return []; });
-    objectsByArc.forEach(function(d) {
-      if (d.length < 2) return;
-      neighbors[d[0]].push(objects[d[1]]);
-      neighbors[d[1]].push(objects[d[0]]);
-    });
     return neighbors;
   }
 
