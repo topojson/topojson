@@ -1,0 +1,64 @@
+#!/usr/bin/env node
+
+var path = require("path"),
+    fs = require("fs"),
+    optimist = require("optimist"),
+    type = require("../lib/topojson/type"),
+    topojson = require("../");
+
+var argv = optimist
+    .usage("Usage: \033[1mgeojson\033[0m [options] [file …]\n\n"
+
++ "Converts the specified input TopoJSON objects to GeoJSON.")
+
+    .options("o", {
+      alias: "out",
+      describe: "output GeoJSON directory",
+      default: process.cwd(),
+    })
+    .options("q", {
+      alias: "quantization",
+      describe: "max. differentiable points in one dimension",
+      default: 1e4,
+    })
+    .options("help", {
+      describe: "display this helpful message",
+      default: false
+    })
+    .argv;
+
+if (!argv._.length || argv.help) return optimist.showHelp();
+
+// Convert TopoJSON back to GeoJSON.
+argv._.forEach(function(file) {
+  var topology = JSON.parse(fs.readFileSync(file, "utf-8"));
+  for (var key in topology.objects) {
+    var object = flatten(topojson.object(topology, topology.objects[key]));
+
+    type({
+      geometry: function(geometry) {
+        delete geometry.arcs;
+        this[geometry.type](geometry);
+      },
+      point: function(point) {
+        point[0] = round(point[0]);
+        point[1] = round(point[1]);
+      }
+    }).object(object);
+
+    fs.writeFileSync(path.join(argv.o, key + ".json"), JSON.stringify(object), "utf8");
+  }
+});
+
+function round(x) {
+  return Math.round(x * argv.q) / argv.q;
+}
+
+// Unfortunately, JSON.stringify ignores inherited properties.
+function flatten(object) {
+  for (var k in object) {
+    if (!object.hasOwnProperty(k)) object[k] = object[k];
+    if (typeof object[k] === "object") flatten(object[k]);
+  }
+  return object;
+}
