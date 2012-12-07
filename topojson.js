@@ -134,8 +134,9 @@ topojson = (function() {
           ? o.geometries.forEach(geometry)
           : geometry(o);
 
-      if (arguments.length < 3) for (var i in geomsByArc) arcs.push([i]);
-      else for (var i in geomsByArc) if (filter((geom = geomsByArc[i])[0], geom[geom.length - 1])) arcs.push([i]);
+      geomsByArc.forEach(arguments.length < 3
+          ? function(geoms, i) { arcs.push([i]); }
+          : function(geoms, i) { if (filter(geoms[0], geoms[geoms.length - 1])) arcs.push([i]); });
     } else {
       for (var i = 0, n = topology.arcs.length; i < n; ++i) arcs.push([i]);
     }
