@@ -1,5 +1,9 @@
 # TopoJSON
+**TopoJSON** は地理的データ構造をエンコードするためのフォーマットGeoJSON を拡張したものです。TopoJSON ファイル中の
+ジオメトリは、個別に記述するのではなく *arcs* と呼ばれる共有行セグメントとしてまとめられています。TopoJSON は冗長性を
+排し、GeoJSON よりずっとコンパクトなジオメトリの記述が可能です。典型的な TopoJSON のファイルは、同じ内容の GeoJSON より
+80% サイズが小さくなります。さらに、 TopoJSON を使うことで [topology-preserving shape simplification](http://bost.ocks.org/mike/simplify/) や [automatic map coloring](http://bl.ocks.org/4188334) 、 [cartograms](http://prag.ma/code/d3-cartogram/)のように地理的データ構造を使ったアプリケーション作成を容易に行えるようになります。
 
-**TopoJSON** is an extension of GeoJSON that encodes topology. Rather than representing geometries discretely, geometries in TopoJSON files are stitched together from shared line segments called *arcs*. TopoJSON eliminates redundancy, offering much more compact representations of geometry than with GeoJSON; typical TopoJSON files are 80% smaller than their GeoJSON equivalents. In addition, TopoJSON facilitates applications that use topology, such as [topology-preserving shape simplification](http://bost.ocks.org/mike/simplify/), [automatic map coloring](http://bl.ocks.org/4188334), and [cartograms](http://prag.ma/code/d3-cartogram/).
+さらに詳しくは [ wiki ](/fod5/topojson/Home_jp) をご覧ください。
 
-Want to learn more? [See the wiki.](/mbostock/topojson/wiki)
+[[English]](https://github.com/mbostock/topojson/blob/master/README.md)
