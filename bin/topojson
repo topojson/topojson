@@ -62,7 +62,7 @@ argv._.forEach(function(file) {
   if (object.type === "Topology") {
     for (var key in object.objects) objects[key] = flatten(topojson.object(object, object.objects[key]));
   } else {
-    objects[path.basename(file, ".json")] = object;
+    objects[path.basename(file, path.extname(file))] = object;
   }
 });
 
