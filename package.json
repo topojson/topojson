@@ -22,7 +22,8 @@
     "vows": "0.6.x"
   },
   "bin": {
-    "topojson": "./bin/topojson"
+    "topojson": "./bin/topojson",
+    "geojson": "./bin/geojson"
   },
   "scripts": {
     "test": "./node_modules/vows/bin/vows; echo"
