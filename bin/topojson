@@ -70,7 +70,7 @@ argv._.forEach(function(file) {
 object = topojson.topology(objects, {
   "quantization": +argv.q,
   "force-clockwise": !!argv["force-clockwise"],
-  "id": id != null ? function(d) { return idType(d.properties[id]); } : function(d) { return d.id; },
+  "id": id != null ? function(d) { return d.properties && idType(d.properties[id]); } : function(d) { return d.id; },
   "property-filter": argv.p === true ? function(d) { return d; }
       : argv.p === false ? function() { return null }
       : (function() { var o = {}; [].concat(argv.p).forEach(function(k) { var i = k.indexOf("="), v = k; if (i >= 0) v = k.slice(i + 1), k = k.slice(0, i); o[k] = v; }); return function(d) { return o[d]; }; })()
