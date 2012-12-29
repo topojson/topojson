@@ -101,6 +101,19 @@ suite.addBatch({
       assert.deepEqual(topology.arcs[0], [[0, 0], [1, 0], [0, 1], [-1, 0], [0, -1]]);
     },
 
+    // TopoJSON uses integers with for points, also. However, there’s no delta-
+    // encoding, even for MultiPoints. And, unlike other geometry objects,
+    // points are still defined with coordinates rather than arcs.
+    "points coordinates are integers with delta encoding": function() {
+      var topology = topojson.topology({foo: {type: "Point", coordinates: [1/8, 1/16]}, bar: {type: "Point", coordinates: [1/2, 1/4]}}, {quantization: 2});
+      assert.deepEqual(topology.arcs, []);
+      assert.deepEqual(topology.objects.foo, {type: "Point", coordinates: [0, 0]});
+      assert.deepEqual(topology.objects.bar, {type: "Point", coordinates: [1, 1]});
+      var topology = topojson.topology({foo: {type: "MultiPoint", coordinates: [[1/8, 1/16], [1/2, 1/4]]}}, {quantization: 2});
+      assert.deepEqual(topology.arcs, []);
+      assert.deepEqual(topology.objects.foo, {type: "MultiPoint", coordinates: [[0, 0], [1, 1]]});
+    },
+
     // GeoJSON inputs are in floating point format, so some error may creep in
     // that prevents you from using exact match to determine shared points. The
     // default quantization, 1e4, allows for 10,000 differentiable points in

@@ -161,6 +161,10 @@ topojson = (function() {
       if (i < 0) reverse(points, n);
     }
 
+    function point(coordinates) {
+      return [coordinates[0] * kx + dx, coordinates[1] * ky + dy];
+    }
+
     function line(arcs) {
       var points = [];
       for (var i = 0, n = arcs.length; i < n; ++i) arc(arcs[i], points);
@@ -173,15 +177,17 @@ topojson = (function() {
 
     function geometry(o) {
       o = Object.create(o);
-      o.coordinates = geometryType[o.type](o.arcs);
+      o.coordinates = geometryType[o.type](o);
       return o;
     }
 
     var geometryType = {
-      LineString: line,
-      MultiLineString: polygon,
-      Polygon: polygon,
-      MultiPolygon: function(arcs) { return arcs.map(polygon); }
+      Point: function(o) { return point(o.coordinates); },
+      MultiPoint: function(o) { return o.coordinates.map(point); },
+      LineString: function(o) { return line(o.arcs); },
+      MultiLineString: function(o) { return polygon(o.arcs); },
+      Polygon: function(o) { return polygon(o.arcs); },
+      MultiPolygon: function(o) { return o.arcs.map(polygon); }
     };
 
     return o.type === "GeometryCollection"
