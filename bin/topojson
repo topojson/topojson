@@ -53,7 +53,7 @@ if (!argv._.length || argv.help) return optimist.showHelp();
 var objects = {},
     object,
     id = argv["id-property"],
-    idType = /^\+/.test(id) ? (id = id.substring(1), Number) : function(d) { return d; };
+    idType = /^\+/.test(id) ? (id = id.substring(1), function(d) { d = +d; return isNaN(d) ? undefined : d; }) : function(d) { return d; };
 
 // Create a map from basename to JSON object.
 // Convert TopoJSON back to GeoJSON in preparation for merge, as needed.
