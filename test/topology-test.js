@@ -45,6 +45,26 @@ suite.addBatch({
       assert.equal(topology.objects.collection.geometries[0].type, "LineString");
       assert.equal(topology.objects.collection.geometries[1].type, "Polygon");
     },
+    "features with null geometry objects are ignored in feature collections": function() {
+      var topology = topojson.topology({
+        collection: {
+          type: "FeatureCollection",
+          features: [
+            {type: "Feature", geometry: null},
+            {type: "Feature", geometry: {type: "Polygon", coordinates: [[[.5, .6], [.7, .8]]]}}
+          ]
+        }
+      });
+      assert.equal(topology.objects.collection.type, "GeometryCollection");
+      assert.equal(topology.objects.collection.geometries.length, 1);
+      assert.equal(topology.objects.collection.geometries[0].type, "Polygon");
+    },
+    "top-level features with null geometry objects are ignored": function() {
+      var topology = topojson.topology({
+        feature: {type: "Feature", geometry: null}
+      });
+      assert.deepEqual(topology.objects, {});
+    },
 
     // To know what a geometry object represents, specify an id. I prefer
     // numeric identifiers, such as ISO 3166-1 numeric, but strings work too.
