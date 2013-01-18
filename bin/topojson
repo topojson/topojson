@@ -8,6 +8,8 @@ var path = require("path"),
 var argv = optimist
     .usage("Usage: \033[1mtopojson\033[0m [options] [file …]\n\n"
 
++ "Version: " + topojson.version + "\n\n"
+
 + "Converts the specified input GeoJSON or TopoJSON objects to TopoJSON,\n"
 + "outputting a single TopoJSON topology object. The `objects` property of\n"
 + "the output topology is a map from input file name to geometry object.")
