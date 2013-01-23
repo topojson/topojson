@@ -1,0 +1,6 @@
+{
+  "name": "TopoJSON",
+  "main": "topojson.js",
+  "version": "0.0.10",
+  "dependencies": {}
+}
