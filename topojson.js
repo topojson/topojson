@@ -171,8 +171,14 @@ topojson = (function() {
       return points;
     }
 
+    function ring(arcs) {
+      var points = line(arcs);
+      while (points.length < 4) points.push(points[0]);
+      return points;
+    }
+
     function polygon(arcs) {
-      return arcs.map(line);
+      return arcs.map(ring);
     }
 
     function geometry(o) {
@@ -185,7 +191,7 @@ topojson = (function() {
       Point: function(o) { return point(o.coordinates); },
       MultiPoint: function(o) { return o.coordinates.map(point); },
       LineString: function(o) { return line(o.arcs); },
-      MultiLineString: function(o) { return polygon(o.arcs); },
+      MultiLineString: function(o) { return o.arcs.map(line); },
       Polygon: function(o) { return polygon(o.arcs); },
       MultiPolygon: function(o) { return o.arcs.map(polygon); }
     };
