@@ -29,6 +29,11 @@ var argv = optimist
       describe: "precision threshold for Visvalingam simplification, in steradians",
       default: 0,
     })
+    .options("n", {
+      alias: "simplify-proportion",
+      describe: "proportion of points to retain for Visvalingam simplification",
+      default: 1,
+    })
     .options("id-property", {
       describe: "name of feature property to promote to geometry id",
       default: null
@@ -79,7 +84,7 @@ object = topojson.topology(objects, {
 });
 
 // Simplify.
-if (+argv.s > 0) topojson.simplify(object, +argv.s);
+if (+argv.s > 0 || +argv.n > 0) topojson.simplify(object, +argv.s, +argv.n);
 
 // Output JSON.
 var json = JSON.stringify(object);
