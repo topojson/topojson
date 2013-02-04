@@ -29,6 +29,10 @@ var argv = optimist
       describe: "precision threshold for Visvalingam simplification, in steradians",
       default: 0,
     })
+    .options("simplify-proportion", {
+      describe: "proportion of points to retain for Visvalingam simplification",
+      default: 0,
+    })
     .options("id-property", {
       describe: "name of feature property to promote to geometry id",
       default: null
@@ -48,9 +52,14 @@ var argv = optimist
       type: "boolean",
       default: false
     })
+    .check(function(argv) {
+      if (!argv._.length) throw new Error("input required");
+      if (+argv.s && +argv.n) throw new Error("--simplify and --simplify-proportion are exclusive");
+      if (typeof argv.p == "string") argv.p = argv.p.split(",");
+    })
     .argv;
 
-if (!argv._.length || argv.help) return optimist.showHelp();
+if (argv.help) return optimist.showHelp();
 
 var objects = {},
     object,
@@ -75,11 +84,14 @@ object = topojson.topology(objects, {
   "id": id != null ? function(d) { return d.properties && idType(d.properties[id]); } : function(d) { return d.id; },
   "property-filter": argv.p === true ? function(d) { return d; }
       : argv.p === false ? function() { return null }
-      : (function() { var o = {}; [].concat(argv.p).forEach(function(k) { var i = k.indexOf("="), v = k; if (i >= 0) v = k.slice(i + 1), k = k.slice(0, i); o[k] = v; }); return function(d) { return o[d]; }; })()
+      : (function() { var o = {}; argv.p.forEach(function(k) { var i = k.indexOf("="), v = k; if (i >= 0) v = k.slice(i + 1), k = k.slice(0, i); o[k] = v; }); return function(d) { return o[d]; }; })()
 });
 
 // Simplify.
-if (+argv.s > 0) topojson.simplify(object, +argv.s);
+if (+argv.s > 0 || +argv.n > 0) topojson.simplify(object, {
+  "minimum-area": +argv.s,
+  "retain-proportion": +argv.n
+});
 
 // Output JSON.
 var json = JSON.stringify(object);
