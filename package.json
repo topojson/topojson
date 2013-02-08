@@ -1,6 +1,6 @@
 {
   "name": "topojson",
-  "version": "0.0.13",
+  "version": "0.0.14",
   "description": "An extension to GeoJSON that encodes topology.",
   "keywords": [
     "geojson",
@@ -20,9 +20,6 @@
   },
   "devDependencies": {
     "vows": "0.6.x"
-  },
-  "engines": {
-    "node": ">= 0.8.0"
   },
   "bin": {
     "topojson": "./bin/topojson"

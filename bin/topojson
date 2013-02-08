@@ -99,7 +99,7 @@ if (+argv.s > 0 || +argv["simplify-proportion"] > 0) topojson.simplify(object, {
 
 // Output JSON.
 var json = JSON.stringify(object);
-if (argv.o === "/dev/stdout") fs.appendFileSync(argv.o, json, "utf8");
+if (argv.o === "/dev/stdout") console.log(json);
 else fs.writeFileSync(argv.o, json, "utf8");
 
 // Unfortunately, JSON.stringify ignores inherited properties.
