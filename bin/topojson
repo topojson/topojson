@@ -54,8 +54,8 @@ var argv = optimist
     })
     .check(function(argv) {
       if (!argv._.length) throw new Error("input required");
-      if (+argv.s && +argv.n) throw new Error("--simplify and --simplify-proportion are exclusive");
-      if (typeof argv.p == "string") argv.p = argv.p.split(",");
+      if (+argv.s && +argv["simplify-proportion"]) throw new Error("--simplify and --simplify-proportion are exclusive");
+      if (typeof argv.p === "string") argv.p = argv.p.split(",");
     })
     .argv;
 
@@ -88,9 +88,9 @@ object = topojson.topology(objects, {
 });
 
 // Simplify.
-if (+argv.s > 0 || +argv.n > 0) topojson.simplify(object, {
+if (+argv.s > 0 || +argv["simplify-proportion"] > 0) topojson.simplify(object, {
   "minimum-area": +argv.s,
-  "retain-proportion": +argv.n
+  "retain-proportion": +argv["simplify-proportion"]
 });
 
 // Output JSON.
