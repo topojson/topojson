@@ -63,8 +63,12 @@ if (argv.help) return optimist.showHelp();
 
 var objects = {},
     object,
-    id = argv["id-property"],
-    idType = /^\+/.test(id) ? (id = id.substring(1), function(d) { d = +d; return isNaN(d) ? undefined : d; }) : function(d) { return d; };
+    id = argv["id-property"];
+
+// Create a property-to-identifier function.
+id = id == null
+    ? function(d) { return d.id; }
+    : propertyId(typeof id === "string" ? id.split(",") : id);
 
 // Create a map from basename to JSON object.
 // Convert TopoJSON back to GeoJSON in preparation for merge, as needed.
@@ -81,10 +85,10 @@ argv._.forEach(function(file) {
 object = topojson.topology(objects, {
   "quantization": +argv.q,
   "force-clockwise": !!argv["force-clockwise"],
-  "id": id != null ? function(d) { return d.properties && idType(d.properties[id]); } : function(d) { return d.id; },
+  "id": id,
   "property-filter": argv.p === true ? function(d) { return d; }
       : argv.p === false ? function() { return null }
-      : (function() { var o = {}; argv.p.forEach(function(k) { var i = k.indexOf("="), v = k; if (i >= 0) v = k.slice(i + 1), k = k.slice(0, i); o[k] = v; }); return function(d) { return o[d]; }; })()
+      : propertyFilter(argv.p)
 });
 
 // Simplify.
@@ -105,4 +109,31 @@ function flatten(object) {
     if (typeof object[k] === "object") flatten(object[k]);
   }
   return object;
+}
+
+function propertyId(properties) {
+  return function(d) {
+    if (d = d.properties) {
+      var id;
+      properties.some(function(p) {
+        id = /^\+/.test(p) ? +d[p.substring(1)] : d[p];
+        if (typeof id === "number") isNaN(id) && (id = null);
+        else if (typeof id !== "string") id = id + "";
+        return id;
+      });
+      return id;
+    }
+  };
+}
+
+function propertyFilter(properties) {
+  var o = {};
+  properties.forEach(function(k) {
+    var i = k.indexOf("="), v = k;
+    if (i >= 0) v = k.slice(i + 1), k = k.slice(0, i);
+    o[k] = v;
+  });
+  return function(d) {
+    return o[d];
+  };
 }
