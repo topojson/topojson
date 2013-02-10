@@ -3,6 +3,8 @@
 var path = require("path"),
     fs = require("fs"),
     optimist = require("optimist"),
+    shapefile = require("shapefile"),
+    queue = require("queue-async"),
     topojson = require("../");
 
 var argv = optimist
@@ -10,9 +12,10 @@ var argv = optimist
 
 + "Version: " + topojson.version + "\n\n"
 
-+ "Converts the specified input GeoJSON or TopoJSON objects to TopoJSON,\n"
-+ "outputting a single TopoJSON topology object. The `objects` property of\n"
-+ "the output topology is a map from input file name to geometry object.")
++ "Converts the specified input shapefile, GeoJSON or TopoJSON objects to\n"
++ "TopoJSON, outputting a single TopoJSON topology object. The `objects`\n"
++ "property of the output topology is a map from input file name to geometry\n"
++ "object.")
 
     .options("o", {
       alias: "out",
@@ -62,7 +65,6 @@ var argv = optimist
 if (argv.help) return optimist.showHelp();
 
 var objects = {},
-    object,
     id = argv["id-property"];
 
 // Create a property-to-identifier function.
@@ -72,35 +74,74 @@ id = id == null
 
 // Create a map from basename to JSON object.
 // Convert TopoJSON back to GeoJSON in preparation for merge, as needed.
+var q = queue(1);
 argv._.forEach(function(file) {
-  object = JSON.parse(fs.readFileSync(file, "utf-8"));
+  q.defer(/\.shp$/.test(file) ? inputShapefile : inputJson, file);
+});
+q.await(output);
+
+function inputShapefile(file, callback) {
+  file = qualify(file);
+
+  var object = objects[file.name] = {
+    type: "FeatureCollection",
+    features: []
+  };
+
+  shapefile.readStream(file.path)
+      .on("error", callback)
+      .on("feature", function(feature) { object.features.push(feature); })
+      .on("end", callback);
+}
+
+function inputJson(file, callback) {
+  file = qualify(file);
+
+  var object = JSON.parse(fs.readFileSync(file.path));
+
   if (object.type === "Topology") {
-    for (var key in object.objects) objects[key] = flatten(topojson.object(object, object.objects[key]));
+    for (var key in object.objects) {
+      objects[key] = flatten(topojson.object(object, object.objects[key]));
+    }
   } else {
-    objects[path.basename(file, path.extname(file))] = object;
+    objects[file.name] = object;
   }
-});
 
-// Convert GeoJSON to TopoJSON.
-object = topojson.topology(objects, {
-  "quantization": +argv.q,
-  "force-clockwise": !!argv["force-clockwise"],
-  "id": id,
-  "property-filter": argv.p === true ? function(d) { return d; }
-      : argv.p === false ? function() { return null }
-      : propertyFilter(argv.p)
-});
+  callback(null);
+}
 
-// Simplify.
-if (+argv.s > 0 || +argv["simplify-proportion"] > 0) topojson.simplify(object, {
-  "minimum-area": +argv.s,
-  "retain-proportion": +argv["simplify-proportion"]
-});
+function output(error) {
+  if (error) return console.trace(error);
 
-// Output JSON.
-var json = JSON.stringify(object);
-if (argv.o === "/dev/stdout") console.log(json);
-else fs.writeFileSync(argv.o, json, "utf8");
+  // Convert GeoJSON to TopoJSON.
+  var object = topojson.topology(objects, {
+    "quantization": +argv.q,
+    "force-clockwise": !!argv["force-clockwise"],
+    "id": id,
+    "property-filter": argv.p === true ? function(d) { return d; }
+        : argv.p === false ? function() { return null }
+        : propertyFilter(argv.p)
+  });
+
+  // Simplify.
+  if (+argv.s > 0 || +argv["simplify-proportion"] > 0) topojson.simplify(object, {
+    "minimum-area": +argv.s,
+    "retain-proportion": +argv["simplify-proportion"]
+  });
+
+  // Output JSON.
+  var json = JSON.stringify(object);
+  if (argv.o === "/dev/stdout") console.log(json);
+  else fs.writeFileSync(argv.o, json, "utf8");
+}
+
+function qualify(file) {
+  var i = file.indexOf("=");
+  return {
+    name: i >= 0 ? file.substring(0, i) : path.basename(file, path.extname(file)),
+    path: i >= 0 ? file.substring(i + 1) : file
+  };
+}
 
 // Unfortunately, JSON.stringify ignores inherited properties.
 function flatten(object) {
