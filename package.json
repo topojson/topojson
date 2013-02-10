@@ -16,9 +16,9 @@
   },
   "main": "./index.js",
   "dependencies": {
-    "optimist": "0.3.5",
-    "queue-async": "1.0.1",
-    "shapefile": "0.0.2"
+    "optimist": "0.3.x",
+    "queue-async": "1.0.x",
+    "shapefile": "0.0.x"
   },
   "devDependencies": {
     "vows": "0.6.x"
