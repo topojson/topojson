@@ -18,7 +18,9 @@ console.log(JSON.stringify({
   },
   "main": "./index.js",
   "dependencies": {
-    "optimist": "0.3.5"
+    "optimist": "0.3.5",
+    "queue-async": "1.0.1",
+    "shapefile": "0.0.2"
   },
   "devDependencies": {
     "vows": "0.6.x"
