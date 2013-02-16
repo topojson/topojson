@@ -158,7 +158,8 @@ function propertyId(properties) {
       var id;
       properties.some(function(p) {
         id = /^\+/.test(p) ? +d[p.substring(1)] : d[p];
-        if (typeof id === "number") isNaN(id) && (id = null);
+        if (id == null) return;
+        else if (typeof id === "number") isNaN(id) && (id = null);
         else if (typeof id !== "string") id = id + "";
         return id;
       });
