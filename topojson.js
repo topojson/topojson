@@ -168,6 +168,7 @@ topojson = (function() {
     function line(arcs) {
       var points = [];
       for (var i = 0, n = arcs.length; i < n; ++i) arc(arcs[i], points);
+      if (points.length < 2) points.push(points[0]);
       return points;
     }
 
@@ -182,10 +183,12 @@ topojson = (function() {
     }
 
     function geometry(o) {
-      var t = o.type, i = o.id, p = o.properties;
-      return t === "GeometryCollection" ? {type: t, id: i, properties: p, geometries: o.geometries.map(geometry)}
-          : t in geometryType ? {type: t, id: i, properties: p, coordinates: geometryType[t](o)}
-          : null;
+      var t = o.type, g = t === "GeometryCollection" ? {type: t, geometries: o.geometries.map(geometry)}
+          : t in geometryType ? {type: t, coordinates: geometryType[t](o)}
+          : {type: null};
+      if ("id" in o) g.id = o.id;
+      if ("properties" in o) g.properties = o.properties;
+      return g;
     }
 
     var geometryType = {
