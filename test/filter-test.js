@@ -21,12 +21,12 @@ suite.addBatch({
     "empty geometry objects are converted to null": function(filter) {
       var topology = topojson.topology({line: {type: "Polygon", coordinates: [[[0, 0], [1, 1], [1, 1], [0, 0]]]}});
       filter(topology);
-      assert.deepEqual(topology.objects.line, {});
+      assert.deepEqual(topology.objects.line, {type: null});
     },
     "small geometry objects are converted to null": function(filter) {
       var topology = topojson.topology({polygon: {type: "Polygon", coordinates: [[[0, 0], [1, 0], [1, 1], [0, 1], [0, 0]]]}});
       filter(topology, {"minimum-area": .5});
-      assert.deepEqual(topology.objects.polygon, {});
+      assert.deepEqual(topology.objects.polygon, {type: null});
     },
     "big geometry objects are preserved": function(filter) {
       var topology = topojson.topology({polygon: {type: "Polygon", coordinates: [[[0, 0], [0, 1], [1, 1], [1, 0], [0, 0]]]}});
