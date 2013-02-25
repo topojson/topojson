@@ -182,9 +182,10 @@ topojson = (function() {
     }
 
     function geometry(o) {
-      o = Object.create(o);
-      o.coordinates = geometryType[o.type](o);
-      return o;
+      var t = o.type, i = o.id, p = o.properties;
+      return t === "GeometryCollection" ? {type: t, id: i, properties: p, geometries: o.geometries.map(geometry)}
+          : t in geometryType ? {type: t, id: i, properties: p, coordinates: geometryType[t](o)}
+          : null;
     }
 
     var geometryType = {
@@ -196,9 +197,7 @@ topojson = (function() {
       MultiPolygon: function(o) { return o.arcs.map(polygon); }
     };
 
-    return o.type === "GeometryCollection"
-        ? (o = Object.create(o), o.geometries = o.geometries.map(geometry), o)
-        : geometry(o);
+    return geometry(o);
   }
 
   function reverse(array, n) {

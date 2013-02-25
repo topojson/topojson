@@ -45,7 +45,22 @@ suite.addBatch({
       assert.equal(topology.objects.collection.geometries[0].type, "LineString");
       assert.equal(topology.objects.collection.geometries[1].type, "Polygon");
     },
-    "features with null geometry objects are ignored in feature collections": function() {
+    "null geometry objects are preserved in geometry collections": function() {
+      var topology = topojson.topology({
+        collection: {
+          type: "GeometryCollection",
+          geometries: [
+            null,
+            {type: "Polygon", coordinates: [[[.5, .6], [.7, .8]]]}
+          ]
+        }
+      });
+      assert.equal(topology.objects.collection.type, "GeometryCollection");
+      assert.equal(topology.objects.collection.geometries.length, 2);
+      assert.isUndefined(topology.objects.collection.geometries[0].type);
+      assert.equal(topology.objects.collection.geometries[1].type, "Polygon");
+    },
+    "features with null geometry objects are preserved in feature collections": function() {
       var topology = topojson.topology({
         collection: {
           type: "FeatureCollection",
@@ -56,14 +71,13 @@ suite.addBatch({
         }
       });
       assert.equal(topology.objects.collection.type, "GeometryCollection");
-      assert.equal(topology.objects.collection.geometries.length, 1);
-      assert.equal(topology.objects.collection.geometries[0].type, "Polygon");
+      assert.equal(topology.objects.collection.geometries.length, 2);
+      assert.isUndefined(topology.objects.collection.geometries[0].type);
+      assert.equal(topology.objects.collection.geometries[1].type, "Polygon");
     },
-    "top-level features with null geometry objects are ignored": function() {
-      var topology = topojson.topology({
-        feature: {type: "Feature", geometry: null}
-      });
-      assert.deepEqual(topology.objects, {});
+    "top-level features with null geometry objects are preserved": function() {
+      var topology = topojson.topology({feature: {type: "Feature", geometry: null}});
+      assert.deepEqual(topology.objects, {feature: {}});
     },
 
     // To know what a geometry object represents, specify an id. I prefer
@@ -159,28 +173,28 @@ suite.addBatch({
     },
 
     // In exceptional cases, very small geometry objects may collapse down to a
-    // single point after quantization. These geometries are therefore removed.
-    "empty lines in a MultiLineString are removed": function() {
-      var topology = topojson.topology({foo: {type: "MultiLineString", coordinates: [[[1/8, 1/16], [1/2, 1/4]], [], [[1/8, 1/16]], [[1/8, 1/16], [1/8, 1/16]], [[1/2, 1/4], [1/8, 1/16]]]}}, {quantization: 2});
-      assert.equal(topology.arcs.length, 1);
+    // single point after quantization.
+    "empty lines in a MultiLineString are preserved": function() {
+      var topology = topojson.topology({foo: {type: "MultiLineString", coordinates: [[[1/8, 1/16], [1/2, 1/4]], [[1/8, 1/16], [1/8, 1/16]], [[1/2, 1/4], [1/8, 1/16]]]}}, {quantization: 2});
+      assert.equal(topology.arcs.length, 2);
+      assert.deepEqual(topology.arcs[1], [[0, 0]]);
       assert.deepEqual(topology.arcs[0], [[0, 0], [1, 1]]);
-      assert.deepEqual(topology.objects.foo.arcs, [[0], [~0]]);
+      assert.deepEqual(topology.objects.foo.arcs, [[0], [1], [~0]]);
     },
-    "empty polygons in a MultiPolygon are removed": function() {
+    "empty polygons in a MultiPolygon are preserved": function() {
       var topology = topojson.topology({foo: {type: "MultiPolygon", coordinates: [
         [[[1/8, 1/16], [1/2, 1/16], [1/2, 1/4], [1/8, 1/4], [1/8, 1/16]]],
-        [[[1/8, 1/16]]],
-        [[[1/8, 1/16], [1/8, 1/16]]],
+        [[[1/8, 1/16], [1/8, 1/16], [1/8, 1/16], [1/8, 1/16]]],
         [[[1/8, 1/16], [1/8, 1/4], [1/2, 1/4], [1/2, 1/16], [1/8, 1/16]]]
-      ]}}, {quantization: 2, "force-clockwise": false});
-      assert.equal(topology.arcs.length, 1);
+      ]}}, {quantization: 2});
+      assert.equal(topology.arcs.length, 2);
       assert.deepEqual(topology.arcs[0], [[0, 0], [1, 0], [0, 1], [-1, 0], [0, -1]]);
-      assert.deepEqual(topology.objects.foo.arcs, [[[0]], [[~0]]]);
+      assert.deepEqual(topology.objects.foo.arcs, [[[0]], [[1]], [[~0]]]);
     },
-    "empty geometries in a GeometryCollection are removed": function() {
+    "empty geometries in a GeometryCollection are preserved": function() {
       var topology = topojson.topology({collection: {type: "FeatureCollection", features: [{type: "Feature", geometry: {type: "MultiPolygon", coordinates: []}}]}}, {quantization: 2});
       assert.equal(topology.arcs.length, 0);
-      assert.deepEqual(topology.objects.collection, {type: "GeometryCollection", geometries: []});
+      assert.deepEqual(topology.objects.collection, {type: "GeometryCollection", geometries: [{type: "MultiPolygon", arcs: []}]});
     },
 
     // If one of the top-level objects in the input is empty, however, it is

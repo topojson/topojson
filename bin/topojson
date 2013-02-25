@@ -101,7 +101,7 @@ function inputJson(file, callback) {
 
   if (object.type === "Topology") {
     for (var key in object.objects) {
-      objects[key] = flatten(topojson.object(object, object.objects[key]));
+      objects[key] = topojson.object(object, object.objects[key]);
     }
   } else {
     objects[file.name] = object;
@@ -116,7 +116,6 @@ function output(error) {
   // Convert GeoJSON to TopoJSON.
   var object = topojson.topology(objects, {
     "quantization": +argv.q,
-    "force-clockwise": !!argv["force-clockwise"],
     "id": id,
     "property-filter": argv.p === true ? function(d) { return d; }
         : argv.p === false ? function() { return null }
@@ -127,6 +126,14 @@ function output(error) {
   if (+argv.s > 0 || +argv["simplify-proportion"] > 0) topojson.simplify(object, {
     "minimum-area": +argv.s,
     "retain-proportion": +argv["simplify-proportion"]
+  });
+
+  // Remove empty (or tiny) features.
+  // TODO For --simplify-propertion, figure out the appropriate minimum area.
+  // TODO Combine simplify + filter as topojson.topology options?
+  topojson.filter(object, {
+    "minimum-area": +argv.s || 0,
+    "force-clockwise": !!argv["force-clockwise"]
   });
 
   // Output JSON.
@@ -141,15 +148,6 @@ function qualify(file) {
     name: i >= 0 ? file.substring(0, i) : path.basename(file, path.extname(file)),
     path: i >= 0 ? file.substring(i + 1) : file
   };
-}
-
-// Unfortunately, JSON.stringify ignores inherited properties.
-function flatten(object) {
-  for (var k in object) {
-    if (!object.hasOwnProperty(k)) object[k] = object[k];
-    if (typeof object[k] === "object") flatten(object[k]);
-  }
-  return object;
 }
 
 function propertyId(properties) {
