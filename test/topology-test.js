@@ -131,7 +131,7 @@ suite.addBatch({
     "arc coordinates are integers with delta encoding": function() {
       var topology = topojson.topology({foo: {type: "LineString", coordinates: [[1/8, 1/16], [1/2, 1/16], [1/8, 1/4], [1/2, 1/4]]}}, {quantization: 2});
       assert.deepEqual(topology.arcs[0], [[0, 0], [1, 0], [-1, 1], [1, 0]]);
-      var topology = topojson.topology({foo: {type: "Polygon", coordinates: [[[1/8, 1/16], [1/2, 1/16], [1/2, 1/4], [1/8, 1/4], [1/8, 1/16]]]}}, {quantization: 2, "force-clockwise": false});
+      var topology = topojson.topology({foo: {type: "Polygon", coordinates: [[[1/8, 1/16], [1/2, 1/16], [1/2, 1/4], [1/8, 1/4], [1/8, 1/16]]]}}, {quantization: 2});
       assert.deepEqual(topology.arcs[0], [[0, 0], [1, 0], [0, 1], [-1, 0], [0, -1]]);
     },
 
@@ -160,7 +160,7 @@ suite.addBatch({
     "precision of quantization is configurable": function() {
       var topology = topojson.topology({foo: {type: "LineString", coordinates: [[1/8, 1/16], [1/2, 1/16], [1/8, 1/4], [1/2, 1/4]]}}, {quantization: 3});
       assert.deepEqual(topology.arcs[0], [[0, 0], [2, 0], [-2, 2], [2, 0]]);
-      var topology = topojson.topology({foo: {type: "Polygon", coordinates: [[[1/8, 1/16], [1/2, 1/16], [1/2, 1/4], [1/8, 1/4], [1/8, 1/16]]]}}, {quantization: 5, "force-clockwise": false});
+      var topology = topojson.topology({foo: {type: "Polygon", coordinates: [[[1/8, 1/16], [1/2, 1/16], [1/2, 1/4], [1/8, 1/4], [1/8, 1/16]]]}}, {quantization: 5});
       assert.deepEqual(topology.arcs[0], [[0, 0], [4, 0], [0, 4], [-4, 0], [0, -4]]);
     },
 
@@ -168,7 +168,7 @@ suite.addBatch({
     "coincident points are removed": function() {
       var topology = topojson.topology({foo: {type: "LineString", coordinates: [[1/8, 1/16], [1/8, 1/16], [1/2, 1/4], [1/2, 1/4]]}}, {quantization: 2});
       assert.deepEqual(topology.arcs[0], [[0, 0], [1, 1]]);
-      var topology = topojson.topology({foo: {type: "Polygon", coordinates: [[[1/8, 1/16], [1/2, 1/16], [1/2, 1/16], [1/2, 1/4], [1/8, 1/4], [1/8, 1/4], [1/8, 1/16]]]}}, {quantization: 2, "force-clockwise": false});
+      var topology = topojson.topology({foo: {type: "Polygon", coordinates: [[[1/8, 1/16], [1/2, 1/16], [1/2, 1/16], [1/2, 1/4], [1/8, 1/4], [1/8, 1/4], [1/8, 1/16]]]}}, {quantization: 2});
       assert.deepEqual(topology.arcs[0], [[0, 0], [1, 0], [0, 1], [-1, 0], [0, -1]]);
     },
 
@@ -337,7 +337,7 @@ suite.addBatch({
       var topology = topojson.topology({
         abcda: {type: "Polygon", coordinates: [[[0, 0], [1, 0], [1, 1], [0, 1], [0, 0]]]},
         befcb: {type: "Polygon", coordinates: [[[1, 0], [2, 0], [2, 1], [1, 1], [1, 0]]]}
-      }, {quantization: 3, "force-clockwise": false});
+      }, {quantization: 3});
       assert.deepEqual(topology.arcs, [
         [[1, 0], [0, 2]], // BC
         [[1, 2], [-1, 0], [0, -2], [1, 0]], // CDAB
@@ -361,7 +361,7 @@ suite.addBatch({
         abca: {type: "Polygon", coordinates: [[[0, 0], [1, 0], [1, 1], [0, 0]]]},
         acda: {type: "Polygon", coordinates: [[[0, 0], [1, 1], [0, 1], [0, 0]]]},
         bfcb: {type: "Polygon", coordinates: [[[1, 0], [2, 1], [1, 1], [1, 0]]]}
-      }, {quantization: 3, "force-clockwise": false});
+      }, {quantization: 3});
       assert.deepEqual(topology.arcs, [
         [[1, 2], [-1, -2]], // CA
         [[0, 0], [1, 0]], // AB
@@ -388,7 +388,7 @@ suite.addBatch({
         abca: {type: "Polygon", coordinates: [[[0, 0], [1, 0], [1, 1], [0, 0]]]},
         befcb: {type: "Polygon", coordinates: [[[1, 0], [2, 0], [2, 1], [1, 1], [1, 0]]]},
         egfe: {type: "Polygon", coordinates: [[[2, 0], [3, 1], [2, 1], [2, 0]]]}
-      }, {quantization: 4, "force-clockwise": false});
+      }, {quantization: 4});
       assert.deepEqual(topology.arcs, [
         [[1, 0], [0, 3]], // BC
         [[1, 3], [-1, -3], [1, 0]], // CAB
@@ -416,7 +416,7 @@ suite.addBatch({
         abcda: {type: "Polygon", coordinates: [[[0, 0], [1, 0], [1, 1], [0, 1], [0, 0]]]},
         abefgda: {type: "Polygon", coordinates: [[[0, 0], [1, 0], [2, 0], [2, 2], [0, 2], [0, 1], [0, 0]]]},
         befgdcb: {type: "Polygon", coordinates: [[[1, 0], [2, 0], [2, 2], [0, 2], [0, 1], [1, 1], [1, 0]]]}
-      }, {quantization: 3, "force-clockwise": false});
+      }, {quantization: 3});
       assert.deepEqual(topology.arcs, [
         [[1, 0], [0, 1], [-1, 0]], // BCD
         [[0, 1], [0, -1], [1, 0]], // DAB
@@ -425,6 +425,74 @@ suite.addBatch({
       assert.deepEqual(topology.objects.abcda, {type: "Polygon", arcs: [[0, 1]]});
       assert.deepEqual(topology.objects.abefgda, {type: "Polygon", arcs: [[2, 1]]});
       assert.deepEqual(topology.objects.befgdcb, {type: "Polygon", arcs: [[~0, 2]]});
+    },
+
+    //
+    // A-----B
+    // |     |
+    // |     |
+    // D-----C
+    //
+    "the polygons ABCDA and BCDAB share one arcs": function() {
+      var topology = topojson.topology({
+        abcda: {type: "Polygon", coordinates: [[[0, 0], [1, 0], [1, 1], [0, 1], [0, 0]]]},
+        bcdab: {type: "Polygon", coordinates: [[[1, 0], [1, 1], [0, 1], [0, 0], [1, 0]]]}
+      }, {quantization: 2});
+      assert.deepEqual(topology.arcs, [
+        [[0, 0], [1, 0], [0, 1], [-1, 0], [0, -1]] // ABCDA
+      ]);
+      assert.deepEqual(topology.objects.abcda, {type: "Polygon", arcs: [[0]]});
+      assert.deepEqual(topology.objects.bcdab, {type: "Polygon", arcs: [[0]]});
+    },
+
+    //
+    // A-----------------B
+    // |                 |
+    // |                 |
+    // |     E-----F     |
+    // |     |     |     |
+    // |     |     |     |
+    // |     H-----G     |
+    // |                 |
+    // |                 |
+    // D-----------------C
+    //
+    "the polygons ABCDA-EHGFE and EFGHE share two arcs": function() {
+      var topology = topojson.topology({
+        abcda: {type: "Polygon", coordinates: [[[0, 0], [3, 0], [3, 3], [0, 3], [0, 0]], [[1, 1], [1, 2], [2, 2], [2, 1], [1, 1]]]},
+        efghe: {type: "Polygon", coordinates: [[[1, 1], [2, 1], [2, 2], [1, 2], [1, 1]]]}
+      }, {quantization: 4});
+      assert.deepEqual(topology.arcs, [
+        [[0, 0], [3, 0], [0, 3], [-3, 0], [0, -3]], // ABCDA
+        [[1, 1], [0, 1], [1, 0], [0, -1], [-1, 0]] // EHGFE
+      ]);
+      assert.deepEqual(topology.objects.abcda, {type: "Polygon", arcs: [[0], [1]]});
+      assert.deepEqual(topology.objects.efghe, {type: "Polygon", arcs: [[~1]]});
+    },
+
+    //
+    // A-----------------B
+    // |                 |
+    // |                 |
+    // |     E-----F     |
+    // |     |     |     |
+    // |     |     |     |
+    // |     H-----G     |
+    // |                 |
+    // |                 |
+    // D-----------------C
+    //
+    "the polygons ABCDA-EHGFE and FGHEF share two arcs": function() {
+      var topology = topojson.topology({
+        abcda: {type: "Polygon", coordinates: [[[0, 0], [3, 0], [3, 3], [0, 3], [0, 0]], [[1, 1], [1, 2], [2, 2], [2, 1], [1, 1]]]},
+        fghef: {type: "Polygon", coordinates: [[[2, 1], [2, 2], [1, 2], [1, 1], [2, 1]]]}
+      }, {quantization: 4});
+      assert.deepEqual(topology.arcs, [
+        [[0, 0], [3, 0], [0, 3], [-3, 0], [0, -3]], // ABCDA
+        [[1, 1], [0, 1], [1, 0], [0, -1], [-1, 0]] // EHGFE
+      ]);
+      assert.deepEqual(topology.objects.abcda, {type: "Polygon", arcs: [[0], [1]]});
+      assert.deepEqual(topology.objects.fghef, {type: "Polygon", arcs: [[~1]]});
     }
   }
 });
