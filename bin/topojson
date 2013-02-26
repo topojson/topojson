@@ -115,6 +115,7 @@ function output(error) {
 
   // Convert GeoJSON to TopoJSON.
   var object = topojson.topology(objects, {
+    "verbose": true,
     "quantization": +argv.q,
     "id": id,
     "property-filter": argv.p === true ? function(d) { return d; }
@@ -124,6 +125,7 @@ function output(error) {
 
   // Simplify.
   if (+argv.s > 0 || +argv["simplify-proportion"] > 0) topojson.simplify(object, {
+    "verbose": true,
     "minimum-area": +argv.s,
     "retain-proportion": +argv["simplify-proportion"]
   });

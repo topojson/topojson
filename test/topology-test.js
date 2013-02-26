@@ -172,16 +172,33 @@ suite.addBatch({
       assert.deepEqual(topology.arcs[0], [[0, 0], [1, 0], [0, 1], [-1, 0], [0, -1]]);
     },
 
-    // In exceptional cases, very small geometry objects may collapse down to a
-    // single point after quantization.
-    "empty lines in a MultiLineString are preserved": function() {
+    // Quantization may introduce degenerate features which have collapsed onto a single point.
+    "collapsed lines are preserved": function() {
+      var topology = topojson.topology({
+        foo: {type: "LineString", coordinates: [[0, 0], [1, 1], [2, 2]]},
+        bar: {type: "LineString", coordinates: [[-100, -100], [0, 0], [100, 100]]}
+      }, {quantization: 3});
+      assert.deepEqual(topology.objects.foo, {type: "LineString", arcs: [0]});
+      assert.deepEqual(topology.arcs[0], [[1, 1]]);
+    },
+    "collapsed lines in a MultiLineString are preserved": function() {
       var topology = topojson.topology({foo: {type: "MultiLineString", coordinates: [[[1/8, 1/16], [1/2, 1/4]], [[1/8, 1/16], [1/8, 1/16]], [[1/2, 1/4], [1/8, 1/16]]]}}, {quantization: 2});
       assert.equal(topology.arcs.length, 2);
       assert.deepEqual(topology.arcs[1], [[0, 0]]);
       assert.deepEqual(topology.arcs[0], [[0, 0], [1, 1]]);
       assert.deepEqual(topology.objects.foo.arcs, [[0], [1], [~0]]);
     },
-    "empty polygons in a MultiPolygon are preserved": function() {
+    "collapsed polygons are preserved": function() {
+      var topology = topojson.topology({
+        foo: {type: "Polygon", coordinates: [[[0, 0], [0, 1], [1, 1], [1, 0], [0, 0]]]},
+        bar: {type: "Polygon", coordinates: [[[0, 0], [0, 1], [1, 1], [0, 0]]]},
+        baz: {type: "MultiPoint", coordinates: [[-100, -100], [0, 0], [100, 100]]}
+      }, {quantization: 3});
+      assert.deepEqual(topology.objects.foo, {type: "Polygon", arcs: [[0]]});
+      assert.deepEqual(topology.objects.bar, {type: "Polygon", arcs: [[0]]}); // the same as foo!
+      assert.deepEqual(topology.arcs[0], [[1, 1]]);
+    },
+    "collapsed polygons in a MultiPolygon are preserved": function() {
       var topology = topojson.topology({foo: {type: "MultiPolygon", coordinates: [
         [[[1/8, 1/16], [1/2, 1/16], [1/2, 1/4], [1/8, 1/4], [1/8, 1/16]]],
         [[[1/8, 1/16], [1/8, 1/16], [1/8, 1/16], [1/8, 1/16]]],
@@ -191,7 +208,7 @@ suite.addBatch({
       assert.deepEqual(topology.arcs[0], [[0, 0], [1, 0], [0, 1], [-1, 0], [0, -1]]);
       assert.deepEqual(topology.objects.foo.arcs, [[[0]], [[1]], [[~0]]]);
     },
-    "empty geometries in a GeometryCollection are preserved": function() {
+    "collapsed geometries in a GeometryCollection are preserved": function() {
       var topology = topojson.topology({collection: {type: "FeatureCollection", features: [{type: "Feature", geometry: {type: "MultiPolygon", coordinates: []}}]}}, {quantization: 2});
       assert.equal(topology.arcs.length, 0);
       assert.deepEqual(topology.objects.collection, {type: "GeometryCollection", geometries: [{type: "MultiPolygon", arcs: []}]});
