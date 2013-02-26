@@ -240,7 +240,7 @@ topojson = (function() {
     }
 
     function geometry(o, i) {
-      geometryType[o.type](o.arcs, i);
+      if (o.type in geometryType) geometryType[o.type](o.arcs, i);
     }
 
     var geometryType = {
