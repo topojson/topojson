@@ -119,8 +119,10 @@ topojson = (function() {
       }
 
       function geometry(o) {
-        geom = o;
-        geometryType[o.type](o.arcs);
+        if (o.type in geometryType) {
+          geom = o;
+          geometryType[o.type](o.arcs);
+        }
       }
 
       var geometryType = {
