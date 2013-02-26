@@ -219,7 +219,7 @@ topojson = (function() {
     return lo;
   }
 
-  function neighbors(topology, objects) {
+  function neighbors(objects) {
     var objectsByArc = [],
         neighbors = objects.map(function() { return []; });
 
@@ -255,7 +255,7 @@ topojson = (function() {
   }
 
   return {
-    version: "0.0.19",
+    version: "0.0.20",
     mesh: mesh,
     object: object,
     neighbors: neighbors

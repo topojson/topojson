@@ -12,7 +12,7 @@ suite.addBatch({
         ab: {type: "LineString", coordinates: [[0, 0], [1, 0]]},
         cd: {type: "LineString", coordinates: [[0, 1], [1, 1]]}
       }, {quantization: 2});
-      assert.deepEqual(topojson.neighbors(topology, []), []);
+      assert.deepEqual(topojson.neighbors([]), []);
     },
 
     //
@@ -25,7 +25,7 @@ suite.addBatch({
         ab: {type: "LineString", coordinates: [[0, 0], [1, 0]]},
         cd: {type: "LineString", coordinates: [[0, 1], [1, 1]]}
       }, {quantization: 2});
-      assert.deepEqual(topojson.neighbors(topology, [
+      assert.deepEqual(topojson.neighbors([
         topology.objects.ab,
         topology.objects.cd
       ]), [
@@ -42,7 +42,7 @@ suite.addBatch({
         ab: {type: "LineString", coordinates: [[0, 0], [1, 0]]},
         bc: {type: "LineString", coordinates: [[1, 0], [2, 0]]}
       }, {quantization: 3});
-      assert.deepEqual(topojson.neighbors(topology, [
+      assert.deepEqual(topojson.neighbors([
         topology.objects.ab,
         topology.objects.bc
       ]), [
@@ -59,7 +59,7 @@ suite.addBatch({
         abc: {type: "LineString", coordinates: [[0, 0], [1, 0], [2, 0]]},
         bcd: {type: "LineString", coordinates: [[1, 0], [2, 0], [3, 0]]}
       }, {quantization: 4});
-      assert.deepEqual(topojson.neighbors(topology, [
+      assert.deepEqual(topojson.neighbors([
         topology.objects.abc,
         topology.objects.bcd
       ]), [
@@ -76,7 +76,7 @@ suite.addBatch({
         abc: {type: "LineString", coordinates: [[0, 0], [1, 0], [2, 0]]},
         dcb: {type: "LineString", coordinates: [[3, 0], [2, 0], [1, 0]]}
       }, {quantization: 4});
-      assert.deepEqual(topojson.neighbors(topology, [
+      assert.deepEqual(topojson.neighbors([
         topology.objects.abc,
         topology.objects.dcb
       ]), [
@@ -97,7 +97,7 @@ suite.addBatch({
         edcb: {type: "LineString", coordinates: [[4, 0], [3, 0], [2, 0], [1, 0]]},
         fedc: {type: "LineString", coordinates: [[5, 0], [4, 0], [3, 0], [2, 0]]}
       }, {quantization: 6});
-      assert.deepEqual(topojson.neighbors(topology, [
+      assert.deepEqual(topojson.neighbors([
         topology.objects.abcd,
         topology.objects.bcde,
         topology.objects.cdef,
@@ -129,7 +129,7 @@ suite.addBatch({
         befcb: {type: "Polygon", coordinates: [[[1, 0], [2, 0], [2, 1], [1, 1], [1, 0]]]},
         ghig: {type: "Polygon", coordinates: [[[3, 0], [4, 1], [3, 1], [3, 0]]]}
       }, {quantization: 5});
-      assert.deepEqual(topojson.neighbors(topology, [
+      assert.deepEqual(topojson.neighbors([
         topology.objects.abcda,
         topology.objects.befcb,
         topology.objects.ghig
@@ -157,7 +157,7 @@ suite.addBatch({
         abdeghkja: {type: "Polygon", coordinates: [[[0, 0], [2, 0], [2, 1], [1, 1], [1, 2], [2, 2], [2, 3], [0, 3], [0, 0]]]},
         bclkhifeb: {type: "Polygon", coordinates: [[[2, 0], [4, 0], [4, 3], [2, 3], [2, 2], [3, 2], [3, 1], [2, 1], [2, 0]]]}
       }, {quantization: 5});
-      assert.deepEqual(topojson.neighbors(topology, [
+      assert.deepEqual(topojson.neighbors([
         topology.objects.abdeghkja,
         topology.objects.bclkhifeb
       ]), [
