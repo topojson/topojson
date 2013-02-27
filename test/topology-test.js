@@ -176,7 +176,7 @@ suite.addBatch({
     "collapsed lines are preserved": function() {
       var topology = topojson.topology({
         foo: {type: "LineString", coordinates: [[0, 0], [1, 1], [2, 2]]},
-        bar: {type: "LineString", coordinates: [[-100, -100], [0, 0], [100, 100]]}
+        bar: {type: "LineString", coordinates: [[-80, -80], [0, 0], [80, 80]]}
       }, {quantization: 3});
       assert.deepEqual(topology.objects.foo, {type: "LineString", arcs: [0]});
       assert.deepEqual(topology.arcs[0], [[1, 1]]);
@@ -192,7 +192,7 @@ suite.addBatch({
       var topology = topojson.topology({
         foo: {type: "Polygon", coordinates: [[[0, 0], [0, 1], [1, 1], [1, 0], [0, 0]]]},
         bar: {type: "Polygon", coordinates: [[[0, 0], [0, 1], [1, 1], [0, 0]]]},
-        baz: {type: "MultiPoint", coordinates: [[-100, -100], [0, 0], [100, 100]]}
+        baz: {type: "MultiPoint", coordinates: [[-80, -80], [0, 0], [80, 80]]}
       }, {quantization: 3});
       assert.deepEqual(topology.objects.foo, {type: "Polygon", arcs: [[0]]});
       assert.deepEqual(topology.objects.bar, {type: "Polygon", arcs: [[0]]}); // the same as foo!
