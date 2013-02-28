@@ -344,7 +344,7 @@ suite.addBatch({
         [[1, 0], [1, 0], [0, 2], [-1, 0]] // BEFC
       ]);
       assert.deepEqual(topology.objects.abcda, {type: "Polygon", arcs: [[0, 1]]});
-      assert.deepEqual(topology.objects.befcb, {type: "Polygon", arcs: [[~0, 2]]});
+      assert.deepEqual(topology.objects.befcb, {type: "Polygon", arcs: [[2, ~0]]});
     },
 
     //
@@ -363,15 +363,15 @@ suite.addBatch({
         bfcb: {type: "Polygon", coordinates: [[[1, 0], [2, 1], [1, 1], [1, 0]]]}
       }, {quantization: 3});
       assert.deepEqual(topology.arcs, [
+        [[1, 0], [0, 2]], // BC
         [[1, 2], [-1, -2]], // CA
         [[0, 0], [1, 0]], // AB
-        [[1, 0], [0, 2]], // BC
         [[1, 2], [-1, 0], [0, -2]], // CDA
         [[1, 0], [1, 2], [-1, 0]] // BFC
       ]);
       assert.deepEqual(topology.objects.abca, {type: "Polygon", arcs: [[0, 1, 2]]});
-      assert.deepEqual(topology.objects.acda, {type: "Polygon", arcs: [[3, ~0]]});
-      assert.deepEqual(topology.objects.bfcb, {type: "Polygon", arcs: [[~2, 4]]});
+      assert.deepEqual(topology.objects.acda, {type: "Polygon", arcs: [[3, ~1]]});
+      assert.deepEqual(topology.objects.bfcb, {type: "Polygon", arcs: [[4, ~0]]});
     },
 
     //
@@ -392,14 +392,14 @@ suite.addBatch({
       assert.deepEqual(topology.arcs, [
         [[1, 0], [0, 3]], // BC
         [[1, 3], [-1, -3], [1, 0]], // CAB
-        [[1, 0], [1, 0]], // BE
         [[2, 0], [0, 3]], // EF
         [[2, 3], [-1, 0]], // FC
+        [[1, 0], [1, 0]], // BE
         [[2, 0], [1, 3], [-1, 0]] // EGF
       ]);
       assert.deepEqual(topology.objects.abca, {type: "Polygon", arcs: [[0, 1]]});
-      assert.deepEqual(topology.objects.befcb, {type: "Polygon", arcs: [[2, 3, 4, ~0]]});
-      assert.deepEqual(topology.objects.egfe, {type: "Polygon", arcs: [[~3, 5]]});
+      assert.deepEqual(topology.objects.befcb, {type: "Polygon", arcs: [[2, 3, ~0, 4]]});
+      assert.deepEqual(topology.objects.egfe, {type: "Polygon", arcs: [[5, ~2]]});
     },
 
     //
@@ -424,7 +424,7 @@ suite.addBatch({
       ]);
       assert.deepEqual(topology.objects.abcda, {type: "Polygon", arcs: [[0, 1]]});
       assert.deepEqual(topology.objects.abefgda, {type: "Polygon", arcs: [[2, 1]]});
-      assert.deepEqual(topology.objects.befgdcb, {type: "Polygon", arcs: [[~0, 2]]});
+      assert.deepEqual(topology.objects.befgdcb, {type: "Polygon", arcs: [[2, ~0]]});
     },
 
     //
@@ -493,6 +493,26 @@ suite.addBatch({
       ]);
       assert.deepEqual(topology.objects.abcda, {type: "Polygon", arcs: [[0], [1]]});
       assert.deepEqual(topology.objects.fghef, {type: "Polygon", arcs: [[~1]]});
+    },
+
+    //
+    //    C-----D
+    //     \   /
+    //      \ /
+    // A-----B-----E
+    //
+    "the polygon BCDB and the line string ABE share three arcs": function() {
+      var topology = topojson.topology({
+        abe: {type: "LineString", coordinates: [[0, 1], [2, 1], [4, 1]]},
+        bcdb: {type: "Polygon", coordinates: [[[2, 1], [1, 0], [3, 0], [2, 1]]]}
+      }, {quantization: 5});
+      assert.deepEqual(topology.arcs, [
+        [[0, 4], [2, 0]], // AB
+        [[2, 4], [2, 0]], // BE
+        [[2, 4], [-1, -4], [2, 0], [-1, 4]] // BCDB
+      ]);
+      assert.deepEqual(topology.objects.abe, {type: "LineString", arcs: [0, 1]});
+      assert.deepEqual(topology.objects.bcdb, {type: "Polygon", arcs: [[2]]});
     }
   }
 });
