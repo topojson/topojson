@@ -45,6 +45,20 @@ suite.addBatch({
       assert.equal(topology.objects.collection.geometries[0].type, "LineString");
       assert.equal(topology.objects.collection.geometries[1].type, "Polygon");
     },
+    "nested geometry collections": function() {
+      var topology = topojson.topology({
+        collection: {
+          type: "GeometryCollection",
+          geometries: [
+            {type: "GeometryCollection", geometries: [
+              {type: "LineString", coordinates: [[.1, .2], [.3, .4]]}
+            ]},
+            {type: "Polygon", coordinates: [[[.5, .6], [.7, .8]]]}
+          ]
+        }
+      });
+      assert.equal(topology.objects.collection.geometries[0].geometries[0].arcs.length, 1);
+    },
     "null geometry objects are preserved in geometry collections": function() {
       var topology = topojson.topology({
         collection: {
