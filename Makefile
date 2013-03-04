@@ -5,9 +5,6 @@ all: \
 	examples/world-110m.json \
 	examples/world-50m.json
 
-node_modules: package.json
-	npm install && touch node_modules
-
 component.json: src/component.js topojson.js
 	@rm -f $@
 	node src/component.js > $@
@@ -24,10 +21,10 @@ examples/us-%.json: node_modules/us-atlas/topo/us-%.json
 examples/world-%.json: node_modules/world-atlas/topo/world-%.json
 	cp $< $@
 
-node_modules/us-atlas/topo/%.json: node_modules
+node_modules/us-atlas/topo/%.json:
 	make topo/$(notdir $@) -C node_modules/us-atlas
 
-node_modules/world-atlas/topo/%.json: node_modules
+node_modules/world-atlas/topo/%.json:
 	make topo/$(notdir $@) -C node_modules/world-atlas
 
 test: all
