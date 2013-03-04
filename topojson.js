@@ -119,7 +119,8 @@ topojson = (function() {
       }
 
       function geometry(o) {
-        if (o.type in geometryType) {
+        if (o.type === "GeometryCollection") o.geometries.forEach(geometry);
+        else if (o.type in geometryType) {
           geom = o;
           geometryType[o.type](o.arcs);
         }
@@ -132,9 +133,7 @@ topojson = (function() {
         MultiPolygon: function(arcs) { arcs.forEach(polygon); }
       };
 
-      o.type === "GeometryCollection"
-          ? o.geometries.forEach(geometry)
-          : geometry(o);
+      geometry(o);
 
       geomsByArc.forEach(arguments.length < 3
           ? function(geoms, i) { arcs.push([i]); }
@@ -240,7 +239,8 @@ topojson = (function() {
     }
 
     function geometry(o, i) {
-      if (o.type in geometryType) geometryType[o.type](o.arcs, i);
+      if (o.type === "GeometryCollection") o.geometries.forEach(function(o) { geometry(o, i); });
+      else if (o.type in geometryType) geometryType[o.type](o.arcs, i);
     }
 
     var geometryType = {
@@ -255,7 +255,7 @@ topojson = (function() {
   }
 
   return {
-    version: "0.0.24",
+    version: "0.0.25",
     mesh: mesh,
     object: object,
     neighbors: neighbors
