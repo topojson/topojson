@@ -23,7 +23,9 @@ console.log(JSON.stringify({
     "shapefile": "0.0.x"
   },
   "devDependencies": {
-    "vows": "0.6.x"
+    "vows": "0.6.x",
+    "us-atlas": "0.0.x",
+    "world-atlas": "0.0.x"
   },
   "bin": {
     "topojson": "./bin/topojson"
