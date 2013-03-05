@@ -1,9 +1,13 @@
-all: \
+GENERATED_FILES = \
 	component.json \
 	package.json \
 	examples/us-10m.json \
 	examples/world-110m.json \
 	examples/world-50m.json
+
+.SECONDARY:
+
+all: $(GENERATED_FILES)
 
 component.json: src/component.js topojson.js
 	@rm -f $@
@@ -31,4 +35,4 @@ test: all
 	@npm test
 
 clean:
-	rm -f package.json component.json
+	rm -f -- $(GENERATED_FILES)

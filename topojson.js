@@ -255,7 +255,7 @@ topojson = (function() {
   }
 
   return {
-    version: "0.0.25",
+    version: "0.0.26",
     mesh: mesh,
     object: object,
     neighbors: neighbors

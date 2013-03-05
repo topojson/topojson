@@ -134,6 +134,7 @@ function output(error) {
   // TODO For --simplify-propertion, figure out the appropriate minimum area.
   // TODO Combine simplify + filter as topojson.topology options?
   topojson.filter(object, {
+    "verbose": true,
     "minimum-area": +argv.s || 0,
     "force-clockwise": !!argv["force-clockwise"]
   });
