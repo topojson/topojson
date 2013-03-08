@@ -59,6 +59,14 @@ var argv = optimist
       describe: "character encoding for reading shapefile properties",
       default: null
     })
+    .options("longitude", {
+      describe: "name of the longitude property for CSV or TSV geometry input",
+      default: "longitude"
+    })
+    .options("latitude", {
+      describe: "name of the latitude property for CSV or TSV geometry input",
+      default: "latitude"
+    })
     .options("help", {
       describe: "display this helpful message",
       type: "boolean",
@@ -93,9 +101,41 @@ var externalProperties = argv.e && readExternalProperties(argv.e);
 // Convert TopoJSON back to GeoJSON in preparation for merge, as needed.
 var q = queue(1);
 argv._.forEach(function(file) {
-  q.defer(/\.shp$/.test(file) ? inputShapefile : inputJson, file);
+  q.defer(/\.shp$/i.test(file) ? inputShapefile
+      : /\.csv$/i.test(file) ? inputDsv(dsv.csv)
+      : /\.tsv$/i.test(file) ? inputDsv(dsv.tsv)
+      : inputJson, file);
 });
 q.await(output);
+
+function inputDsv(dsv) {
+  return function(file, callback) {
+    file = qualify(file);
+    fs.readFile(file.path, "utf8", function(error, text) {
+      if (error) return callback(error);
+
+      objects[file.name] = {
+        type: "FeatureCollection",
+        features: dsv.parse(text).map(function(row) {
+          var longitude = +row[argv.longitude],
+              latitude = +row[argv.latitude];
+          delete row[argv.longitude];
+          delete row[argv.latitude];
+          return {
+            type: "Feature",
+            properties: row,
+            geometry: isNaN(longitude) || isNaN(latitude) ? null : {
+              type: "Point",
+              coordinates: [longitude, latitude]
+            }
+          };
+        })
+      };
+
+      callback(null);
+    });
+  };
+}
 
 function inputShapefile(file, callback) {
   file = qualify(file);
