@@ -18,12 +18,12 @@ console.log(JSON.stringify({
   },
   "main": "./index.js",
   "dependencies": {
+    "dsv": "0.0.x",
     "optimist": "0.3.x",
     "queue-async": "1.0.x",
     "shapefile": "~0.0.7"
   },
   "devDependencies": {
-    "dsv": "0.0.x",
     "vows": "0.6.x",
     "us-atlas": "0.0.x",
     "world-atlas": "0.0.x"
