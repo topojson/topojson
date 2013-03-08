@@ -1,6 +1,6 @@
 {
   "name": "topojson",
-  "version": "0.0.28",
+  "version": "0.0.29",
   "description": "An extension to GeoJSON that encodes topology.",
   "keywords": [
     "geojson",
@@ -18,7 +18,7 @@
   "dependencies": {
     "optimist": "0.3.x",
     "queue-async": "1.0.x",
-    "shapefile": "0.0.x"
+    "shapefile": "~0.0.7"
   },
   "devDependencies": {
     "dsv": "0.0.x",

@@ -25,7 +25,7 @@ var argv = optimist
     })
     .options("q", {
       alias: "quantization",
-      describe: "max. differentiable points in one dimension",
+      describe: "maximum number of differentiable points along either dimension",
       default: 1e4,
     })
     .options("s", {
@@ -37,14 +37,14 @@ var argv = optimist
       describe: "proportion of points to retain for Visvalingam simplification",
       default: 0,
     })
+    .options("force-clockwise", {
+      describe: "force clockwise exterior rings and counterclockwise interior rings",
+      type: "boolean",
+      default: true
+    })
     .options("id-property", {
       describe: "name of feature property to promote to geometry id",
       default: null
-    })
-    .options("force-clockwise", {
-      describe: "force exterior rings to be clockwise, and interior rings to be counterclockwise",
-      type: "boolean",
-      default: true
     })
     .options("p", {
       alias: "properties",
@@ -53,7 +53,11 @@ var argv = optimist
     })
     .options("e", {
       alias: "external-properties",
-      describe: "a CSV or TSV file with properties to join (by id) to the output features"
+      describe: "CSV or TSV file to join properties (by id) to output features"
+    })
+    .options("shapefile-encoding", {
+      describe: "character encoding for reading shapefile properties",
+      default: null
     })
     .options("help", {
       describe: "display this helpful message",
@@ -101,7 +105,7 @@ function inputShapefile(file, callback) {
     features: []
   };
 
-  shapefile.readStream(file.path)
+  shapefile.readStream(file.path, argv["shapefile-encoding"])
       .on("error", callback)
       .on("feature", function(feature) { object.features.push(feature); })
       .on("end", callback);

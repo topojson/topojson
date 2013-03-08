@@ -20,7 +20,7 @@ console.log(JSON.stringify({
   "dependencies": {
     "optimist": "0.3.x",
     "queue-async": "1.0.x",
-    "shapefile": "0.0.x"
+    "shapefile": "~0.0.7"
   },
   "devDependencies": {
     "dsv": "0.0.x",
