@@ -118,9 +118,9 @@ function output(error) {
     "verbose": true,
     "quantization": +argv.q,
     "id": id,
-    "property-filter": argv.p === true ? function(d) { return d; }
-        : argv.p === false ? function() { return null }
-        : propertyFilter(argv.p)
+    "property-transform": argv.p === true ? function(o, k, v) { o[k] = v; return true; }
+        : argv.p === false ? function() {}
+        : propertyTransform(argv.p)
   });
 
   // Simplify.
@@ -169,14 +169,20 @@ function propertyId(properties) {
   };
 }
 
-function propertyFilter(properties) {
-  var o = {};
-  properties.forEach(function(k) {
-    var i = k.indexOf("="), v = k;
-    if (i >= 0) v = k.slice(i + 1), k = k.slice(0, i);
-    o[k] = v;
+function propertyTransform(properties) {
+  var transforms = {};
+  properties.forEach(function(target) {
+    var i = target.indexOf("="),
+        source = target,
+        number;
+    if (i >= 0) source = target.substring(i + 1), target = target.substring(0, i);
+    if (number = /^\+/.test(source)) source = source.substring(1);
+    transforms[source] = number
+        ? function(properties, value) { properties[target] = +value; }
+        : function(properties, value) { properties[target] = value; };
   });
-  return function(d) {
-    return o[d];
+  return function(properties, key, value) {
+    var transform = transforms[key];
+    return transform && value != null && (transform(properties, value), true);
   };
 }
