@@ -2,6 +2,7 @@
 
 var path = require("path"),
     fs = require("fs"),
+    dsv = require("dsv"),
     optimist = require("optimist"),
     shapefile = require("shapefile"),
     queue = require("queue-async"),
@@ -50,6 +51,10 @@ var argv = optimist
       describe: "feature properties to preserve; no name preserves all properties",
       default: false
     })
+    .options("e", {
+      alias: "external-properties",
+      describe: "a CSV or TSV file with properties to join (by id) to the output features"
+    })
     .options("help", {
       describe: "display this helpful message",
       type: "boolean",
@@ -70,7 +75,15 @@ var objects = {},
 // Create a property-to-identifier function.
 id = id == null
     ? function(d) { return d.id; }
-    : propertyId(typeof id === "string" ? id.split(",") : id);
+    : parsePropertyId(typeof id === "string" ? id.split(",") : id);
+
+// Create the property transform function.
+var propertyTransform = argv.p === true ? function(o, k, v) { o[k] = v; return true; }
+    : argv.p === false ? function() {}
+    : parsePropertyTransform(argv.p);
+
+// Load any external properties.
+var externalProperties = argv.e && readExternalProperties(argv.e);
 
 // Create a map from basename to JSON object.
 // Convert TopoJSON back to GeoJSON in preparation for merge, as needed.
@@ -118,9 +131,7 @@ function output(error) {
     "verbose": true,
     "quantization": +argv.q,
     "id": id,
-    "property-transform": argv.p === true ? function(o, k, v) { o[k] = v; return true; }
-        : argv.p === false ? function() {}
-        : propertyTransform(argv.p)
+    "property-transform": propertyTransform
   });
 
   // Simplify.
@@ -139,6 +150,9 @@ function output(error) {
     "force-clockwise": !!argv["force-clockwise"]
   });
 
+  // Bind with external properties.
+  if (externalProperties) topojson.bind(object, externalProperties);
+
   // Output JSON.
   var json = JSON.stringify(object);
   if (argv.o === "/dev/stdout") console.log(json);
@@ -153,7 +167,7 @@ function qualify(file) {
   };
 }
 
-function propertyId(properties) {
+function parsePropertyId(properties) {
   return function(d) {
     if (d = d.properties) {
       var id;
@@ -169,7 +183,7 @@ function propertyId(properties) {
   };
 }
 
-function propertyTransform(properties) {
+function parsePropertyTransform(properties) {
   var transforms = {};
   properties.forEach(function(target) {
     var i = target.indexOf("="),
@@ -185,4 +199,23 @@ function propertyTransform(properties) {
     var transform = transforms[key];
     return transform && value != null && (transform(properties, value), true);
   };
+}
+
+function readExternalProperties(file) {
+  var propertiesById = {};
+
+  // Infer the file type from the name.
+  // If that doesn't work, look for a tab and hope for the best!
+  var type = /\.tsv$/i.test(file) ? dsv.tsv
+        : /\.csv$/i.test(file) ? dsv.csv
+        : text.indexOf("\t") ? dsv.tsv
+        : dsv.csv;
+
+  type.parse(fs.readFileSync(file, "utf-8")).forEach(function(row) {
+    var properties = {};
+    for (var key in row) if (key != "id") propertyTransform(properties, key, row[key]);
+    propertiesById[row.id] = properties;
+  });
+
+  return propertiesById;
 }

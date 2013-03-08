@@ -14,7 +14,7 @@ console.log(JSON.stringify({
   },
   "repository": {
     "type": "git",
-    "url": "http://github.com/mbostock/topojson.git"
+    "url": "https://github.com/mbostock/topojson.git"
   },
   "main": "./index.js",
   "dependencies": {
@@ -23,6 +23,7 @@ console.log(JSON.stringify({
     "shapefile": "0.0.x"
   },
   "devDependencies": {
+    "dsv": "0.0.x",
     "vows": "0.6.x",
     "us-atlas": "0.0.x",
     "world-atlas": "0.0.x"
@@ -31,6 +32,6 @@ console.log(JSON.stringify({
     "topojson": "./bin/topojson"
   },
   "scripts": {
-    "test": "./node_modules/vows/bin/vows; echo"
+    "test": "node_modules/.bin/vows; echo"
   }
 }, null, 2));

@@ -7,6 +7,8 @@ GENERATED_FILES = \
 
 .SECONDARY:
 
+.PHONY: all clean test
+
 all: $(GENERATED_FILES)
 
 component.json: src/component.js topojson.js
