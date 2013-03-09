@@ -1,5 +1,5 @@
 {
   "name": "topojson",
-  "version": "0.0.30",
+  "version": "0.0.31",
   "main": "./topojson.js"
 }
