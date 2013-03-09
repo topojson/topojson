@@ -1,5 +1,5 @@
 var vows = require("vows"),
-    assert = require("assert"),
+    assert = require("./assert"),
     topojson = require("../");
 
 var suite = vows.describe("topojson.topology");
@@ -164,6 +164,14 @@ suite.addBatch({
       var topology = topojson.topology({foo: {type: "MultiPoint", coordinates: [[1/8, 1/16], [1/2, 1/4]]}}, {quantization: 2});
       assert.deepEqual(topology.arcs, []);
       assert.deepEqual(topology.objects.foo, {type: "MultiPoint", coordinates: [[0, 0], [1, 1]]});
+    },
+
+    // Rounding is more accurate than flooring.
+    "quantization rounds to the closest integer coordinate to minimize error": function() {
+      var topology = topojson.topology({foo: {type: "LineString", coordinates: [[0.0, 0.0], [0.5, 0.5], [1.6, 1.6], [3.0, 3.0], [4.1, 4.1], [4.9, 4.9], [5.9, 5.9], [6.5, 6.5], [7.0, 7.0], [8.4, 8.4], [8.5, 8.5], [10, 10]]}}, {quantization: 11});
+      assert.deepEqual(topojson.object(topology, topology.objects.foo).coordinates, [[0, 0], [1, 1], [2, 2], [3, 3], [4, 4], [5, 5], [6, 6], [7, 7], [8, 8], [9, 9], [10, 10]]);
+      assert.deepEqual(topology.arcs, [[[0, 0], [1, 1], [1, 1], [1, 1], [1, 1], [1, 1], [1, 1], [1, 1], [1, 1], [1, 1], [1, 1]]]);
+      assert.deepEqual(topology.transform, {scale: [1, 1], translate: [0, 0]});
     },
 
     // GeoJSON inputs are in floating point format, so some error may creep in
