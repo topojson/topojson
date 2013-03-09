@@ -125,6 +125,7 @@ function inputDsv(dsv) {
           delete row[argv.latitude];
           return {
             type: "Feature",
+            id: id(row),
             properties: row,
             geometry: isNaN(longitude) || isNaN(latitude) ? null : {
               type: "Point",
