@@ -118,6 +118,10 @@ suite.addBatch({
       var topology = topojson.topology({foo: {type: "Feature", id: "Foo", properties: {UNREASONABLY_LONG_NAME: "George"}, geometry: {type: "LineString", coordinates: [[.1, .2], [.3, .4]]}}}, {"property-transform": function(o, k, v) { return o[k.replace(/^UNREASONABLY_LONG_/, "").toLowerCase()] = v; }});
       assert.deepEqual(topology.objects.foo.properties, {name: "George"});
     },
+    "a properties transform can apply to geometry collections": function() {
+      var topology = topojson.topology({foo: {type: "Feature", id: "Foo", properties: {UNREASONABLY_LONG_NAME: "George"}, geometry: {type: "GeometryCollection", geometries: [{type: "LineString", coordinates: [[.1, .2], [.3, .4]]}]}}}, {"property-transform": function(o, k, v) { return o[k.replace(/^UNREASONABLY_LONG_/, "").toLowerCase()] = v; }});
+      assert.deepEqual(topology.objects.foo.properties, {name: "George"});
+    },
 
     // Unlike GeoJSON's feature.properties, the properties object is optional.
     "if no properties are specified, no properties are emitted": function() {
