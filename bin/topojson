@@ -95,7 +95,9 @@ var propertyTransform = argv.p === true ? function(o, k, v) { o[k] = v; return t
     : parsePropertyTransform(argv.p);
 
 // Load any external properties.
-var externalProperties = argv.e && readExternalProperties(argv.e);
+var externalProperties = {};
+if (typeof argv.e === "string") argv.e = [argv.e];
+if (argv.e) argv.e.forEach(readExternalProperties);
 
 // Create a map from basename to JSON object.
 // Convert TopoJSON back to GeoJSON in preparation for merge, as needed.
@@ -195,7 +197,7 @@ function output(error) {
   });
 
   // Bind with external properties.
-  if (externalProperties) topojson.bind(object, externalProperties);
+  if (argv.e) topojson.bind(object, externalProperties);
 
   // Output JSON.
   var json = JSON.stringify(object);
@@ -233,8 +235,17 @@ function parsePropertyTransform(properties) {
     var i = target.indexOf("="),
         source = target,
         number;
-    if (i >= 0) source = target.substring(i + 1), target = target.substring(0, i);
-    if (number = /^\+/.test(source)) source = source.substring(1);
+
+    if (i >= 0) {
+      source = target.substring(i + 1);
+      target = target.substring(0, i);
+    }
+
+    if (number = /^\+/.test(source)) {
+      source = source.substring(1);
+      if (i < 0) target = source;
+    }
+
     transforms[source] = number
         ? function(properties, value) { properties[target] = +value; }
         : function(properties, value) { properties[target] = value; };
@@ -246,7 +257,6 @@ function parsePropertyTransform(properties) {
 }
 
 function readExternalProperties(file) {
-  var propertiesById = {};
 
   // Infer the file type from the name.
   // If that doesn't work, look for a tab and hope for the best!
@@ -256,10 +266,7 @@ function readExternalProperties(file) {
         : dsv.csv;
 
   type.parse(fs.readFileSync(file, "utf-8")).forEach(function(row) {
-    var properties = {};
+    var properties = externalProperties[row.id] || (externalProperties[row.id] = {});
     for (var key in row) if (key != "id") propertyTransform(properties, key, row[key]);
-    propertiesById[row.id] = properties;
   });
-
-  return propertiesById;
 }
