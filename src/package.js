@@ -24,7 +24,7 @@ console.log(JSON.stringify({
     "shapefile": "~0.0.7"
   },
   "devDependencies": {
-    "vows": "0.6.x",
+    "vows": "0.7.x",
     "us-atlas": "0.0.x",
     "world-atlas": "0.0.x"
   },

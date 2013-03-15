@@ -119,17 +119,17 @@ function inputDsv(dsv) {
       objects[file.name] = {
         type: "FeatureCollection",
         features: dsv.parse(text).map(function(row) {
-          var longitude = +row[argv.longitude],
-              latitude = +row[argv.latitude];
+          var longitude = row[argv.longitude],
+              latitude = row[argv.latitude];
           delete row[argv.longitude];
           delete row[argv.latitude];
           return {
             type: "Feature",
             id: id(row),
             properties: row,
-            geometry: isNaN(longitude) || isNaN(latitude) ? null : {
+            geometry: !longitude || !latitude || isNaN(longitude) || isNaN(latitude) ? null : {
               type: "Point",
-              coordinates: [longitude, latitude]
+              coordinates: [+longitude, +latitude]
             }
           };
         })
