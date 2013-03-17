@@ -16,10 +16,9 @@ var argv = optimist
       describe: "output GeoJSON directory",
       default: process.cwd(),
     })
-    .options("q", {
-      alias: "quantization",
-      describe: "max. differentiable points in one dimension",
-      default: 1e4,
+    .options("precision", {
+      describe: "number of digits after the decimal place to ouput",
+      default: 5,
     })
     .options("help", {
       describe: "display this helpful message",
@@ -29,16 +28,31 @@ var argv = optimist
 
 if (!argv._.length || argv.help) return optimist.showHelp();
 
+var precision = Math.pow(10, argv.precision);
+
 // Convert TopoJSON back to GeoJSON.
 argv._.forEach(function(file) {
   var topology = JSON.parse(fs.readFileSync(file, "utf-8"));
   for (var key in topology.objects) {
-    var object = flatten(topojson.object(topology, topology.objects[key]));
+    var object = topojson.object(topology, topology.objects[key]);
 
-    type({
+    object = type({
+      GeometryCollection: function(collection) {
+        return {
+          type: "FeatureCollection",
+          features: collection.geometries.map(this.geometry, this)
+        };
+      },
       geometry: function(geometry) {
-        delete geometry.arcs;
+        if (geometry.type === "GeometryCollection") return this.GeometryCollection(geometry);
+        geometry.coordinates = geometry.coordinates;
         this[geometry.type](geometry);
+        return {
+          type: "Feature",
+          id: geometry.id,
+          properties: geometry.properties,
+          geometry: geometry
+        };
       },
       point: function(point) {
         point[0] = round(point[0]);
@@ -51,14 +65,5 @@ argv._.forEach(function(file) {
 });
 
 function round(x) {
-  return Math.round(x * argv.q) / argv.q;
-}
-
-// Unfortunately, JSON.stringify ignores inherited properties.
-function flatten(object) {
-  for (var k in object) {
-    if (!object.hasOwnProperty(k)) object[k] = object[k];
-    if (typeof object[k] === "object") flatten(object[k]);
-  }
-  return object;
+  return Math.round(x * precision) / precision;
 }
