@@ -1,6 +1,6 @@
 {
   "name": "topojson",
-  "version": "0.0.33",
+  "version": "0.0.34",
   "description": "An extension to GeoJSON that encodes topology.",
   "keywords": [
     "geojson",
@@ -27,8 +27,7 @@
     "world-atlas": "0.0.x"
   },
   "bin": {
-    "topojson": "./bin/topojson",
-    "geojson": "./bin/geojson"
+    "topojson": "./bin/topojson"
   },
   "scripts": {
     "test": "node_modules/.bin/vows; echo"
