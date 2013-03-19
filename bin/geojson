@@ -17,7 +17,7 @@ var argv = optimist
       default: process.cwd(),
     })
     .options("precision", {
-      describe: "number of digits after the decimal place to ouput",
+      describe: "number of digits after the decimal place to output",
       default: undefined,
     })
     .options("help", {
