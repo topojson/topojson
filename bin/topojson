@@ -37,6 +37,16 @@ var argv = optimist
       describe: "proportion of points to retain for Visvalingam simplification",
       default: 0,
     })
+    .options("cartesian", {
+      describe: "assume Cartesian coordinates",
+      type: "boolean",
+      default: false
+    })
+    .options("spherical", {
+      describe: "assume Spherical coordinates",
+      type: "boolean",
+      default: false
+    })
     .options("force-clockwise", {
       describe: "force clockwise exterior rings and counterclockwise interior rings",
       type: "boolean",
@@ -77,6 +87,7 @@ var argv = optimist
     .check(function(argv) {
       if (!argv._.length) throw new Error("input required");
       if (+argv.s && +argv["simplify-proportion"]) throw new Error("--simplify and --simplify-proportion are exclusive");
+      if (argv.cartesian && argv.spherical) throw new Error("--spherical and --cartesian are exclusive");
       if (typeof argv.p === "string") argv.p = argv.p.split(",");
     })
     .argv;
@@ -174,18 +185,21 @@ function inputJson(file, callback) {
 
 function output(error) {
   if (error) return console.trace(error);
-
-  // Convert GeoJSON to TopoJSON.
-  var object = topojson.topology(objects, {
+  var options = {
     "verbose": true,
     "quantization": +argv.q,
+    "coordinate-system": argv.spherical ? "spherical" : argv.cartesian ? "cartesian" : "auto",
     "id": id,
     "property-transform": propertyTransform
-  });
+  };
+
+  // Convert GeoJSON to TopoJSON.
+  var object = topojson.topology(objects, options);
 
   // Simplify.
   if (+argv.s > 0 || +argv["simplify-proportion"] > 0) topojson.simplify(object, {
     "verbose": true,
+    "coordinate-system": options["coordinate-system"],
     "minimum-area": +argv.s,
     "retain-proportion": +argv["simplify-proportion"]
   });
@@ -195,6 +209,7 @@ function output(error) {
   // TODO Combine simplify + filter as topojson.topology options?
   topojson.filter(object, {
     "verbose": true,
+    "coordinate-system": options["coordinate-system"],
     "minimum-area": +argv.s || 0,
     "force-clockwise": !!argv["force-clockwise"]
   });
