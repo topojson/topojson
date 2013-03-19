@@ -29,7 +29,8 @@ console.log(JSON.stringify({
     "world-atlas": "0.0.x"
   },
   "bin": {
-    "topojson": "./bin/topojson"
+    "topojson": "./bin/topojson",
+    "geojson": "./bin/geojson"
   },
   "scripts": {
     "test": "node_modules/.bin/vows; echo"
