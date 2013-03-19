@@ -18,7 +18,7 @@ var argv = optimist
     })
     .options("precision", {
       describe: "number of digits after the decimal place to ouput",
-      default: 5,
+      default: undefined,
     })
     .options("help", {
       describe: "display this helpful message",
@@ -28,7 +28,9 @@ var argv = optimist
 
 if (!argv._.length || argv.help) return optimist.showHelp();
 
-var precision = Math.pow(10, argv.precision);
+var precision = Math.pow(10, argv.precision), round = isNaN(precision)
+    ? function(x) { return x; }
+    : function(x) { return Math.round(x * precision) / precision; };
 
 // Convert TopoJSON back to GeoJSON.
 argv._.forEach(function(file) {
@@ -46,7 +48,7 @@ argv._.forEach(function(file) {
       geometry: function(geometry) {
         if (geometry.type === "GeometryCollection") return this.GeometryCollection(geometry);
         geometry.coordinates = geometry.coordinates;
-        this[geometry.type](geometry);
+        if (geometry.type in this) this[geometry.type](geometry);
         return {
           type: "Feature",
           id: geometry.id,
@@ -63,7 +65,3 @@ argv._.forEach(function(file) {
     fs.writeFileSync(path.join(argv.o, key + ".json"), JSON.stringify(object), "utf8");
   }
 });
-
-function round(x) {
-  return Math.round(x * precision) / precision;
-}
