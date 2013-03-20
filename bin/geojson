@@ -52,7 +52,7 @@ argv._.forEach(function(file) {
         return {
           type: "Feature",
           id: geometry.id,
-          properties: geometry.properties,
+          properties: geometry.properties || {},
           geometry: geometry
         };
       },
