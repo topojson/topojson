@@ -20,6 +20,10 @@ var argv = optimist
       describe: "number of digits after the decimal place to output",
       default: undefined,
     })
+    .options("id-property", {
+      describe: "demote geometry id to specified feature property",
+      default: null
+    })
     .options("help", {
       describe: "display this helpful message",
       default: false
@@ -49,10 +53,12 @@ argv._.forEach(function(file) {
         if (geometry.type === "GeometryCollection") return this.GeometryCollection(geometry);
         geometry.coordinates = geometry.coordinates;
         if (geometry.type in this) this[geometry.type](geometry);
+        var id = geometry.id, properties = geometry.properties || {};
+        if (argv["id-property"] != null) properties[argv["id-property"]] = id, id = undefined;
         return {
           type: "Feature",
-          id: geometry.id,
-          properties: geometry.properties || {},
+          id: id,
+          properties: properties,
           geometry: geometry
         };
       },
