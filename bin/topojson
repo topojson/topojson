@@ -52,6 +52,11 @@ var argv = optimist
       type: "boolean",
       default: true
     })
+    .options("stitch-poles", {
+      describe: "splice antimeridian cuts for polygons that encompass a pole",
+      type: "boolean",
+      default: true
+    })
     .options("id-property", {
       describe: "name of feature property to promote to geometry id",
       default: null
@@ -189,6 +194,7 @@ function output(error) {
     "verbose": true,
     "quantization": +argv.q,
     "coordinate-system": argv.spherical ? "spherical" : argv.cartesian ? "cartesian" : "auto",
+    "stitch-poles": argv["stitch-poles"],
     "id": id,
     "property-transform": propertyTransform
   };
