@@ -547,6 +547,45 @@ suite.addBatch({
       ]);
       assert.deepEqual(topology.objects.abe, {type: "LineString", arcs: [0, 1]});
       assert.deepEqual(topology.objects.bcdb, {type: "Polygon", arcs: [[2]]});
+    },
+
+    //
+    // A-----B-----C-----D-----E
+    // |                       |
+    // |                       |
+    // J-----I-----H-----G-----F
+    "a polygon surrounding the South pole with a cut along the antimeridian": function() {
+      var topology = topojson.topology({
+        polygon: {type: "Polygon", coordinates: [[
+          [-180, -80], [-90, -80], [0, -80], [90, -80], [180, -80],
+          [180, -90], [90, -90], [0, -90], [-90, -90], [-180, -90],
+          [-180, -80]
+        ]]}}, {quantization: 4});
+      assert.deepEqual(topology.arcs, [
+        [[0, 0], [1, 0], [1, 0], [1, 0], [-3, 0]]
+      ]);
+      assert.deepEqual(topology.objects.polygon, {type: "Polygon", arcs: [[0]]});
+    },
+
+    //
+    // B-----C-----D-----E-----F
+    // |                       |
+    // |                       |
+    // A                       G
+    // |                       |
+    // |                       |
+    // L-----K-----J-----I-----H
+    "a large polygon surrounding the South pole with a cut along the antimeridian": function() {
+      var topology = topojson.topology({
+        polygon: {type: "Polygon", coordinates: [[
+          [-180, -85], [-180, -80], [-90, -80], [0, -80], [90, -80], [180, -80],
+          [180, -85], [180, -90], [90, -90], [0, -90], [-90, -90], [-180, -90],
+          [-180, -85]
+        ]]}}, {quantization: 4});
+      assert.deepEqual(topology.arcs, [
+        [[0, 0], [0, 3], [1, 0], [1, 0], [1, 0], [-3, -3]]
+      ]);
+      assert.deepEqual(topology.objects.polygon, {type: "Polygon", arcs: [[0]]});
     }
   }
 });
