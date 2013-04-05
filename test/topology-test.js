@@ -169,7 +169,7 @@ suite.addBatch({
     // Rounding is more accurate than flooring.
     "quantization rounds to the closest integer coordinate to minimize error": function() {
       var topology = topojson.topology({foo: {type: "LineString", coordinates: [[0.0, 0.0], [0.5, 0.5], [1.6, 1.6], [3.0, 3.0], [4.1, 4.1], [4.9, 4.9], [5.9, 5.9], [6.5, 6.5], [7.0, 7.0], [8.4, 8.4], [8.5, 8.5], [10, 10]]}}, {quantization: 11});
-      assert.deepEqual(topojson.object(topology, topology.objects.foo).coordinates, [[0, 0], [1, 1], [2, 2], [3, 3], [4, 4], [5, 5], [6, 6], [7, 7], [8, 8], [9, 9], [10, 10]]);
+      assert.deepEqual(topojson.feature(topology, topology.objects.foo).geometry.coordinates, [[0, 0], [1, 1], [2, 2], [3, 3], [4, 4], [5, 5], [6, 6], [7, 7], [8, 8], [9, 9], [10, 10]]);
       assert.deepEqual(topology.arcs, [[[0, 0], [1, 1], [1, 1], [1, 1], [1, 1], [1, 1], [1, 1], [1, 1], [1, 1], [1, 1], [1, 1]]]);
       assert.deepEqual(topology.transform, {scale: [1, 1], translate: [0, 0]});
     },
@@ -177,7 +177,7 @@ suite.addBatch({
     // When rounding, we must be careful not to exceed [±180°, ±90°]!
     "quantization precisely preserves minimum and maximum values": function() {
       var topology = topojson.topology({foo: {type: "LineString", coordinates: [[-180, -90], [0, 0], [180, 90]]}}, {quantization: 3});
-      assert.deepEqual(topojson.object(topology, topology.objects.foo).coordinates, [[-180, -90], [0, 0], [180, 90]]);
+      assert.deepEqual(topojson.feature(topology, topology.objects.foo).geometry.coordinates, [[-180, -90], [0, 0], [180, 90]]);
       assert.deepEqual(topology.arcs, [[[0, 0], [1, 1], [1, 1]]]);
       assert.deepEqual(topology.transform, {scale: [180, 90], translate: [-180, -90]});
     },
