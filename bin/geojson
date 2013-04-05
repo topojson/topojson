@@ -40,28 +40,9 @@ var precision = Math.pow(10, argv.precision), round = isNaN(precision)
 argv._.forEach(function(file) {
   var topology = JSON.parse(fs.readFileSync(file, "utf-8"));
   for (var key in topology.objects) {
-    var object = topojson.object(topology, topology.objects[key]);
+    var object = topojson.feature(topology, topology.objects[key]);
 
-    object = type({
-      GeometryCollection: function(collection) {
-        return {
-          type: "FeatureCollection",
-          features: collection.geometries.map(this.geometry, this)
-        };
-      },
-      geometry: function(geometry) {
-        if (geometry.type === "GeometryCollection") return this.GeometryCollection(geometry);
-        geometry.coordinates = geometry.coordinates;
-        if (geometry.type in this) this[geometry.type](geometry);
-        var id = geometry.id, properties = geometry.properties || {};
-        if (argv["id-property"] != null) properties[argv["id-property"]] = id, id = undefined;
-        return {
-          type: "Feature",
-          id: id,
-          properties: properties,
-          geometry: geometry
-        };
-      },
+    type({
       point: function(point) {
         point[0] = round(point[0]);
         point[1] = round(point[1]);
