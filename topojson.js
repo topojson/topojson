@@ -271,9 +271,8 @@ topojson = (function() {
   }
 
   return {
-    version: "0.0.39",
+    version: "1.0.0",
     mesh: mesh,
-    object: object, // deprecated; use feature instead
     feature: featureOrCollection,
     neighbors: neighbors
   };
