@@ -145,27 +145,22 @@ topojson = (function() {
     return object(topology, {type: "MultiLineString", arcs: merge(topology, arcs)});
   }
 
+  function featureOrCollection(topology, o) {
+    return o.type === "GeometryCollection" ? {
+      type: "FeatureCollection",
+      features: o.geometries.map(function(o) { return feature(topology, o); })
+    } : feature(topology, o);
+  }
+
   function feature(topology, o) {
-    return type({
-      GeometryCollection: function(c) {
-        return {
-          type: "FeatureCollection",
-          features: c.geometries.map(this.geometry, this)
-        };
-      },
-      geometry: function(g) {
-        if (g.type === "GeometryCollection") return this.GeometryCollection(g);
-        g.coordinates = g.coordinates;
-        if (g.type in this) this[g.type](g);
-        else g = null;
-        return {
-          type: "Feature",
-          id: g && g.id,
-          properties: g && g.properties || {},
-          geometry: g
-        };
-      }
-    }).object(object(topology, o));
+    var f = {
+      type: "Feature",
+      id: o.id,
+      properties: o.properties || {},
+      geometry: object(topology, o)
+    };
+    if (o.id == null) delete f.id;
+    return f;
   }
 
   function object(topology, o) {
@@ -207,12 +202,10 @@ topojson = (function() {
     }
 
     function geometry(o) {
-      var t = o.type, g = t === "GeometryCollection" ? {type: t, geometries: o.geometries.map(geometry)}
+      var t = o.type;
+      return t === "GeometryCollection" ? {type: t, geometries: o.geometries.map(geometry)}
           : t in geometryType ? {type: t, coordinates: geometryType[t](o)}
-          : {type: null};
-      if ("id" in o) g.id = o.id;
-      if ("properties" in o) g.properties = o.properties;
-      return g;
+          : null;
     }
 
     var geometryType = {
@@ -281,7 +274,7 @@ topojson = (function() {
     version: "0.0.39",
     mesh: mesh,
     object: object, // deprecated; use feature instead
-    feature: feature,
+    feature: featureOrCollection,
     neighbors: neighbors
   };
 })();
