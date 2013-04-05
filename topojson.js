@@ -145,6 +145,29 @@ topojson = (function() {
     return object(topology, {type: "MultiLineString", arcs: merge(topology, arcs)});
   }
 
+  function feature(topology, o) {
+    return type({
+      GeometryCollection: function(c) {
+        return {
+          type: "FeatureCollection",
+          features: c.geometries.map(this.geometry, this)
+        };
+      },
+      geometry: function(g) {
+        if (g.type === "GeometryCollection") return this.GeometryCollection(g);
+        g.coordinates = g.coordinates;
+        if (g.type in this) this[g.type](g);
+        else g = null;
+        return {
+          type: "Feature",
+          id: g && g.id,
+          properties: g && g.properties || {},
+          geometry: g
+        };
+      }
+    }).object(object(topology, o));
+  }
+
   function object(topology, o) {
     var tf = topology.transform,
         kx = tf.scale[0],
@@ -257,7 +280,8 @@ topojson = (function() {
   return {
     version: "0.0.39",
     mesh: mesh,
-    object: object,
+    object: object, // deprecated; use feature instead
+    feature: feature,
     neighbors: neighbors
   };
 })();
