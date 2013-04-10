@@ -179,7 +179,7 @@ function inputJson(file, callback) {
 
   if (object.type === "Topology") {
     for (var key in object.objects) {
-      objects[key] = topojson.object(object, object.objects[key]);
+      objects[key] = topojson.feature(object, object.objects[key]);
     }
   } else {
     objects[file.name] = object;
