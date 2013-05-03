@@ -467,7 +467,7 @@ suite.addBatch({
     // |     |
     // D-----C
     //
-    "the polygons ABCDA and BCDAB share one arcs": function() {
+    "the polygons ABCDA and BCDAB share one arc": function() {
       var topology = topojson.topology({
         abcda: {type: "Polygon", coordinates: [[[0, 0], [1, 0], [1, 1], [0, 1], [0, 0]]]},
         bcdab: {type: "Polygon", coordinates: [[[1, 0], [1, 1], [0, 1], [0, 0], [1, 0]]]}
