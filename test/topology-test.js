@@ -229,7 +229,7 @@ suite.addBatch({
         baz: {type: "MultiPoint", coordinates: [[-80, -80], [0, 0], [80, 80]]}
       }, {quantization: 3});
       assert.deepEqual(topology.objects.foo, {type: "Polygon", arcs: [[0]]});
-      assert.deepEqual(topology.objects.bar, {type: "Polygon", arcs: [[1]]});
+      assert.deepEqual(topology.objects.bar, {type: "Polygon", arcs: [[0]]});
       assert.deepEqual(topology.arcs[0], [[1, 1]]);
     },
     "collapsed polygons in a MultiPolygon are preserved": function() {
