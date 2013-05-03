@@ -166,7 +166,7 @@ function inputShapefile(file, callback) {
     features: []
   };
 
-  shapefile.readStream(file.path, {encoding: argv["shapefile-encoding"], "ignore-properties": !argv.p})
+  shapefile.readStream(file.path, {encoding: argv["shapefile-encoding"]})
       .on("error", callback)
       .on("feature", function(feature) { object.features.push(feature); })
       .on("end", callback);
