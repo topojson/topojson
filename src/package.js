@@ -18,21 +18,21 @@ console.log(JSON.stringify({
   },
   "main": "./index.js",
   "dependencies": {
-    "dsv": "0.0.x",
-    "optimist": "0.3.x",
-    "queue-async": "1.0.x",
-    "shapefile": "~0.0.7"
+    "dsv": "0.0",
+    "optimist": "0.3",
+    "queue-async": "1.0",
+    "shapefile": "0.1"
   },
   "devDependencies": {
-    "vows": "0.7.x",
-    "us-atlas": "0.0.x",
-    "world-atlas": "0.0.x"
+    "vows": "0.7",
+    "us-atlas": "0.0",
+    "world-atlas": "0.0"
   },
   "bin": {
     "topojson": "./bin/topojson",
     "geojson": "./bin/geojson"
   },
   "scripts": {
-    "test": "node_modules/.bin/vows; echo"
+    "test": "./node_modules/.bin/vows && echo"
   }
 }, null, 2));

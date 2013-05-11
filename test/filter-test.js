@@ -9,7 +9,7 @@ suite.addBatch({
     topic: function() {
       return topojson.filter;
     },
-    "null geometry objects are preserved": function(filter) {
+    "null top-level geometry objects are preserved": function(filter) {
       var topology = topojson.topology({
         feature: {type: "Feature", geometry: null},
         geometry: null
@@ -18,17 +18,45 @@ suite.addBatch({
       assert.deepEqual(topology.objects.feature, {});
       assert.deepEqual(topology.objects.geometry, {});
     },
-    "empty geometry objects are converted to null": function(filter) {
+    "empty top-level feature collections are converted to null": function(filter) {
+      var topology = topojson.topology({
+        collection: {type: "FeatureCollection", features: [
+          {type: "Feature", properties: {}, geometry: null},
+          {type: "Feature", properties: {}, geometry: null}
+        ]}
+      });
+      filter(topology, {"coordinate-system": "spherical"});
+      assert.deepEqual(topology.objects.collection, {type: null});
+    },
+    "null inner features are removed": function(filter) {
+      var topology = topojson.topology({
+        collection: {type: "FeatureCollection", features: [
+          {type: "Feature", properties: {}, geometry: null},
+          {type: "Feature", properties: {}, geometry: {type: "Point", coordinates: [0, 0]}},
+          {type: "Feature", properties: {}, geometry: null}
+        ]}
+      });
+      filter(topology, {"coordinate-system": "spherical"});
+      assert.deepEqual(topology.objects.collection, {type: "GeometryCollection", geometries: [{type: "Point", coordinates: [0, 0]}]});
+    },
+    "empty polygons are removed": function(filter) {
+      var topology = topojson.topology({
+        collection: {type: "FeatureCollection", features: [
+          {type: "Feature", properties: {}, geometry: null},
+          {type: "Feature", properties: {}, geometry: {type: "Point", coordinates: [0, 0]}},
+          {type: "Feature", properties: {}, geometry: {type: "Polygon", coordinates: [[[0, 0], [1, 1], [1, 1], [0, 0]]]}},
+          {type: "Feature", properties: {}, geometry: null}
+        ]}
+      });
+      filter(topology, {"coordinate-system": "spherical"});
+      assert.deepEqual(topology.objects.collection, {type: "GeometryCollection", geometries: [{type: "Point", coordinates: [0, 0]}]});
+    },
+    "empty top-level geometry objects are converted to null": function(filter) {
       var topology = topojson.topology({line: {type: "Polygon", coordinates: [[[0, 0], [1, 1], [1, 1], [0, 0]]]}});
       filter(topology, {"coordinate-system": "spherical"});
       assert.deepEqual(topology.objects.line, {type: null});
     },
-    "small geometry objects are converted to null": function(filter) {
-      var topology = topojson.topology({polygon: {type: "Polygon", coordinates: [[[0, 0], [1, 0], [1, 1], [0, 1], [0, 0]]]}});
-      filter(topology, {"coordinate-system": "spherical", "minimum-area": .5});
-      assert.deepEqual(topology.objects.polygon, {type: null});
-    },
-    "big geometry objects are preserved": function(filter) {
+    "non-empty top-level geometry objects are preserved": function(filter) {
       var topology = topojson.topology({polygon: {type: "Polygon", coordinates: [[[0, 0], [0, 1], [1, 1], [1, 0], [0, 0]]]}});
       filter(topology, {"coordinate-system": "spherical"});
       assert.deepEqual(topology.objects.polygon, {type: "Polygon", arcs: [[0]]});
