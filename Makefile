@@ -2,8 +2,11 @@ GENERATED_FILES = \
 	component.json \
 	package.json \
 	examples/us-10m.json \
+	examples/world-50m.json \
 	examples/world-110m.json \
-	examples/world-50m.json
+	node_modules/us-atlas/topo/us-10m.json \
+	node_modules/world-atlas/topo/world-50m.json \
+	node_modules/world-atlas/topo/world-110m.json
 
 .SECONDARY:
 
