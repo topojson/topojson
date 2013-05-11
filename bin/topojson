@@ -89,6 +89,23 @@ var argv = optimist
       describe: "name of the y (latitude) property for CSV or TSV geometry input",
       default: "latitude"
     })
+    .options("width", {
+      describe: "scale and translate to fit a viewport of the specified width",
+      default: null
+    })
+    .options("height", {
+      describe: "scale and translate to fit a viewport of the specified height",
+      default: null
+    })
+    .options("margin", {
+      describe: "pixels of margin to reserve when scaling to fit a viewport",
+      default: 0
+    })
+    .options("bbox", {
+      describe: "include bbox property in generated topology",
+      type: "boolean",
+      default: false
+    })
     .options("help", {
       describe: "display this helpful message",
       type: "boolean",
@@ -98,7 +115,9 @@ var argv = optimist
       if (!argv._.length) throw new Error("input required");
       if (+argv.s && +argv["simplify-proportion"]) throw new Error("--simplify and --simplify-proportion are exclusive");
       if (argv.cartesian && argv.spherical) throw new Error("--spherical and --cartesian are exclusive");
+      if (argv.spherical && ((argv.width = +argv.width) || (argv.height = +argv.height))) throw new Error("--width and --height requires Cartesian coordinates");
       if (typeof argv.p === "string") argv.p = argv.p.split(",");
+      argv.margin = +argv.margin;
     })
     .argv;
 
@@ -229,6 +248,35 @@ function output(error) {
 
   // Bind with external properties.
   if (argv.e) topojson.bind(object, externalProperties);
+
+  // Translate and scale to fit the viewport.
+  if (argv.width || argv.height) {
+    if (options["coordinate-system"] !== "cartesian") throw new Error("--width and --height require Cartesian coordinates");
+    var dx = object.bbox[2] - object.bbox[0],
+        dy = object.bbox[3] - object.bbox[1],
+        m = argv.margin,
+        w = Math.max(0, argv.width - m * 2),
+        h = Math.max(0, argv.height - m * 2),
+        k;
+
+    if (w && h) {
+      k = Math.min(w / dx, h / dy);
+    } else if (w) {
+      k = w / dx;
+      h = k * dy;
+    } else {
+      k = h / dy;
+      w = k * dx;
+    }
+
+    object.transform.scale[0] *= k;
+    object.transform.scale[1] *= -k;
+    object.transform.translate[0] = (w - dx * k) / 2 + m;
+    object.transform.translate[1] = (h + dy * k) / 2 + m;
+  }
+
+  // Delete the bbox if not desired.
+  if (!argv["bbox"]) delete object.bbox;
 
   // Output JSON.
   var json = JSON.stringify(object);
