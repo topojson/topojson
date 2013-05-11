@@ -4,4 +4,5 @@ var topojson = module.exports = new Function("topojson", "return " + fs.readFile
 topojson.topology = require("./lib/topojson/topology");
 topojson.simplify = require("./lib/topojson/simplify");
 topojson.filter = require("./lib/topojson/filter");
+topojson.prune = require("./lib/topojson/prune");
 topojson.bind = require("./lib/topojson/bind");
