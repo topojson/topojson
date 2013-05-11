@@ -57,6 +57,11 @@ var argv = optimist
       type: "boolean",
       default: true
     })
+    .options("allow-empty", {
+      describe: "preserve null or empty features (e.g., zero-area polygons)",
+      type: "boolean",
+      default: false
+    })
     .options("id-property", {
       describe: "name of feature property to promote to geometry id",
       default: null
@@ -210,14 +215,16 @@ function output(error) {
     "retain-proportion": +argv["simplify-proportion"]
   });
 
-  // Remove empty (or tiny) features.
-  // TODO For --simplify-propertion, figure out the appropriate minimum area.
-  // TODO Combine simplify + filter as topojson.topology options?
-  topojson.filter(object, {
+  // Force clockwise polygons, as appropriate.
+  if (!!argv["force-clockwise"]) topojson.clockwise(object, {
     "verbose": true,
-    "coordinate-system": options["coordinate-system"],
-    "minimum-area": +argv.s || 0,
-    "force-clockwise": !!argv["force-clockwise"]
+    "coordinate-system": options["coordinate-system"]
+  });
+
+  // Remove empty (collapsed) features.
+  if (!argv["allow-empty"]) topojson.filter(object, {
+    "verbose": true,
+    "coordinate-system": options["coordinate-system"]
   });
 
   // Bind with external properties.
