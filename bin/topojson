@@ -294,17 +294,16 @@ function qualify(file) {
 
 function parsePropertyId(properties) {
   return function(d) {
-    if (d = d.properties) {
-      var id;
-      properties.some(function(p) {
-        id = /^\+/.test(p) ? +d[p.substring(1)] : d[p];
-        if (id == null) return;
-        else if (typeof id === "number") isNaN(id) && (id = null);
-        else if (typeof id !== "string") id = id + "";
-        return id;
-      });
+    if (d.properties) d = d.properties;
+    var id;
+    properties.some(function(p) {
+      id = /^\+/.test(p) ? +d[p.substring(1)] : d[p];
+      if (id == null) return;
+      else if (typeof id === "number") isNaN(id) && (id = null);
+      else if (typeof id !== "string") id = id + "";
       return id;
-    }
+    });
+    return id;
   };
 }
 
@@ -345,7 +344,7 @@ function readExternalProperties(file) {
         : dsv.csv;
 
   type.parse(fs.readFileSync(file, "utf-8")).forEach(function(row) {
-    var properties = externalProperties[row.id] || (externalProperties[row.id] = {});
+    var i = id(row), properties = externalProperties[i] || (externalProperties[i] = {});
     for (var key in row) if (key != "id") propertyTransform(properties, key, row[key]);
   });
 }
