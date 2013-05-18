@@ -136,10 +136,10 @@ topojson = (function() {
       geometry(o);
 
       geomsByArc.forEach(arguments.length < 3
-          ? function(geoms, i) { arcs.push([i]); }
-          : function(geoms, i) { if (filter(geoms[0], geoms[geoms.length - 1])) arcs.push([i]); });
+          ? function(geoms, i) { arcs.push(i); }
+          : function(geoms, i) { if (filter(geoms[0], geoms[geoms.length - 1])) arcs.push(i); });
     } else {
-      for (var i = 0, n = topology.arcs.length; i < n; ++i) arcs.push([i]);
+      for (var i = 0, n = topology.arcs.length; i < n; ++i) arcs.push(i);
     }
 
     return object(topology, {type: "MultiLineString", arcs: merge(topology, arcs)});
@@ -271,7 +271,7 @@ topojson = (function() {
   }
 
   return {
-    version: "1.1.1",
+    version: "1.1.2",
     mesh: mesh,
     feature: featureOrCollection,
     neighbors: neighbors
