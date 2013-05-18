@@ -79,6 +79,11 @@ var argv = optimist
       describe: "character encoding for reading shapefile properties",
       default: null
     })
+    .options("ignore-shapefile-properties", {
+      describe: "skip reading shapefile properties (.dbf) for faster performance",
+      type: "boolean",
+      default: false
+    })
     .options("x", {
       alias: "longitude",
       describe: "name of the x (longitude) property for CSV or TSV geometry input",
@@ -190,7 +195,7 @@ function inputShapefile(file, callback) {
     features: []
   };
 
-  shapefile.readStream(file.path, {encoding: argv["shapefile-encoding"]})
+  shapefile.readStream(file.path, {encoding: argv["shapefile-encoding"], "ignore-properties": !!argv["ignore-shapefile-properties"]})
       .on("error", callback)
       .on("feature", function(feature) { object.features.push(feature); })
       .on("end", callback);
