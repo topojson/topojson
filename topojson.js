@@ -235,18 +235,15 @@ topojson = (function() {
   }
 
   function neighbors(objects) {
-    var objectsByArc = [],
+    var indexesByArc = {}, // arc index -> array of object indexes
         neighbors = objects.map(function() { return []; });
 
     function line(arcs, i) {
       arcs.forEach(function(a) {
         if (a < 0) a = ~a;
-        var o = objectsByArc[a] || (objectsByArc[a] = []);
-        if (!o[i]) o.forEach(function(j) {
-          var n, k;
-          k = bisect(n = neighbors[i], j); if (n[k] !== j) n.splice(k, 0, j);
-          k = bisect(n = neighbors[j], i); if (n[k] !== i) n.splice(k, 0, i);
-        }), o[i] = i;
+        var o = indexesByArc[a];
+        if (o) o.push(i);
+        else indexesByArc[a] = [i];
       });
     }
 
@@ -267,6 +264,17 @@ topojson = (function() {
     };
 
     objects.forEach(geometry);
+
+    for (var i in indexesByArc) {
+      for (var indexes = indexesByArc[i], m = indexes.length, j = 0; j < m; ++j) {
+        for (var k = j + 1; k < m; ++k) {
+          var ij = indexes[j], ik = indexes[k], n;
+          if ((n = neighbors[ij])[i = bisect(n, ik)] !== ik) n.splice(i, 0, ik);
+          if ((n = neighbors[ik])[i = bisect(n, ij)] !== ij) n.splice(i, 0, ij);
+        }
+      }
+    }
+
     return neighbors;
   }
 
