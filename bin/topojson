@@ -30,7 +30,7 @@ var argv = optimist
     })
     .options("s", {
       alias: "simplify",
-      describe: "precision threshold for Visvalingam simplification, in steradians",
+      describe: "precision threshold for Visvalingam simplification, in area units (steradians for spherical coordinates)",
       default: 0,
     })
     .options("simplify-proportion", {
