@@ -51,6 +51,19 @@ suite.addBatch({
       filter(topology, {"coordinate-system": "spherical"});
       assert.deepEqual(topology.objects.collection, {type: "GeometryCollection", geometries: [{type: "Point", coordinates: [0, 0]}]});
     },
+    "empty rings are removed": function(filter) {
+      var topology = topojson.topology({
+        collection: {type: "GeometryCollection", geometries: [
+          {type: "Polygon", coordinates: [[[0, 0], [1, 1], [1, 1], [0, 0]], [[0, 0], [1, 0], [1, 1], [0, 1], [0, 0]]]},
+          {type: "Polygon", coordinates: [[[0, 0], [0, 1], [1, 1], [1, 0], [0, 0]], [[0, 0], [1, 1], [1, 1], [0, 0]]]}
+        ]}
+      });
+      filter(topology, {"coordinate-system": "spherical"});
+      assert.deepEqual(topology.objects.collection, {type: "GeometryCollection", geometries: [
+        {type: "Polygon", arcs: [[0, 1]]},
+        {type: "Polygon", arcs: [[~1, ~0]]}
+      ]});
+    },
     "empty top-level geometry objects are converted to null": function(filter) {
       var topology = topojson.topology({line: {type: "Polygon", coordinates: [[[0, 0], [1, 1], [1, 1], [0, 0]]]}});
       filter(topology, {"coordinate-system": "spherical"});
