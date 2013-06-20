@@ -1,15 +1,8 @@
 topojson = (function() {
 
   function merge(topology, arcs) {
-    var arcsByEnd = {},
-        fragmentByStart = {},
+    var fragmentByStart = {},
         fragmentByEnd = {};
-
-    arcs.forEach(function(i) {
-      var e = ends(i);
-      (arcsByEnd[e[0]] || (arcsByEnd[e[0]] = [])).push(i);
-      (arcsByEnd[e[1]] || (arcsByEnd[e[1]] = [])).push(~i);
-    });
 
     arcs.forEach(function(i) {
       var e = ends(i),
