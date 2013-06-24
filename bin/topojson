@@ -2,11 +2,13 @@
 
 var path = require("path"),
     fs = require("fs"),
-    dsv = require("dsv"),
+    d3 = require("d3"),
     optimist = require("optimist"),
     shapefile = require("shapefile"),
     queue = require("queue-async"),
     topojson = require("../");
+
+require("d3-geo-projection")(d3);
 
 var argv = optimist
     .usage("Usage: \033[1mtopojson\033[0m [options] [file …]\n\n"
@@ -38,12 +40,12 @@ var argv = optimist
       default: 0,
     })
     .options("cartesian", {
-      describe: "assume Cartesian coordinates",
+      describe: "assume Cartesian input coordinates",
       type: "boolean",
       default: false
     })
     .options("spherical", {
-      describe: "assume Spherical coordinates",
+      describe: "assume spherical input coordinates",
       type: "boolean",
       default: false
     })
@@ -94,6 +96,10 @@ var argv = optimist
       describe: "name of the y (latitude) property for CSV or TSV geometry input",
       default: "latitude"
     })
+    .options("projection", {
+      describe: "name of a projection to apply (implies spherical input)",
+      default: null
+    })
     .options("width", {
       describe: "scale and translate to fit a viewport of the specified width",
       default: null
@@ -119,6 +125,7 @@ var argv = optimist
     .check(function(argv) {
       if (!argv._.length) throw new Error("input required");
       if (+argv.s && +argv["simplify-proportion"]) throw new Error("--simplify and --simplify-proportion are exclusive");
+      if (argv.projection) argv.spherical = false, argv.cartesian = true, argv.projection = d3.geo[argv.projection]();
       if (argv.cartesian && argv.spherical) throw new Error("--spherical and --cartesian are exclusive");
       if (argv.spherical && ((argv.width = +argv.width) || (argv.height = +argv.height))) throw new Error("--width and --height requires Cartesian coordinates");
       if (typeof argv.p === "string") argv.p = argv.p.split(",");
@@ -151,8 +158,8 @@ if (argv.e) argv.e.forEach(readExternalProperties);
 var q = queue(1);
 argv._.forEach(function(file) {
   q.defer(/\.shp$/i.test(file) ? inputShapefile
-      : /\.csv$/i.test(file) ? inputDsv(dsv.csv)
-      : /\.tsv$/i.test(file) ? inputDsv(dsv.tsv)
+      : /\.csv$/i.test(file) ? inputDsv(d3.csv)
+      : /\.tsv$/i.test(file) ? inputDsv(d3.tsv)
       : inputJson, file);
 });
 q.await(output);
@@ -227,6 +234,11 @@ function output(error) {
     "id": id,
     "property-transform": propertyTransform
   };
+
+  // Reproject.
+  if (argv.projection) for (var key in objects) {
+    objects[key] = d3.geo.project(objects[key], argv.projection);
+  }
 
   // Convert GeoJSON to TopoJSON.
   var object = topojson.topology(objects, options);
