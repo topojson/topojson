@@ -255,6 +255,15 @@ suite.addBatch({
       assert.equal(topology.arcs.length, 0);
       assert.deepEqual(topology.objects.foo, {type: "MultiPolygon", arcs: []});
     },
+    "empty polygons are not removed": function() {
+      var topology = topojson.topology({
+        foo: {type: "FeatureCollection", features: [{type: "Feature", geometry: {type: "MultiPolygon", coordinates: [[]]}}]},
+        bar: {type: "Polygon", coordinates: []}
+      });
+      assert.equal(topology.arcs.length, 0);
+      assert.deepEqual(topology.objects.foo, {type: "GeometryCollection", geometries: [{type: "MultiPolygon", arcs: [[]]}]});
+      assert.deepEqual(topology.objects.bar, {type: "Polygon", arcs: []});
+    },
 
     //
     // A-----B
