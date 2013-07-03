@@ -7,9 +7,9 @@
   "objects": {
     "multilinestring": {"type": "MultiLineString", "arcs": []},
     "multipoint": {"type": "MultiPoint", "coordinates": []},
-    "multipolygon": {"type": null},
-    "multipolygon2": {"type": null},
-    "polygon": {"type": null}
+    "multipolygon": {"type": "MultiPolygon", "arcs": []},
+    "multipolygon2": {"type": "MultiPolygon", "arcs": [[]]},
+    "polygon": {"type": "Polygon", "arcs": []}
   },
   "arcs": []
 }

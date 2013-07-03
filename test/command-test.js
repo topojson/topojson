@@ -6,19 +6,21 @@ var fs = require("fs"),
 var suite = vows.describe("topojson");
 
 suite.addBatch({
-  "Empty geometries": testConversion("empty", "--allow-empty")
+  "Empty geometries": testConversion("empty", "empty"),
+  "Empty geometries with --allow-empty": testConversion("empty", "empty-allowed", "--allow-empty")
 });
 
-function testConversion(name, options) {
+function testConversion(input, output, options) {
+  if (!options) options = "";
   return {
     topic: function() {
       var callback = this.callback;
-      child.exec("./bin/topojson " + options + " -- ./test/inputs/" + name + "/*.json", function(error, stdout, stderr) {
-        callback(null, JSON.parse(stdout));
+      child.exec("./bin/topojson " + options + " -- ./test/inputs/" + input + "/*.json", function(error, stdout, stderr) {
+        callback(error, error ? null : JSON.parse(stdout));
       });
     },
     "has the expected output": function(actual) {
-      var expected = JSON.parse(fs.readFileSync("./test/outputs/" + name + ".json", "utf-8"));
+      var expected = JSON.parse(fs.readFileSync("./test/outputs/" + output + ".json", "utf-8"));
       assert.deepEqual(actual, expected);
     }
   };
