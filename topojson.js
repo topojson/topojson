@@ -1,15 +1,8 @@
 topojson = (function() {
 
   function merge(topology, arcs) {
-    var arcsByEnd = {},
-        fragmentByStart = {},
+    var fragmentByStart = {},
         fragmentByEnd = {};
-
-    arcs.forEach(function(i) {
-      var e = ends(i);
-      (arcsByEnd[e[0]] || (arcsByEnd[e[0]] = [])).push(i);
-      (arcsByEnd[e[1]] || (arcsByEnd[e[1]] = [])).push(~i);
-    });
 
     arcs.forEach(function(i) {
       var e = ends(i),
@@ -187,13 +180,13 @@ topojson = (function() {
     function line(arcs) {
       var points = [];
       for (var i = 0, n = arcs.length; i < n; ++i) arc(arcs[i], points);
-      if (points.length < 2) points.push(points[0]);
+      if (points.length < 2) points.push(points[0].slice());
       return points;
     }
 
     function ring(arcs) {
       var points = line(arcs);
-      while (points.length < 4) points.push(points[0]);
+      while (points.length < 4) points.push(points[0].slice());
       return points;
     }
 
@@ -279,7 +272,7 @@ topojson = (function() {
   }
 
   return {
-    version: "1.1.4",
+    version: "1.1.5",
     mesh: mesh,
     feature: featureOrCollection,
     neighbors: neighbors
