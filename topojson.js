@@ -180,13 +180,13 @@ topojson = (function() {
     function line(arcs) {
       var points = [];
       for (var i = 0, n = arcs.length; i < n; ++i) arc(arcs[i], points);
-      if (points.length < 2) points.push(points[0]);
+      if (points.length < 2) points.push(points[0].slice());
       return points;
     }
 
     function ring(arcs) {
       var points = line(arcs);
-      while (points.length < 4) points.push(points[0]);
+      while (points.length < 4) points.push(points[0].slice());
       return points;
     }
 
