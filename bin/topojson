@@ -274,7 +274,8 @@ function output(error) {
   // Remove empty (collapsed) features.
   if (!argv["allow-empty"]) topojson.filter(object, {
     "verbose": true,
-    "coordinate-system": options["coordinate-system"]
+    "coordinate-system": options["coordinate-system"],
+    "force-clockwise": false
   });
 
   // Bind with external properties.

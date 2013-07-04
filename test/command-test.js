@@ -6,6 +6,8 @@ var fs = require("fs"),
 var suite = vows.describe("topojson");
 
 suite.addBatch({
+  "Polygons": testConversion("polygon", "polygon"),
+  "Polygons with --no-force-clockwise": testConversion("polygon", "polygon-counterclockwise", "--no-force-clockwise"),
   "Empty geometries": testConversion("empty", "empty"),
   "Empty geometries with --allow-empty": testConversion("empty", "empty-allowed", "--allow-empty")
 });
