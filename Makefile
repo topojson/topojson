@@ -1,5 +1,5 @@
 GENERATED_FILES = \
-	component.json \
+	bower.json \
 	package.json \
 	examples/us-10m.json \
 	examples/world-50m.json \
@@ -14,14 +14,14 @@ GENERATED_FILES = \
 
 all: $(GENERATED_FILES)
 
-component.json: src/component.js topojson.js
+bower.json: bin/bower topojson.js
 	@rm -f $@
-	node src/component.js > $@
+	bin/bower > $@
 	@chmod a-w $@
 
-package.json: src/package.js topojson.js
+package.json: bin/package topojson.js
 	@rm -f $@
-	node src/package.js > $@
+	bin/package > $@
 	@chmod a-w $@
 
 examples/us-%.json: node_modules/us-atlas/topo/us-%.json

@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+
 require("../topojson");
 
 console.log(JSON.stringify({
