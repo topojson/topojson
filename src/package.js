@@ -16,9 +16,10 @@ console.log(JSON.stringify({
     "type": "git",
     "url": "https://github.com/mbostock/topojson.git"
   },
-  "main": "./index.js",
+  "main": "index.js",
   "dependencies": {
-    "dsv": "0.0",
+    "d3": "3",
+    "d3-geo-projection": "0.2",
     "optimist": "0.3",
     "queue-async": "1.0",
     "shapefile": "0.1"
