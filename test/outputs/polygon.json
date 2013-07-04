@@ -5,11 +5,7 @@
     "translate": [0, 0]
   },
   "objects": {
-    "clockwise": {
-      "type": "Polygon",
-      "arcs": [[0]]
-    },
-    "counterclockwise": {
+    "polygon": {
       "type": "Polygon",
       "arcs": [[0]]
     }
