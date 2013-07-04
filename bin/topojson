@@ -358,10 +358,10 @@ function readExternalProperties(file) {
 
   // Infer the file type from the name.
   // If that doesn't work, look for a tab and hope for the best!
-  var type = /\.tsv$/i.test(file) ? dsv.tsv
-        : /\.csv$/i.test(file) ? dsv.csv
-        : text.indexOf("\t") ? dsv.tsv
-        : dsv.csv;
+  var type = /\.tsv$/i.test(file) ? d3.tsv
+        : /\.csv$/i.test(file) ? d3.csv
+        : text.indexOf("\t") ? d3.tsv
+        : d3.csv;
 
   type.parse(fs.readFileSync(file, "utf-8")).forEach(function(row) {
     var i = id(row), properties = externalProperties[i] || (externalProperties[i] = {});
