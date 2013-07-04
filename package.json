@@ -17,7 +17,7 @@
   "main": "index.js",
   "dependencies": {
     "d3": "3",
-    "d3-geo-projection": "0.2",
+    "d3-geo-projection": "~0.2.1",
     "optimist": "0.3",
     "queue-async": "1.0",
     "shapefile": "0.1"
