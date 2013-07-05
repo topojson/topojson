@@ -7,11 +7,15 @@
   "objects": {
     "clockwise": {
       "type": "Polygon",
-      "arcs": [[0]]
+      "arcs": [
+        [0]
+      ]
     },
     "counterclockwise": {
       "type": "Polygon",
-      "arcs": [[-1]]
+      "arcs": [
+        [-1]
+      ]
     }
   },
   "arcs": [

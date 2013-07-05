@@ -3,19 +3,19 @@ var fs = require("fs"),
     vows = require("vows"),
     assert = require("./assert");
 
-var suite = vows.describe("topojson");
+var suite = vows.describe("bin/topojson");
 
 suite.addBatch({
   "Polygons": testConversion(
     "polygon",
-    "-- polygon=test/inputs/polygon-clockwise.json"
+    "-- polygon=test/geojson/polygon-clockwise.json"
   ),
 
   "Polygons with --no-force-clockwise": testConversion(
     "polygon-counterclockwise",
     "--no-force-clockwise"
-    + " -- clockwise=test/inputs/polygon-clockwise.json"
-    + " counterclockwise=test/inputs/polygon-counterclockwise.json"
+    + " -- clockwise=test/geojson/polygon-clockwise.json"
+    + " counterclockwise=test/geojson/polygon-counterclockwise.json"
   ),
 
   "Polygons with --projection": testConversion(
@@ -24,27 +24,27 @@ suite.addBatch({
     + " --width 960"
     + " --height 500"
     + " --margin 20"
-    + " -- polygon=test/inputs/polygon-clockwise.json"
+    + " -- polygon=test/geojson/polygon-clockwise.json"
   ),
 
   "Empty geometries": testConversion(
     "empty",
-    "-- multilinestring=test/inputs/empty-multilinestring.json"
-    + " multipoint=test/inputs/empty-multipoint.json"
-    + " multipolygon=test/inputs/empty-multipolygon.json"
-    + " multipolygon2=test/inputs/empty-multipolygon2.json"
-    + " polygon=test/inputs/empty-polygon.json"
+    "-- multilinestring=test/geojson/empty-multilinestring.json"
+    + " multipoint=test/geojson/empty-multipoint.json"
+    + " multipolygon=test/geojson/empty-multipolygon.json"
+    + " multipolygon2=test/geojson/empty-multipolygon2.json"
+    + " polygon=test/geojson/empty-polygon.json"
   ),
 
   "Empty geometries with --allow-empty": testConversion(
     "empty-allowed",
     "--allow-empty"
-    + " -- multilinestring=test/inputs/empty-multilinestring.json"
-    + " multipoint=test/inputs/empty-multipoint.json"
-    + " multipolygon=test/inputs/empty-multipolygon.json"
-    + " multipolygon2=test/inputs/empty-multipolygon2.json"
-    + " polygon=test/inputs/empty-polygon.json"
-  ),
+    + " -- multilinestring=test/geojson/empty-multilinestring.json"
+    + " multipoint=test/geojson/empty-multipoint.json"
+    + " multipolygon=test/geojson/empty-multipolygon.json"
+    + " multipolygon2=test/geojson/empty-multipolygon2.json"
+    + " polygon=test/geojson/empty-polygon.json"
+  )
 });
 
 function testConversion(output, options) {
@@ -57,7 +57,7 @@ function testConversion(output, options) {
       });
     },
     "has the expected output": function(actual) {
-      var expected = JSON.parse(fs.readFileSync("test/outputs/" + output + ".json", "utf-8"));
+      var expected = JSON.parse(fs.readFileSync("test/topojson/" + output + ".json", "utf-8"));
       assert.deepEqual(actual, expected);
     }
   };

@@ -48,7 +48,7 @@ argv._.forEach(function(file) {
           feature.properties[argv["id-property"]] = feature.id;
           delete feature.id;
         }
-        return feature;
+        return this.defaults.Feature.call(this, feature);
       },
       point: function(point) {
         point[0] = round(point[0]);
