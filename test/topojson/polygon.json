@@ -7,7 +7,9 @@
   "objects": {
     "polygon": {
       "type": "Polygon",
-      "arcs": [[0]]
+      "arcs": [
+        [0]
+      ]
     }
   },
   "arcs": [
