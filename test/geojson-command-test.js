@@ -18,13 +18,15 @@ suite.addBatch({
   ),
   "Projected polygons": testConversion(
     {
-      polygon: "polygon-feature-mercator"
+      clockwise: "polygon-feature-mercator",
+      counterclockwise: "polygon-feature-mercator"
     },
     "-- test/topojson/polygon-mercator.json"
   ),
   "Rounded polygons": testConversion(
     {
-      polygon: "polygon-feature-rounded"
+      clockwise: "polygon-feature-rounded",
+      counterclockwise: "polygon-feature-rounded"
     },
     "--precision 2"
     + " -- test/topojson/polygon-mercator.json"

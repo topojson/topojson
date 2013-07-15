@@ -237,8 +237,12 @@ function output(error) {
     "property-transform": propertyTransform
   };
 
-  // Reproject.
+  // Reproject (and force inputs to be clockwise before projecting, if needed).
   if (argv.projection) for (var key in objects) {
+    if (!!argv["force-clockwise"]) topojson.clockwise(objects[key], {
+      "verbose": true,
+      "coordinate-system": "spherical"
+    });
     objects[key] = d3.geo.project(objects[key], argv.projection);
   }
 

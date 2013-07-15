@@ -24,7 +24,8 @@ suite.addBatch({
     + " --width 960"
     + " --height 500"
     + " --margin 20"
-    + " -- polygon=test/geojson/polygon-clockwise.json"
+    + " -- clockwise=test/geojson/polygon-clockwise.json"
+    + " counterclockwise=test/geojson/polygon-counterclockwise.json"
   ),
 
   "Empty geometries": testConversion(
