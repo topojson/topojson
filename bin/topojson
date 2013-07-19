@@ -123,6 +123,7 @@ var argv = optimist
       default: false
     })
     .check(function(argv) {
+      if (argv.help) return;
       if (!argv._.length) throw new Error("input required");
       if (+argv.s && +argv["simplify-proportion"]) throw new Error("--simplify and --simplify-proportion are exclusive");
       if (argv.projection) argv.spherical = false, argv.cartesian = true, argv.projection = new Function("d3", "return " + argv.projection)(d3);
