@@ -126,6 +126,7 @@ var argv = optimist
       if (argv.help) return;
       if (!argv._.length) throw new Error("input required");
       if (+argv.s && +argv["simplify-proportion"]) throw new Error("--simplify and --simplify-proportion are exclusive");
+      if (+argv["simplify-proportion"] < 0 || +argv["simplify-proportion"] >= 1) throw new Error("--simplify-proportion must be between 0 and 1");
       if (argv.projection) argv.spherical = false, argv.cartesian = true, argv.projection = new Function("d3", "return " + argv.projection)(d3);
       if (argv.cartesian && argv.spherical) throw new Error("--spherical and --cartesian are exclusive");
       if (argv.spherical && (+argv.width || +argv.height)) throw new Error("--width and --height requires Cartesian coordinates");
