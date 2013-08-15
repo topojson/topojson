@@ -276,7 +276,7 @@ topojson = (function() {
   }
 
   function presimplify(topology, triangleArea) {
-    var heap = minAreaHeap(),
+    var heap = minHeap(compareArea),
         maxArea = 0,
         triangle;
 
@@ -348,7 +348,11 @@ topojson = (function() {
     );
   }
 
-  function minAreaHeap() {
+  function compareArea(a, b) {
+    return a[1][2] - b[1][2];
+  }
+
+  function minHeap(compare) {
     var heap = {},
         array = [];
 
@@ -375,7 +379,7 @@ topojson = (function() {
           object = array.pop();
       if (i !== array.length) {
         array[object.index = i] = object;
-        (object[1][2] < removed[1][2] ? up : down)(i);
+        (compare(object, removed) < 0 ? up : down)(i);
       }
       return i;
     };
@@ -385,7 +389,7 @@ topojson = (function() {
       while (i > 0) {
         var up = ((i + 1) >> 1) - 1,
             parent = array[up];
-        if (object[1][2] >= parent[1][2]) break;
+        if (compare(object, parent) >= 0) break;
         array[parent.index = i] = parent;
         array[object.index = i = up] = object;
       }
@@ -398,8 +402,8 @@ topojson = (function() {
             left = right - 1,
             down = i,
             child = array[down];
-        if (left < array.length && array[left][1][2] < child[1][2]) child = array[down = left];
-        if (right < array.length && array[right][1][2] < child[1][2]) child = array[down = right];
+        if (left < array.length && compare(array[left], child) < 0) child = array[down = left];
+        if (right < array.length && compare(array[right], child) < 0) child = array[down = right];
         if (down === i) break;
         array[child.index = i] = child;
         array[object.index = i = down] = object;
