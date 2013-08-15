@@ -28,6 +28,7 @@ console.log(JSON.stringify({
   },
   "devDependencies": {
     "vows": "0.7",
+    "uglify-js": "2",
     "us-atlas": "0.0",
     "world-atlas": "0.0"
   },
