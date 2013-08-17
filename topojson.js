@@ -166,15 +166,19 @@ topojson = (function() {
 
     function arc(i, points) {
       if (points.length) points.pop();
-      for (var a = arcs[i < 0 ? ~i : i], k = 0, n = a.length, x = 0, y = 0, p; k < n; ++k) points.push([
-        (x += (p = a[k])[0]) * kx + dx,
-        (y += p[1]) * ky + dy
-      ]);
+      for (var a = arcs[i < 0 ? ~i : i], k = 0, n = a.length, x = 0, y = 0, p; k < n; ++k) {
+        points.push(p = a[k].slice());
+        p[0] = (x += p[0]) * kx + dx;
+        p[1] = (y += p[1]) * ky + dy;
+      }
       if (i < 0) reverse(points, n);
     }
 
-    function point(coordinates) {
-      return [coordinates[0] * kx + dx, coordinates[1] * ky + dy];
+    function point(p) {
+      p = p.slice();
+      p[0] = p[0] * kx + dx;
+      p[1] = p[1] * ky + dy;
+      return p;
     }
 
     function line(arcs) {
@@ -271,10 +275,179 @@ topojson = (function() {
     return neighbors;
   }
 
+  function presimplify(topology, triangleArea) {
+    var heap = minHeap(compareArea),
+        maxArea = 0,
+        triangle;
+
+    if (!triangleArea) triangleArea = cartesianArea;
+
+    topology.arcs.forEach(function(arc) {
+      var triangles = [];
+
+      arc.forEach(transformAbsolute(topology.transform));
+
+      for (var i = 1, n = arc.length - 1; i < n; ++i) {
+        triangle = arc.slice(i - 1, i + 2);
+        triangle[1][2] = triangleArea(triangle);
+        triangles.push(triangle);
+        heap.push(triangle);
+      }
+
+      // Always keep the arc endpoints!
+      arc[0][2] = arc[n][2] = Infinity;
+
+      for (var i = 0, n = triangles.length; i < n; ++i) {
+        triangle = triangles[i];
+        triangle.previous = triangles[i - 1];
+        triangle.next = triangles[i + 1];
+      }
+    });
+
+    while (triangle = heap.pop()) {
+      var previous = triangle.previous,
+          next = triangle.next;
+
+      // If the area of the current point is less than that of the previous point
+      // to be eliminated, use the latter's area instead. This ensures that the
+      // current point cannot be eliminated without eliminating previously-
+      // eliminated points.
+      if (triangle[1][2] < maxArea) triangle[1][2] = maxArea;
+      else maxArea = triangle[1][2];
+
+      if (previous) {
+        previous.next = next;
+        previous[2] = triangle[2];
+        update(previous);
+      }
+
+      if (next) {
+        next.previous = previous;
+        next[0] = triangle[0];
+        update(next);
+      }
+    }
+
+    topology.arcs.forEach(function(arc) {
+      arc.forEach(transformRelative(topology.transform));
+    });
+
+    function update(triangle) {
+      heap.remove(triangle);
+      triangle[1][2] = triangleArea(triangle);
+      heap.push(triangle);
+    }
+
+    return topology;
+  };
+
+  function cartesianArea(triangle) {
+    return Math.abs(
+      (triangle[0][0] - triangle[2][0]) * (triangle[1][1] - triangle[0][1])
+      - (triangle[0][0] - triangle[1][0]) * (triangle[2][1] - triangle[0][1])
+    );
+  }
+
+  function compareArea(a, b) {
+    return a[1][2] - b[1][2];
+  }
+
+  function minHeap(compare) {
+    var heap = {},
+        array = [];
+
+    heap.push = function() {
+      for (var i = 0, n = arguments.length; i < n; ++i) {
+        var object = arguments[i];
+        up(object.index = array.push(object) - 1);
+      }
+      return array.length;
+    };
+
+    heap.pop = function() {
+      var removed = array[0],
+          object = array.pop();
+      if (array.length) {
+        array[object.index = 0] = object;
+        down(0);
+      }
+      return removed;
+    };
+
+    heap.remove = function(removed) {
+      var i = removed.index,
+          object = array.pop();
+      if (i !== array.length) {
+        array[object.index = i] = object;
+        (compare(object, removed) < 0 ? up : down)(i);
+      }
+      return i;
+    };
+
+    function up(i) {
+      var object = array[i];
+      while (i > 0) {
+        var up = ((i + 1) >> 1) - 1,
+            parent = array[up];
+        if (compare(object, parent) >= 0) break;
+        array[parent.index = i] = parent;
+        array[object.index = i = up] = object;
+      }
+    }
+
+    function down(i) {
+      var object = array[i];
+      while (true) {
+        var right = (i + 1) << 1,
+            left = right - 1,
+            down = i,
+            child = array[down];
+        if (left < array.length && compare(array[left], child) < 0) child = array[down = left];
+        if (right < array.length && compare(array[right], child) < 0) child = array[down = right];
+        if (down === i) break;
+        array[child.index = i] = child;
+        array[object.index = i = down] = object;
+      }
+    }
+
+    return heap;
+  }
+
+  function transformAbsolute(transform) {
+    var x0 = 0,
+        y0 = 0,
+        kx = transform.scale[0],
+        ky = transform.scale[1],
+        dx = transform.translate[0],
+        dy = transform.translate[1];
+    return function(point) {
+      point[0] = (x0 += point[0]) * kx + dx;
+      point[1] = (y0 += point[1]) * ky + dy;
+    };
+  }
+
+  function transformRelative(transform) {
+    var x0 = 0,
+        y0 = 0,
+        kx = transform.scale[0],
+        ky = transform.scale[1],
+        dx = transform.translate[0],
+        dy = transform.translate[1];
+    return function(point) {
+      var x1 = (point[0] - dx) / kx | 0,
+          y1 = (point[1] - dy) / ky | 0;
+      point[0] = x1 - x0;
+      point[1] = y1 - y0;
+      x0 = x1;
+      y0 = y1;
+    };
+  }
+
   return {
-    version: "1.2.3",
+    version: "1.3.0",
     mesh: mesh,
     feature: featureOrCollection,
-    neighbors: neighbors
+    neighbors: neighbors,
+    presimplify: presimplify
   };
 })();

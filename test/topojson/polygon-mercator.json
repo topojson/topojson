@@ -8,13 +8,13 @@
     "clockwise": {
       "type": "Polygon",
       "arcs": [
-        [0]
+        [-1]
       ]
     },
     "counterclockwise": {
       "type": "Polygon",
       "arcs": [
-        [0]
+        [-1]
       ]
     }
   },
