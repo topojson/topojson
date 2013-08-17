@@ -1,6 +1,7 @@
 GENERATED_FILES = \
 	bower.json \
 	package.json \
+	topojson.min.js \
 	examples/us-10m.json \
 	examples/world-50m.json \
 	examples/world-110m.json \
@@ -23,6 +24,9 @@ package.json: bin/package topojson.js
 	@rm -f $@
 	bin/package > $@
 	@chmod a-w $@
+
+topojson.min.js: topojson.js
+	node_modules/.bin/uglifyjs $^ -c -m -o $@
 
 examples/us-%.json: node_modules/us-atlas/topo/us-%.json
 	cp $< $@
