@@ -19,6 +19,15 @@ suite.addBatch({
       });
       assert.deepEqual(Array.apply([], topology.points), [0, 0, 1, 0, 2, 0, 0, 0, 1, 0, 2, 0]);
     },
+    "includes closing point in polygons": function() {
+      var topology = arcify({
+        foo: {
+          type: "Polygon",
+          coordinates: [[[0, 0], [1, 0], [2, 0], [0, 0]]]
+        }
+      });
+      assert.deepEqual(Array.apply([], topology.points), [0, 0, 1, 0, 2, 0, 0, 0]);
+    },
     "represents arcs as indexes into the point buffer": function() {
       var topology = arcify({
         foo: {
