@@ -18,8 +18,8 @@ suite.addBatch({
           coordinates: [[0, 0], [1, 0], [2, 0]]
         }
       }));
-      assert.deepEqual(topology.objects.foo.coordinates, {start: 0, end: 3, next: null});
-      assert.deepEqual(topology.objects.bar.coordinates, {start: 0, end: 3, next: null});
+      assert.deepEqual(topology.objects.foo.coordinates, {start: 0, end: 2, next: null});
+      assert.deepEqual(topology.objects.bar.coordinates, {start: 0, end: 2, next: null});
     },
     "detects reversed duplicate arcs": function() {
       var topology = unify(arcify({
@@ -32,8 +32,8 @@ suite.addBatch({
           coordinates: [[2, 0], [1, 0], [0, 0]]
         }
       }));
-      assert.deepEqual(topology.objects.foo.coordinates, {start: 0, end: 3, next: null});
-      assert.deepEqual(topology.objects.bar.coordinates, {start: 2, end: -1, next: null});
+      assert.deepEqual(topology.objects.foo.coordinates, {start: 0, end: 2, next: null});
+      assert.deepEqual(topology.objects.bar.coordinates, {start: 2, end: 0, next: null});
     },
     "detects when a coincident arc extends the current arc": function() {
       assert.throws(function() {

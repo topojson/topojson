@@ -57,11 +57,11 @@ suite.addBatch({
       assert.deepEqual(topology.objects, {
         foo: {
           type: "LineString",
-          coordinates: {start: 0, end: 3, next: null}
+          coordinates: {start: 0, end: 2, next: null}
         },
         bar: {
           type: "LineString",
-          coordinates: {start: 3, end: 6, next: null}
+          coordinates: {start: 3, end: 5, next: null}
         }
       });
     },
@@ -81,9 +81,9 @@ suite.addBatch({
         }
       });
       assert.deepEqual(topology.arcs, [
-        {start: 0, end: 3, next: null},
-        {start: 3, end: 6, next: null},
-        {start: 6, end: 10, next: null}
+        {start: 0, end: 2, next: null},
+        {start: 3, end: 5, next: null},
+        {start: 6, end: 9, next: null}
       ]);
     },
     "converts singular multipoints to points": function() {
@@ -107,7 +107,7 @@ suite.addBatch({
       });
       assert.deepEqual(topology.objects.foo, {
         type: "LineString",
-        coordinates: {start: 0, end: 2, next: null}
+        coordinates: {start: 0, end: 1, next: null}
       });
     },
     "converts singular multipolygons to polygons": function() {
@@ -119,7 +119,7 @@ suite.addBatch({
       });
       assert.deepEqual(topology.objects.foo, {
         type: "Polygon",
-        coordinates: [{start: 0, end: 4, next: null}]
+        coordinates: [{start: 0, end: 3, next: null}]
       });
     },
     "preserves properties and id on top-level features": function() {
@@ -144,7 +144,7 @@ suite.addBatch({
         },
         geometry: {
           type: "LineString",
-          coordinates: {start: 0, end: 2, next: null}
+          coordinates: {start: 0, end: 1, next: null}
         }
       });
     },
@@ -175,7 +175,7 @@ suite.addBatch({
           },
           geometry: {
             type: "LineString",
-            coordinates: {start: 0, end: 2, next: null}
+            coordinates: {start: 0, end: 1, next: null}
           }
         }]
       });
@@ -201,7 +201,7 @@ suite.addBatch({
           type: "GeometryCollection",
           geometries: [{
             type: "LineString",
-            coordinates: {start: 0, end: 2, next: null}
+            coordinates: {start: 0, end: 1, next: null}
           }]
         }
       });
