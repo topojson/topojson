@@ -36,32 +36,33 @@ suite.addBatch({
       assert.deepEqual(topology.objects.bar.coordinates, {start: 2, end: 0, next: null});
     },
     "detects when a coincident arc extends the current arc": function() {
-      assert.throws(function() {
-        var topology = unify(arcify({
-          foo: {
-            type: "LineString",
-            coordinates: [[0, 0], [1, 0], [2, 0]]
-          },
-          bar: {
-            type: "LineString",
-            coordinates: [[0, 0], [1, 0]]
-          }
-        }));
-      }, Error); // not yet implemented
+      var topology = unify(arcify({
+        foo: {
+          type: "LineString",
+          coordinates: [[0, 0], [1, 0], [2, 0]]
+        },
+        bar: {
+          type: "LineString",
+          coordinates: [[0, 0], [1, 0]]
+        }
+      }));
+      assert.deepEqual(topology.objects.foo.coordinates, {start: 0, end: 1, next: {start: 1, end: 2, next: null}});
+      assert.deepEqual(topology.objects.bar.coordinates, {start: 0, end: 1, next: null});
     },
     "detects when a reversed coincident arc extends the current arc": function() {
-      assert.throws(function() {
-        var topology = unify(arcify({
-          foo: {
-            type: "LineString",
-            coordinates: [[2, 0], [1, 0], [0, 0]]
-          },
-          bar: {
-            type: "LineString",
-            coordinates: [[0, 0], [1, 0]]
-          }
-        }));
-      }, Error); // not yet implemented
+      var topology = unify(arcify({
+        foo: {
+          type: "LineString",
+          coordinates: [[2, 0], [1, 0], [0, 0]]
+        },
+        bar: {
+          type: "LineString",
+          coordinates: [[0, 0], [1, 0]]
+        }
+      }));
+      assert.deepEqual(Array.apply([], topology.coordinates), [2, 0, 1, 0, 0, 0, 0, 0, 1, 0]);
+      assert.deepEqual(topology.objects.foo.coordinates, {start: 0, end: 1, next: {start: 1, end: 2, next: null}});
+      assert.deepEqual(topology.objects.bar.coordinates, {start: 2, end: 1, next: null});
     },
     "detects when the current arc extends a coincident arc": function() {
       assert.throws(function() {
