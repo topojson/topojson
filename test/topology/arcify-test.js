@@ -6,7 +6,7 @@ var suite = vows.describe("arcify");
 
 suite.addBatch({
   "arcify": {
-    "copies points sequentially into a buffer": function() {
+    "copies coordinates sequentially into a buffer": function() {
       var topology = arcify({
         foo: {
           type: "LineString",
@@ -17,18 +17,33 @@ suite.addBatch({
           coordinates: [[0, 0], [1, 0], [2, 0]]
         }
       });
-      assert.deepEqual(Array.apply([], topology.points), [0, 0, 1, 0, 2, 0, 0, 0, 1, 0, 2, 0]);
+      assert.deepEqual(Array.apply([], topology.coordinates), [0, 0, 1, 0, 2, 0, 0, 0, 1, 0, 2, 0]);
     },
-    "includes closing point in polygons": function() {
+    "does not copy point geometries into the coordinate buffer": function() {
+      var topology = arcify({
+        foo: {
+          type: "Point",
+          coordinates: [0, 0]
+        },
+        bar: {
+          type: "MultiPoint",
+          coordinates: [[0, 0], [1, 0], [2, 0]]
+        }
+      });
+      assert.deepEqual(Array.apply([], topology.coordinates), []);
+      assert.deepEqual(topology.objects.foo.coordinates, [0, 0]);
+      assert.deepEqual(topology.objects.bar.coordinates, [[0, 0], [1, 0], [2, 0]]);
+    },
+    "includes closing coordinates in polygons": function() {
       var topology = arcify({
         foo: {
           type: "Polygon",
           coordinates: [[[0, 0], [1, 0], [2, 0], [0, 0]]]
         }
       });
-      assert.deepEqual(Array.apply([], topology.points), [0, 0, 1, 0, 2, 0, 0, 0]);
+      assert.deepEqual(Array.apply([], topology.coordinates), [0, 0, 1, 0, 2, 0, 0, 0]);
     },
-    "represents arcs as indexes into the point buffer": function() {
+    "represents arcs as contiguous slices of the coordinate buffer": function() {
       var topology = arcify({
         foo: {
           type: "LineString",
@@ -50,39 +65,181 @@ suite.addBatch({
         }
       });
     },
-    "records every arc’s occurrences by point": function() {
+    "exposes the constructed arcs in the order of construction": function() {
       var topology = arcify({
-        foo: {
+        line: {
           type: "LineString",
           coordinates: [[0, 0], [1, 0], [2, 0]]
         },
-        bar: {
-          type: "LineString",
-          coordinates: [[0, 1], [1, 0], [2, 0], [3, 1]]
-        }
-      });
-      var arcFoo = topology.objects.foo.coordinates,
-          arcBar = topology.objects.bar.coordinates;
-      assert.deepEqual(topology.occurrences.get([0, 0]), [arcFoo]);
-      assert.deepEqual(topology.occurrences.get([0, 1]), [arcBar]);
-      assert.deepEqual(topology.occurrences.get([1, 0]), [arcFoo, arcBar]);
-      assert.deepEqual(topology.occurrences.get([2, 0]), [arcFoo, arcBar]);
-      assert.deepEqual(topology.occurrences.get([3, 1]), [arcBar]);
-      assert.isUndefined(topology.occurrences.get([1, 1]));
-    },
-    "for closed arcs, records only one occurrence on endpoint": function() {
-      var topology = arcify({
-        foo: {
+        multiline: {
+          type: "MultiLineString",
+          coordinates: [[[0, 0], [1, 0], [2, 0]]]
+        },
+        polygon: {
           type: "Polygon",
           coordinates: [[[0, 0], [1, 0], [2, 0], [0, 0]]]
         }
       });
-      var arcFoo = topology.objects.foo.coordinates[0];
-      assert.deepEqual(topology.occurrences.get([0, 0]), [arcFoo]);
-      assert.deepEqual(topology.occurrences.get([1, 0]), [arcFoo]);
-      assert.deepEqual(topology.occurrences.get([2, 0]), [arcFoo]);
-      assert.isUndefined(topology.occurrences.get([1, 1]));
+      assert.deepEqual(topology.arcs, [
+        {start: 0, end: 3, next: null},
+        {start: 3, end: 6, next: null},
+        {start: 6, end: 10, next: null}
+      ]);
+    },
+    "converts singular multipoints to points": function() {
+      var topology = arcify({
+        foo: {
+          type: "MultiPoint",
+          coordinates: [[0, 0]]
+        }
+      });
+      assert.deepEqual(topology.objects.foo, {
+        type: "Point",
+        coordinates: [0, 0]
+      });
+    },
+    "converts singular multilines to lines": function() {
+      var topology = arcify({
+        foo: {
+          type: "MultiLineString",
+          coordinates: [[[0, 0], [0, 1]]]
+        }
+      });
+      assert.deepEqual(topology.objects.foo, {
+        type: "LineString",
+        coordinates: {start: 0, end: 2, next: null}
+      });
+    },
+    "converts singular multipolygons to polygons": function() {
+      var topology = arcify({
+        foo: {
+          type: "MultiPolygon",
+          coordinates: [[[[0, 0], [0, 1], [1, 0], [0, 0]]]]
+        }
+      });
+      assert.deepEqual(topology.objects.foo, {
+        type: "Polygon",
+        coordinates: [{start: 0, end: 4, next: null}]
+      });
+    },
+    "preserves properties and id on top-level features": function() {
+      var topology = arcify({
+        foo: {
+          type: "Feature",
+          id: "foo",
+          properties: {
+            "foo": 42,
+          },
+          geometry: {
+            type: "LineString",
+            coordinates: [[0, 0], [0, 1]]
+          }
+        }
+      });
+      assert.deepEqual(topology.objects.foo, {
+        type: "Feature",
+        id: "foo",
+        properties: {
+          "foo": 42,
+        },
+        geometry: {
+          type: "LineString",
+          coordinates: {start: 0, end: 2, next: null}
+        }
+      });
+    },
+    "preserves properties and id on feature in collections": function() {
+      var topology = arcify({
+        foo: {
+          type: "FeatureCollection",
+          features: [{
+            type: "Feature",
+            id: "foo",
+            properties: {
+              "foo": 42,
+            },
+            geometry: {
+              type: "LineString",
+              coordinates: [[0, 0], [0, 1]]
+            }
+          }]
+        }
+      });
+      assert.deepEqual(topology.objects.foo, {
+        type: "FeatureCollection",
+        features: [{
+          type: "Feature",
+          id: "foo",
+          properties: {
+            "foo": 42,
+          },
+          geometry: {
+            type: "LineString",
+            coordinates: {start: 0, end: 2, next: null}
+          }
+        }]
+      });
+    },
+    "supports nested geometry collections": function() {
+      var topology = arcify({
+        foo: {
+          type: "Feature",
+          geometry: {
+            type: "GeometryCollection",
+            geometries: [{
+              type: "LineString",
+              coordinates: [[0, 0], [0, 1]]
+            }]
+          }
+        }
+      });
+      assert.deepEqual(topology.objects.foo, {
+        type: "Feature",
+        id: undefined,
+        properties: undefined,
+        geometry: {
+          type: "GeometryCollection",
+          geometries: [{
+            type: "LineString",
+            coordinates: {start: 0, end: 2, next: null}
+          }]
+        }
+      });
     }
+    // ,
+    // "records every arc’s occurrences by point": function() {
+    //   var topology = arcify({
+    //     foo: {
+    //       type: "LineString",
+    //       coordinates: [[0, 0], [1, 0], [2, 0]]
+    //     },
+    //     bar: {
+    //       type: "LineString",
+    //       coordinates: [[0, 1], [1, 0], [2, 0], [3, 1]]
+    //     }
+    //   });
+    //   var arcFoo = topology.objects.foo.coordinates,
+    //       arcBar = topology.objects.bar.coordinates;
+    //   assert.deepEqual(topology.occurrences.get([0, 0]), [arcFoo]);
+    //   assert.deepEqual(topology.occurrences.get([0, 1]), [arcBar]);
+    //   assert.deepEqual(topology.occurrences.get([1, 0]), [arcFoo, arcBar]);
+    //   assert.deepEqual(topology.occurrences.get([2, 0]), [arcFoo, arcBar]);
+    //   assert.deepEqual(topology.occurrences.get([3, 1]), [arcBar]);
+    //   assert.isUndefined(topology.occurrences.get([1, 1]));
+    // },
+    // "for closed arcs, records only one occurrence on endpoint": function() {
+    //   var topology = arcify({
+    //     foo: {
+    //       type: "Polygon",
+    //       coordinates: [[[0, 0], [1, 0], [2, 0], [0, 0]]]
+    //     }
+    //   });
+    //   var arcFoo = topology.objects.foo.coordinates[0];
+    //   assert.deepEqual(topology.occurrences.get([0, 0]), [arcFoo]);
+    //   assert.deepEqual(topology.occurrences.get([1, 0]), [arcFoo]);
+    //   assert.deepEqual(topology.occurrences.get([2, 0]), [arcFoo]);
+    //   assert.isUndefined(topology.occurrences.get([1, 1]));
+    // }
   }
 });
 
