@@ -33,19 +33,11 @@ suite.addBatch({
       assert.deepEqual(topology.objects, {
         foo: {
           type: "LineString",
-          coordinates: {
-            start: 0,
-            end: 3,
-            next: null
-          }
+          coordinates: {start: 0, end: 3, next: null}
         },
         bar: {
           type: "LineString",
-          coordinates: {
-            start: 3,
-            end: 6,
-            next: null
-          }
+          coordinates: {start: 3, end: 6, next: null}
         }
       });
     },
@@ -57,14 +49,16 @@ suite.addBatch({
         },
         bar: {
           type: "LineString",
-          coordinates: [[0, 0], [1, 0], [2, 0]]
+          coordinates: [[0, 1], [1, 0], [2, 0], [3, 1]]
         }
       });
       var arcFoo = topology.objects.foo.coordinates,
           arcBar = topology.objects.bar.coordinates;
-      assert.deepEqual(topology.occurrences.get([0, 0]), [arcFoo, arcBar]);
+      assert.deepEqual(topology.occurrences.get([0, 0]), [arcFoo]);
+      assert.deepEqual(topology.occurrences.get([0, 1]), [arcBar]);
       assert.deepEqual(topology.occurrences.get([1, 0]), [arcFoo, arcBar]);
       assert.deepEqual(topology.occurrences.get([2, 0]), [arcFoo, arcBar]);
+      assert.deepEqual(topology.occurrences.get([3, 1]), [arcBar]);
       assert.isUndefined(topology.occurrences.get([1, 1]));
     },
     "for closed arcs, records only one occurrence on endpoint": function() {
