@@ -47,7 +47,38 @@ suite.addBatch({
             next: null
           }
         }
-      })
+      });
+    },
+    "records every arc’s occurrences by point": function() {
+      var topology = arcify({
+        foo: {
+          type: "LineString",
+          coordinates: [[0, 0], [1, 0], [2, 0]]
+        },
+        bar: {
+          type: "LineString",
+          coordinates: [[0, 0], [1, 0], [2, 0]]
+        }
+      });
+      var arcFoo = topology.objects.foo.coordinates,
+          arcBar = topology.objects.bar.coordinates;
+      assert.deepEqual(topology.occurrences.get([0, 0]), [arcFoo, arcBar]);
+      assert.deepEqual(topology.occurrences.get([1, 0]), [arcFoo, arcBar]);
+      assert.deepEqual(topology.occurrences.get([2, 0]), [arcFoo, arcBar]);
+      assert.isUndefined(topology.occurrences.get([1, 1]));
+    },
+    "for closed arcs, records only one occurrence on endpoint": function() {
+      var topology = arcify({
+        foo: {
+          type: "Polygon",
+          coordinates: [[[0, 0], [1, 0], [2, 0], [0, 0]]]
+        }
+      });
+      var arcFoo = topology.objects.foo.coordinates[0];
+      assert.deepEqual(topology.occurrences.get([0, 0]), [arcFoo]);
+      assert.deepEqual(topology.occurrences.get([1, 0]), [arcFoo]);
+      assert.deepEqual(topology.occurrences.get([2, 0]), [arcFoo]);
+      assert.isUndefined(topology.occurrences.get([1, 1]));
     }
   }
 });
