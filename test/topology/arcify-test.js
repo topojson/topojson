@@ -195,8 +195,6 @@ suite.addBatch({
       });
       assert.deepEqual(topology.objects.foo, {
         type: "Feature",
-        id: undefined,
-        properties: undefined,
         geometry: {
           type: "GeometryCollection",
           geometries: [{

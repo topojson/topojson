@@ -6,20 +6,6 @@ var suite = vows.describe("quantize");
 
 suite.addBatch({
   "quantize": {
-    "computes the bounding box": function() {
-      assert.deepEqual(quantize({
-        type: "Topology",
-        arcs: [
-          [[0, 0], [1, 0], [0, 2], [0, 0]]
-        ],
-        objects: {
-          foo: {
-            type: "LineString",
-            coordinates: [0]
-          }
-        }
-      }).bbox, [0, 0, 1, 2]);
-    },
     "computes the quantization transform": function() {
       assert.deepEqual(quantize({
         type: "Topology",
@@ -83,6 +69,23 @@ suite.addBatch({
         }
       }, 10).arcs, [
         [[0, 0], [9, 0], [-9, 9], [0, -9]]
+      ]);
+    },
+    "observes the topology’s precomputed bounding box": function() {
+      assert.deepEqual(quantize({
+        type: "Topology",
+        bbox: [-1, -1, 2, 2],
+        arcs: [
+          [[0, 0], [1, 0], [0, 1], [0, 0]]
+        ],
+        objects: {
+          foo: {
+            type: "LineString",
+            coordinates: [0]
+          }
+        }
+      }, 10).arcs, [
+        [[3, 3], [3, 0], [-3, 3], [0, -3]]
       ]);
     }
   }

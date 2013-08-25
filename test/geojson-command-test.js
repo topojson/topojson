@@ -7,7 +7,8 @@ var fs = require("fs"),
 
 var suite = vows.describe("bin/geojson");
 
-var testId = 0;
+var tmpprefix = "geojson-command-test-" + process.pid + "-",
+    testId = Math.random() * 0xffff | 0;
 
 suite.addBatch({
   "Polygons": testConversion(
@@ -35,7 +36,7 @@ suite.addBatch({
 
 function testConversion(output, options) {
   if (!options) options = "";
-  var tmpdir = os.tmpdir() + "geojson-command-test-" + ++testId;
+  var tmpdir = os.tmpdir() + tmpprefix + (++testId).toString(16);
   fs.mkdirSync(tmpdir);
   return {
     topic: function() {
