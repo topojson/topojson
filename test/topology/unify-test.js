@@ -48,7 +48,7 @@ suite.addBatch({
       assert.deepEqual(topology.objects.foo.coordinates, {start: 0, end: 1, next: {start: 1, end: 2, next: null}});
       assert.deepEqual(topology.objects.bar.coordinates, {start: 0, end: 1, next: null});
     },
-    "when a reversed old arc CBA extends a new arc AB, they share the arc AB": function() {
+    "when a reversed old arc CBA extends a new arc AB, they share the arc BA": function() {
       var topology = unify({
         foo: {
           type: "LineString",
