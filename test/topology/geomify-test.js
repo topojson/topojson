@@ -86,7 +86,7 @@ suite.addBatch({
           [[0, 0], [1, 0], [2, 0]]
         ],
         objects: {
-          foo: {}
+          foo: {type: null}
         }
       });
     },
@@ -105,7 +105,7 @@ suite.addBatch({
           [[0, 0], [1, 0], [2, 0]]
         ],
         objects: {
-          foo: {}
+          foo: {type: null}
         }
       });
     },
@@ -129,7 +129,7 @@ suite.addBatch({
         objects: {
           foo: {
             type: "GeometryCollection",
-            geometries: [{}]
+            geometries: [{type: null}]
           }
         }
       });
@@ -202,7 +202,7 @@ suite.addBatch({
         ],
         objects: {
           foo: {
-            properties: {},
+            properties: {type: null},
             type: "Feature",
             geometry: {
               type: "LineString",
@@ -217,7 +217,7 @@ suite.addBatch({
         ],
         objects: {
           foo: {
-            properties: {},
+            properties: {type: null},
             type: "LineString",
             arcs: [0]
           }

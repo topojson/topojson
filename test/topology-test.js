@@ -71,7 +71,7 @@ suite.addBatch({
       });
       assert.equal(topology.objects.collection.type, "GeometryCollection");
       assert.equal(topology.objects.collection.geometries.length, 2);
-      assert.isUndefined(topology.objects.collection.geometries[0].type);
+      assert.isNull(topology.objects.collection.geometries[0].type);
       assert.equal(topology.objects.collection.geometries[1].type, "Polygon");
     },
     "features with null geometry objects are preserved in feature collections": function() {
@@ -86,12 +86,12 @@ suite.addBatch({
       });
       assert.equal(topology.objects.collection.type, "GeometryCollection");
       assert.equal(topology.objects.collection.geometries.length, 2);
-      assert.isUndefined(topology.objects.collection.geometries[0].type);
+      assert.isNull(topology.objects.collection.geometries[0].type);
       assert.equal(topology.objects.collection.geometries[1].type, "Polygon");
     },
     "top-level features with null geometry objects are preserved": function() {
       var topology = topojson.topology({feature: {type: "Feature", geometry: null}});
-      assert.deepEqual(topology.objects, {feature: {}});
+      assert.deepEqual(topology.objects, {feature: {type: null}});
     },
 
     // To know what a geometry object represents, specify an id. I prefer
@@ -107,8 +107,7 @@ suite.addBatch({
     // TopoJSON file in multiple applications. Use the geometry object's id to
     // join with external data, e.g., http://bl.ocks.org/4060606
     "converting a feature to a geometry does not preserve its properties by default": function() {
-      var topology = topojson.topology({foo: {type: "Feature", id: "Foo", properties: {name: "George"}, geometry: {type: "LineString", coordinates: [[.1, .2], [.3, .4]]}}});
-      assert.isUndefined(topology.objects.foo.properties);
+      var topology = topojson.topology({foo: {type: "Feature", id: "Foo", properties: {name: "George"}, geometry: {type: "LineString", coordinates: [[.1, .2], [.3, .4]]}}});      assert.isUndefined(topology.objects.foo.properties);
     },
 
     // But you can store properties on TopoJSON geometries, if you insist.
