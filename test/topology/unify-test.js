@@ -7,7 +7,7 @@ var suite = vows.describe("unify");
 
 suite.addBatch({
   "unify": {
-    "detects exact duplicate arcs": function() {
+    "exact duplicate lines ABC & ABC share the arc ABC": function() {
       var topology = unify(arcify({
         foo: {
           type: "LineString",
@@ -21,7 +21,7 @@ suite.addBatch({
       assert.deepEqual(topology.objects.foo.coordinates, {start: 0, end: 2, next: null});
       assert.deepEqual(topology.objects.bar.coordinates, {start: 0, end: 2, next: null});
     },
-    "detects reversed duplicate arcs": function() {
+    "reversed duplicate lines ABC & CBA share the arc ABC": function() {
       var topology = unify(arcify({
         foo: {
           type: "LineString",
@@ -35,7 +35,7 @@ suite.addBatch({
       assert.deepEqual(topology.objects.foo.coordinates, {start: 0, end: 2, next: null});
       assert.deepEqual(topology.objects.bar.coordinates, {start: 2, end: 0, next: null});
     },
-    "detects when a coincident arc extends the current arc": function() {
+    "when an old arc ABC extends a new arc AB, they share the arc AB": function() {
       var topology = unify(arcify({
         foo: {
           type: "LineString",
@@ -49,7 +49,7 @@ suite.addBatch({
       assert.deepEqual(topology.objects.foo.coordinates, {start: 0, end: 1, next: {start: 1, end: 2, next: null}});
       assert.deepEqual(topology.objects.bar.coordinates, {start: 0, end: 1, next: null});
     },
-    "detects when a reversed coincident arc extends the current arc": function() {
+    "when a reversed old arc CBA extends a new arc AB, they share the arc AB": function() {
       var topology = unify(arcify({
         foo: {
           type: "LineString",
@@ -64,7 +64,37 @@ suite.addBatch({
       assert.deepEqual(topology.objects.foo.coordinates, {start: 0, end: 1, next: {start: 1, end: 2, next: null}});
       assert.deepEqual(topology.objects.bar.coordinates, {start: 2, end: 1, next: null});
     },
-    "detects when the current arc extends a coincident arc": function() {
+    "when a new arc ADE shares its start with an old arc ABC, they don’t share arcs": function() {
+      var topology = unify(arcify({
+        foo: {
+          type: "LineString",
+          coordinates: [[0, 0], [1, 0], [2, 0]]
+        },
+        bar: {
+          type: "LineString",
+          coordinates: [[0, 0], [1, 1], [2, 1]]
+        }
+      }));
+      assert.deepEqual(Array.apply([], topology.coordinates), [0, 0, 1, 0, 2, 0, 0, 0, 1, 1, 2, 1]);
+      assert.deepEqual(topology.objects.foo.coordinates, {start: 0, end: 2, next: null});
+      assert.deepEqual(topology.objects.bar.coordinates, {start: 3, end: 5, next: null});
+    },
+    "when a new arc DEC shares its start with an old arc ABC, they don’t share arcs": function() {
+      var topology = unify(arcify({
+        foo: {
+          type: "LineString",
+          coordinates: [[0, 0], [1, 0], [2, 0]]
+        },
+        bar: {
+          type: "LineString",
+          coordinates: [[0, 1], [1, 1], [2, 0]]
+        }
+      }));
+      assert.deepEqual(Array.apply([], topology.coordinates), [0, 0, 1, 0, 2, 0, 0, 1, 1, 1, 2, 0]);
+      assert.deepEqual(topology.objects.foo.coordinates, {start: 0, end: 2, next: null});
+      assert.deepEqual(topology.objects.bar.coordinates, {start: 3, end: 5, next: null});
+    },
+    "not yet implemented: when a new arc ABC extends an old arc AB": function() {
       assert.throws(function() {
         var topology = unify(arcify({
           foo: {
@@ -76,9 +106,9 @@ suite.addBatch({
             coordinates: [[0, 0], [1, 0], [2, 0]]
           }
         }));
-      }, Error); // not yet implemented
+      }, Error);
     },
-    "detects when the current arc extends a reversed coincident arc": function() {
+    "not yet implemented: when a new arc ABC extends a reversed old arc BA": function() {
       assert.throws(function() {
         var topology = unify(arcify({
           foo: {
@@ -90,9 +120,9 @@ suite.addBatch({
             coordinates: [[0, 0], [1, 0], [2, 0]]
           }
         }));
-      }, Error); // not yet implemented
+      }, Error);
     },
-    "detects when the current arc starts in the middle of a coincident arc": function() {
+    "not yet implemented: when a new arc starts BC in the middle of an old arc ABC": function() {
       assert.throws(function() {
         var topology = unify(arcify({
           foo: {
@@ -104,9 +134,9 @@ suite.addBatch({
             coordinates: [[1, 0], [2, 0]]
           }
         }));
-      }, Error); // not yet implemented
+      }, Error);
     },
-    "detects when the current arc starts in the middle of a reversed coincident arc": function() {
+    "not yet implemented: when a new arc BC starts in the middle of a reversed old arc CBA": function() {
       assert.throws(function() {
         var topology = unify(arcify({
           foo: {
@@ -118,9 +148,9 @@ suite.addBatch({
             coordinates: [[1, 0], [2, 0]]
           }
         }));
-      }, Error); // not yet implemented
+      }, Error);
     },
-    "detects when the current arc deviates from a coincident arc": function() {
+    "not yet implemented: when a new arc ABD deviates from an old arc ABC": function() {
       assert.throws(function() {
         var topology = unify(arcify({
           foo: {
@@ -132,9 +162,9 @@ suite.addBatch({
             coordinates: [[0, 0], [1, 0], [3, 0]]
           }
         }));
-      }, Error); // not yet implemented
+      }, Error);
     },
-    "detects when the current arc deviates from a reversed coincident arc": function() {
+    "not yet implemented: when a new arc ABD deviates from a reversed old arc CBA": function() {
       assert.throws(function() {
         var topology = unify(arcify({
           foo: {
@@ -146,9 +176,9 @@ suite.addBatch({
             coordinates: [[0, 0], [1, 0], [3, 0]]
           }
         }));
-      }, Error); // not yet implemented
+      }, Error);
     },
-    "detects when the current arc merges into a coincident arc": function() {
+    "not yet implemented: when a new arc DBC merges into an old arc ABC": function() {
       assert.throws(function() {
         var topology = unify(arcify({
           foo: {
@@ -160,9 +190,9 @@ suite.addBatch({
             coordinates: [[3, 0], [1, 0], [2, 0]]
           }
         }));
-      }, Error); // not yet implemented
+      }, Error);
     },
-    "detects when the current arc merges into a reversed coincident arc": function() {
+    "not yet implemented: when a new arc DBC merges into a reversed old arc CBA": function() {
       assert.throws(function() {
         var topology = unify(arcify({
           foo: {
@@ -174,9 +204,9 @@ suite.addBatch({
             coordinates: [[3, 0], [1, 0], [2, 0]]
           }
         }));
-      }, Error); // not yet implemented
+      }, Error);
     },
-    "detects when the current arc shares a single point with a coincident arc": function() {
+    "not yet implemented: when a new arc DBE shares a single midpoint with an old arc ABC": function() {
       assert.throws(function() {
         var topology = unify(arcify({
           foo: {
@@ -188,9 +218,9 @@ suite.addBatch({
             coordinates: [[0, 1], [1, 0], [2, 1]]
           }
         }));
-      }, Error); // not yet implemented
+      }, Error);
     },
-    "detects when the current arc skips a point with a coincident arc": function() {
+    "not yet implemented: when a new arc skips a point with an old arc": function() {
       assert.throws(function() {
         var topology = unify(arcify({
           foo: {
@@ -202,9 +232,9 @@ suite.addBatch({
             coordinates: [[0, 0], [1, 0], [3, 0], [4, 0]]
           }
         }));
-      }, Error); // not yet implemented
+      }, Error);
     },
-    "detects when the current arc skips a point with a reversed coincident arc": function() {
+    "not yet implemented: when a new arc skips a point with a reversed old arc": function() {
       assert.throws(function() {
         var topology = unify(arcify({
           foo: {
@@ -216,7 +246,7 @@ suite.addBatch({
             coordinates: [[0, 0], [1, 0], [3, 0], [4, 0]]
           }
         }));
-      }, Error); // not yet implemented
+      }, Error);
     }
   }
 });
