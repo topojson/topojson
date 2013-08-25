@@ -283,6 +283,91 @@ suite.addBatch({
       assert.deepEqual(Array.apply([], topology.coordinates), [0, 0, 1, 0, 2, 0, 3, 0, 1, 0, 4, 0, 0, 1, 1, 0, 2, 1]);
       assert.deepEqual(topology.objects.foo.coordinates, {start: 0, end: 1, next: {start: 1, end: 4, next: {start: 4, end: 5, next: null}}});
       assert.deepEqual(topology.objects.bar.coordinates, {start: 6, end: 7, next: {start: 7, end: 8, next: null}});
+    },
+    "when an arc ABCA is closed, it has one arc": function() {
+      var topology = unify(arcify({
+        foo: {
+          type: "LineString",
+          coordinates: [[0, 0], [1, 0], [0, 1], [0, 0]]
+        }
+      }));
+      assert.deepEqual(Array.apply([], topology.coordinates), [0, 0, 1, 0, 0, 1, 0, 0]);
+      assert.deepEqual(topology.objects.foo.coordinates, {start: 0, end: 3, next: null});
+    },
+    "exact duplicate closed lines ABCA & ABCA share the arc ABCA": function() {
+      var topology = unify(arcify({
+        foo: {
+          type: "LineString",
+          coordinates: [[0, 0], [1, 0], [0, 1], [0, 0]]
+        },
+        bar: {
+          type: "LineString",
+          coordinates: [[0, 0], [1, 0], [0, 1], [0, 0]]
+        }
+      }));
+      assert.deepEqual(Array.apply([], topology.coordinates), [0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0]);
+      assert.deepEqual(topology.objects.foo.coordinates, {start: 0, end: 3, next: null});
+      assert.deepEqual(topology.objects.bar.coordinates, {start: 0, end: 3, next: null});
+    },
+    "reversed duplicate closed lines ABCA & ACBA share the arc ABCA": function() {
+      var topology = unify(arcify({
+        foo: {
+          type: "LineString",
+          coordinates: [[0, 0], [1, 0], [0, 1], [0, 0]]
+        },
+        bar: {
+          type: "LineString",
+          coordinates: [[0, 0], [0, 1], [1, 0], [0, 0]]
+        }
+      }));
+      assert.deepEqual(Array.apply([], topology.coordinates), [0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0]);
+      assert.deepEqual(topology.objects.foo.coordinates, {start: 0, end: 3, next: null});
+      assert.deepEqual(topology.objects.bar.coordinates, {start: 3, end: 0, next: null});
+    },
+    "coincident closed lines ABCA & BCAB share the arc BCAB": function() {
+      var topology = unify(arcify({
+        foo: {
+          type: "LineString",
+          coordinates: [[0, 0], [1, 0], [0, 1], [0, 0]] // is rotated by 1
+        },
+        bar: {
+          type: "LineString",
+          coordinates: [[1, 0], [0, 1], [0, 0], [1, 0]]
+        }
+      }));
+      assert.deepEqual(Array.apply([], topology.coordinates), [1, 0, 0, 1, 0, 0, 1, 0, 1, 0, 0, 1, 0, 0, 1, 0]);
+      assert.deepEqual(topology.objects.foo.coordinates, {start: 0, end: 3, next: null});
+      assert.deepEqual(topology.objects.bar.coordinates, {start: 0, end: 3, next: null});
+    },
+    "coincident closed lines ABCA & BACB share the arc BCAB": function() {
+      var topology = unify(arcify({
+        foo: {
+          type: "LineString",
+          coordinates: [[0, 0], [1, 0], [0, 1], [0, 0]] // is rotated by 1
+        },
+        bar: {
+          type: "LineString",
+          coordinates: [[1, 0], [0, 0], [0, 1], [1, 0]]
+        }
+      }));
+      assert.deepEqual(Array.apply([], topology.coordinates), [1, 0, 0, 1, 0, 0, 1, 0, 1, 0, 0, 0, 0, 1, 1, 0]);
+      assert.deepEqual(topology.objects.foo.coordinates, {start: 0, end: 3, next: null});
+      assert.deepEqual(topology.objects.bar.coordinates, {start: 3, end: 0, next: null});
+    },
+    "coincident closed lines ABCA & DBE share the point B": function() {
+      var topology = unify(arcify({
+        foo: {
+          type: "LineString",
+          coordinates: [[0, 0], [1, 0], [0, 1], [0, 0]] // is rotated by 1
+        },
+        bar: {
+          type: "LineString",
+          coordinates: [[2, 1], [1, 0], [2, 2]]
+        }
+      }));
+      assert.deepEqual(Array.apply([], topology.coordinates), [1, 0, 0, 1, 0, 0, 1, 0, 2, 1, 1, 0, 2, 2]);
+      assert.deepEqual(topology.objects.foo.coordinates, {start: 0, end: 3, next: null});
+      assert.deepEqual(topology.objects.bar.coordinates, {start: 4, end: 5, next: {start: 5, end: 6, next: null}});
     }
   }
 });
