@@ -328,7 +328,7 @@ suite.addBatch({
       var topology = unify(arcify({
         foo: {
           type: "LineString",
-          coordinates: [[0, 0], [1, 0], [0, 1], [0, 0]] // is rotated by 1
+          coordinates: [[0, 0], [1, 0], [0, 1], [0, 0]] // is rotated left by 1
         },
         bar: {
           type: "LineString",
@@ -343,7 +343,7 @@ suite.addBatch({
       var topology = unify(arcify({
         foo: {
           type: "LineString",
-          coordinates: [[0, 0], [1, 0], [0, 1], [0, 0]] // is rotated by 1
+          coordinates: [[0, 0], [1, 0], [0, 1], [0, 0]] // is rotated left by 1
         },
         bar: {
           type: "LineString",
@@ -358,7 +358,7 @@ suite.addBatch({
       var topology = unify(arcify({
         foo: {
           type: "LineString",
-          coordinates: [[0, 0], [1, 0], [0, 1], [0, 0]] // is rotated by 1
+          coordinates: [[0, 0], [1, 0], [0, 1], [0, 0]] // is rotated left by 1
         },
         bar: {
           type: "LineString",
