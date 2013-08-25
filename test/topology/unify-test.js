@@ -184,75 +184,80 @@ suite.addBatch({
       assert.deepEqual(topology.objects.foo.coordinates, {start: 0, end: 1, next: {start: 1, end: 2, next: null}});
       assert.deepEqual(topology.objects.bar.coordinates, {start: 2, end: 1, next: {start: 4, end: 5, next: null}});
     },
-    "not yet implemented: when a new arc DBC merges into an old arc ABC": function() {
-      assert.throws(function() {
-        var topology = unify(arcify({
-          foo: {
-            type: "LineString",
-            coordinates: [[0, 0], [1, 0], [2, 0]]
-          },
-          bar: {
-            type: "LineString",
-            coordinates: [[3, 0], [1, 0], [2, 0]]
-          }
-        }));
-      }, Error);
+    "when a new arc DBC merges into an old arc ABC, they share the arc BC": function() {
+      var topology = unify(arcify({
+        foo: {
+          type: "LineString",
+          coordinates: [[0, 0], [1, 0], [2, 0]]
+        },
+        bar: {
+          type: "LineString",
+          coordinates: [[3, 0], [1, 0], [2, 0]]
+        }
+      }));
+      assert.deepEqual(Array.apply([], topology.coordinates), [0, 0, 1, 0, 2, 0, 3, 0, 1, 0, 2, 0]);
+      assert.deepEqual(topology.objects.foo.coordinates, {start: 0, end: 1, next: {start: 1, end: 2, next: null}});
+      assert.deepEqual(topology.objects.bar.coordinates, {start: 3, end: 4, next: {start: 1, end: 2, next: null}});
     },
-    "not yet implemented: when a new arc DBC merges into a reversed old arc CBA": function() {
-      assert.throws(function() {
-        var topology = unify(arcify({
-          foo: {
-            type: "LineString",
-            coordinates: [[2, 0], [1, 0], [0, 0]]
-          },
-          bar: {
-            type: "LineString",
-            coordinates: [[3, 0], [1, 0], [2, 0]]
-          }
-        }));
-      }, Error);
+    "when a new arc DBC merges into a reversed old arc CBA, they share the arc CB": function() {
+      var topology = unify(arcify({
+        foo: {
+          type: "LineString",
+          coordinates: [[2, 0], [1, 0], [0, 0]]
+        },
+        bar: {
+          type: "LineString",
+          coordinates: [[3, 0], [1, 0], [2, 0]]
+        }
+      }));
+      assert.deepEqual(Array.apply([], topology.coordinates), [2, 0, 1, 0, 0, 0, 3, 0, 1, 0, 2, 0]);
+      assert.deepEqual(topology.objects.foo.coordinates, {start: 0, end: 1, next: {start: 1, end: 2, next: null}});
+      assert.deepEqual(topology.objects.bar.coordinates, {start: 3, end: 4, next: {start: 1, end: 0, next: null}});
     },
-    "not yet implemented: when a new arc DBE shares a single midpoint with an old arc ABC": function() {
-      assert.throws(function() {
-        var topology = unify(arcify({
-          foo: {
-            type: "LineString",
-            coordinates: [[0, 0], [1, 0], [2, 0]]
-          },
-          bar: {
-            type: "LineString",
-            coordinates: [[0, 1], [1, 0], [2, 1]]
-          }
-        }));
-      }, Error);
+    "when a new arc DBE shares a single midpoint with an old arc ABC, they share the point B, but no arcs": function() {
+      var topology = unify(arcify({
+        foo: {
+          type: "LineString",
+          coordinates: [[0, 0], [1, 0], [2, 0]]
+        },
+        bar: {
+          type: "LineString",
+          coordinates: [[0, 1], [1, 0], [2, 1]]
+        }
+      }));
+      assert.deepEqual(Array.apply([], topology.coordinates), [0, 0, 1, 0, 2, 0, 0, 1, 1, 0, 2, 1]);
+      assert.deepEqual(topology.objects.foo.coordinates, {start: 0, end: 1, next: {start: 1, end: 2, next: null}});
+      assert.deepEqual(topology.objects.bar.coordinates, {start: 3, end: 4, next: {start: 4, end: 5, next: null}});
     },
-    "not yet implemented: when a new arc skips a point with an old arc": function() {
-      assert.throws(function() {
-        var topology = unify(arcify({
-          foo: {
-            type: "LineString",
-            coordinates: [[0, 0], [1, 0], [2, 0], [3, 0], [4, 0]]
-          },
-          bar: {
-            type: "LineString",
-            coordinates: [[0, 0], [1, 0], [3, 0], [4, 0]]
-          }
-        }));
-      }, Error);
+    "when a new arc ABDE skips a point with an old arc ABCDE, they share arcs AB and DE": function() {
+      var topology = unify(arcify({
+        foo: {
+          type: "LineString",
+          coordinates: [[0, 0], [1, 0], [2, 0], [3, 0], [4, 0]]
+        },
+        bar: {
+          type: "LineString",
+          coordinates: [[0, 0], [1, 0], [3, 0], [4, 0]]
+        }
+      }));
+      assert.deepEqual(Array.apply([], topology.coordinates), [0, 0, 1, 0, 2, 0, 3, 0, 4, 0, 0, 0, 1, 0, 3, 0, 4, 0]);
+      assert.deepEqual(topology.objects.foo.coordinates, {start: 0, end: 1, next: {start: 1, end: 3, next: {start: 3, end: 4, next: null}}});
+      assert.deepEqual(topology.objects.bar.coordinates, {start: 0, end: 1, next: {start: 6, end: 7, next: {start: 3, end: 4, next: null}}});
     },
-    "not yet implemented: when a new arc skips a point with a reversed old arc": function() {
-      assert.throws(function() {
-        var topology = unify(arcify({
-          foo: {
-            type: "LineString",
-            coordinates: [[4, 0], [3, 0], [2, 0], [1, 0], [0, 0]]
-          },
-          bar: {
-            type: "LineString",
-            coordinates: [[0, 0], [1, 0], [3, 0], [4, 0]]
-          }
-        }));
-      }, Error);
+    "when a new arc ABDE skips a point with a reversed old arc EDCBA, they share arcs BA and ED": function() {
+      var topology = unify(arcify({
+        foo: {
+          type: "LineString",
+          coordinates: [[4, 0], [3, 0], [2, 0], [1, 0], [0, 0]]
+        },
+        bar: {
+          type: "LineString",
+          coordinates: [[0, 0], [1, 0], [3, 0], [4, 0]]
+        }
+      }));
+      assert.deepEqual(Array.apply([], topology.coordinates), [4, 0, 3, 0, 2, 0, 1, 0, 0, 0, 0, 0, 1, 0, 3, 0, 4, 0]);
+      assert.deepEqual(topology.objects.foo.coordinates, {start: 0, end: 1, next: {start: 1, end: 3, next: {start: 3, end: 4, next: null}}});
+      assert.deepEqual(topology.objects.bar.coordinates, {start: 4, end: 3, next: {start: 6, end: 7, next: {start: 1, end: 0, next: null}}});
     }
   }
 });
