@@ -105,6 +105,90 @@ suite.addBatch({
           }
         }));
       }, Error); // not yet implemented
+    },
+    "detects when the current arc starts in the middle of a reversed coincident arc": function() {
+      assert.throws(function() {
+        var topology = unify(arcify({
+          foo: {
+            type: "LineString",
+            coordinates: [[2, 0], [1, 0], [0, 0]]
+          },
+          bar: {
+            type: "LineString",
+            coordinates: [[1, 0], [2, 0]]
+          }
+        }));
+      }, Error); // not yet implemented
+    },
+    "detects when the current arc deviates from a coincident arc": function() {
+      assert.throws(function() {
+        var topology = unify(arcify({
+          foo: {
+            type: "LineString",
+            coordinates: [[0, 0], [1, 0], [2, 0]]
+          },
+          bar: {
+            type: "LineString",
+            coordinates: [[0, 0], [1, 0], [3, 0]]
+          }
+        }));
+      }, Error); // not yet implemented
+    },
+    "detects when the current arc deviates from a reversed coincident arc": function() {
+      assert.throws(function() {
+        var topology = unify(arcify({
+          foo: {
+            type: "LineString",
+            coordinates: [[2, 0], [1, 0], [1, 0]]
+          },
+          bar: {
+            type: "LineString",
+            coordinates: [[0, 0], [1, 0], [3, 0]]
+          }
+        }));
+      }, Error); // not yet implemented
+    },
+    "detects when the current arc merges into a coincident arc": function() {
+      assert.throws(function() {
+        var topology = unify(arcify({
+          foo: {
+            type: "LineString",
+            coordinates: [[0, 0], [1, 0], [2, 0]]
+          },
+          bar: {
+            type: "LineString",
+            coordinates: [[3, 0], [1, 0], [2, 0]]
+          }
+        }));
+      }, Error); // not yet implemented
+    },
+    "detects when the current arc merges into a reversed coincident arc": function() {
+      assert.throws(function() {
+        var topology = unify(arcify({
+          foo: {
+            type: "LineString",
+            coordinates: [[2, 0], [1, 0], [0, 0]]
+          },
+          bar: {
+            type: "LineString",
+            coordinates: [[3, 0], [1, 0], [2, 0]]
+          }
+        }));
+      }, Error); // not yet implemented
+    },
+    "detects when the current arc shares a single point with a coincident arc": function() {
+      assert.throws(function() {
+        var topology = unify(arcify({
+          foo: {
+            type: "LineString",
+            coordinates: [[0, 0], [1, 0], [2, 0]]
+          },
+          bar: {
+            type: "LineString",
+            coordinates: [[0, 1], [1, 0], [2, 1]]
+          }
+        }));
+      }, Error); // not yet implemented
     }
   }
 });
