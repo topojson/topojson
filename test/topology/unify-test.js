@@ -94,33 +94,35 @@ suite.addBatch({
       assert.deepEqual(topology.objects.foo.coordinates, {start: 0, end: 2, next: null});
       assert.deepEqual(topology.objects.bar.coordinates, {start: 3, end: 5, next: null});
     },
-    "not yet implemented: when a new arc ABC extends an old arc AB": function() {
-      assert.throws(function() {
-        var topology = unify(arcify({
-          foo: {
-            type: "LineString",
-            coordinates: [[0, 0], [1, 0]]
-          },
-          bar: {
-            type: "LineString",
-            coordinates: [[0, 0], [1, 0], [2, 0]]
-          }
-        }));
-      }, Error);
+    "when a new arc ABC extends an old arc AB, they share the arc AB": function() {
+      var topology = unify(arcify({
+        foo: {
+          type: "LineString",
+          coordinates: [[0, 0], [1, 0]]
+        },
+        bar: {
+          type: "LineString",
+          coordinates: [[0, 0], [1, 0], [2, 0]]
+        }
+      }));
+      assert.deepEqual(Array.apply([], topology.coordinates), [0, 0, 1, 0, 0, 0, 1, 0, 2, 0]);
+      assert.deepEqual(topology.objects.foo.coordinates, {start: 0, end: 1, next: null});
+      assert.deepEqual(topology.objects.bar.coordinates, {start: 0, end: 1, next: {start: 3, end: 4, next: null}});
     },
-    "not yet implemented: when a new arc ABC extends a reversed old arc BA": function() {
-      assert.throws(function() {
-        var topology = unify(arcify({
-          foo: {
-            type: "LineString",
-            coordinates: [[1, 0], [0, 0]]
-          },
-          bar: {
-            type: "LineString",
-            coordinates: [[0, 0], [1, 0], [2, 0]]
-          }
-        }));
-      }, Error);
+    "when a new arc ABC extends a reversed old arc BA, they share the arc BA": function() {
+      var topology = unify(arcify({
+        foo: {
+          type: "LineString",
+          coordinates: [[1, 0], [0, 0]]
+        },
+        bar: {
+          type: "LineString",
+          coordinates: [[0, 0], [1, 0], [2, 0]]
+        }
+      }));
+      assert.deepEqual(Array.apply([], topology.coordinates), [1, 0, 0, 0, 0, 0, 1, 0, 2, 0]);
+      assert.deepEqual(topology.objects.foo.coordinates, {start: 0, end: 1, next: null});
+      assert.deepEqual(topology.objects.bar.coordinates, {start: 1, end: 0, next: {start: 3, end: 4, next: null}});
     },
     "not yet implemented: when a new arc starts BC in the middle of an old arc ABC": function() {
       assert.throws(function() {
@@ -169,7 +171,7 @@ suite.addBatch({
         var topology = unify(arcify({
           foo: {
             type: "LineString",
-            coordinates: [[2, 0], [1, 0], [1, 0]]
+            coordinates: [[2, 0], [1, 0], [0, 0]]
           },
           bar: {
             type: "LineString",
