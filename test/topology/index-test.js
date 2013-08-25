@@ -17,9 +17,22 @@ suite.addBatch({
           coordinates: [[0, 0], [1, 0], [2, 0]]
         }
       });
-      assert.deepEqual(topology, {});
-      // assert.deepEqual(topology.objects.foo.coordinates, {start: 0, end: 2, next: null});
-      // assert.deepEqual(topology.objects.bar.coordinates, {start: 0, end: 2, next: null});
+      assert.deepEqual(topology, {
+        type: "Topology",
+        arcs: [
+          [[0, 0], [1, 0], [2, 0]]
+        ],
+        objects: {
+          foo: {
+            type: "LineString",
+            coordinates: [0]
+          },
+          bar: {
+            type: "LineString",
+            coordinates: [0]
+          }
+        }
+      });
     },
     // "reversed duplicate lines ABC & CBA share the arc ABC": function() {
     //   var topology = unify({
