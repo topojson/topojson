@@ -15,7 +15,7 @@ suite.addBatch({
         objects: {
           foo: {
             type: "LineString",
-            coordinates: [0]
+            arcs: [0]
           }
         }
       }).transform, {
@@ -32,7 +32,7 @@ suite.addBatch({
         objects: {
           foo: {
             type: "LineString",
-            coordinates: [0]
+            arcs: [0]
           }
         }
       }).arcs, [
@@ -48,7 +48,7 @@ suite.addBatch({
         objects: {
           foo: {
             type: "LineString",
-            coordinates: [0]
+            arcs: [0]
           }
         }
       }).arcs, [
@@ -64,7 +64,7 @@ suite.addBatch({
         objects: {
           foo: {
             type: "LineString",
-            coordinates: [0]
+            arcs: [0]
           }
         }
       }, 10).arcs, [
@@ -81,12 +81,24 @@ suite.addBatch({
         objects: {
           foo: {
             type: "LineString",
-            coordinates: [0]
+            arcs: [0]
           }
         }
       }, 10).arcs, [
         [[3, 3], [3, 0], [-3, 3], [0, -3]]
       ]);
+    },
+    "applies to points as well as arcs": function() {
+      assert.deepEqual(quantize({
+        type: "Topology",
+        arcs: [],
+        objects: {
+          foo: {
+            type: "MultiPoint",
+            coordinates: [[0, 0], [1, 0], [0, 1], [0, 0]]
+          }
+        }
+      }).objects.foo.coordinates, [[0, 0], [9999, 0], [0, 9999], [0, 0]]);
     }
   }
 });

@@ -19,6 +19,18 @@ suite.addBatch({
           }
         }
       }), [0, 0, 1, 2]);
+    },
+    "considers points as well as arcs": function() {
+      assert.deepEqual(bounds({
+        type: "Topology",
+        arcs: [],
+        objects: {
+          foo: {
+            type: "MultiPoint",
+            coordinates: [[0, 0], [1, 0], [0, 2], [0, 0]]
+          }
+        }
+      }), [0, 0, 1, 2]);
     }
   }
 });
