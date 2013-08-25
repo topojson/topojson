@@ -189,6 +189,34 @@ suite.addBatch({
           }
         }));
       }, Error); // not yet implemented
+    },
+    "detects when the current arc skips a point with a coincident arc": function() {
+      assert.throws(function() {
+        var topology = unify(arcify({
+          foo: {
+            type: "LineString",
+            coordinates: [[0, 0], [1, 0], [2, 0], [3, 0], [4, 0]]
+          },
+          bar: {
+            type: "LineString",
+            coordinates: [[0, 0], [1, 0], [3, 0], [4, 0]]
+          }
+        }));
+      }, Error); // not yet implemented
+    },
+    "detects when the current arc skips a point with a reversed coincident arc": function() {
+      assert.throws(function() {
+        var topology = unify(arcify({
+          foo: {
+            type: "LineString",
+            coordinates: [[4, 0], [3, 0], [2, 0], [1, 0], [0, 0]]
+          },
+          bar: {
+            type: "LineString",
+            coordinates: [[0, 0], [1, 0], [3, 0], [4, 0]]
+          }
+        }));
+      }, Error); // not yet implemented
     }
   }
 });
