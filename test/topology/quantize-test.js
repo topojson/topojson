@@ -99,6 +99,22 @@ suite.addBatch({
           }
         }
       }).objects.foo.coordinates, [[0, 0], [9999, 0], [0, 9999], [0, 0]]);
+    },
+    "skips coincident points post quantization": function() {
+      assert.deepEqual(quantize({
+        type: "Topology",
+        arcs: [
+          [[0, 0], [0.9, 0.9], [1.1, 1.1], [2, 2]]
+        ],
+        objects: {
+          foo: {
+            type: "LineString",
+            arcs: [0]
+          }
+        }
+      }, 3).arcs, [
+        [[0, 0], [1, 1], [1, 1]]
+      ]);
     }
   }
 });
