@@ -487,20 +487,38 @@ suite.addBatch({
         acdf: {type: "LineString", coordinates: [[0, 0], [1, 1], [2, 1], [3, 1]]}
       }, {quantization: 4});
       assert.deepEqual(topology.arcs, [
-        [[0, 0], [1, 3]], // AC
-        [[1, 3], [1, 0]], // CD
+        [[0, 0], [1, 3], [1, 0]], // ACD
         [[2, 3], [1, -3]], // DE
-        [[2, 3], [1, 0]], // DF
-        [[0, 3], [1, 0]] // BC
+        [[2, 3], [1, 0]] // DF
       ]);
-      assert.deepEqual(topology.objects.acde, {type: "LineString", arcs: [0, 1, 2]});
-      assert.deepEqual(topology.objects.acdf, {type: "LineString", arcs: [0, 1, 3]});
-      assert.deepEqual(topology.objects.bcde, {type: "LineString", arcs: [4, 1, 2]});
-      assert.deepEqual(topology.objects.bcdf, {type: "LineString", arcs: [4, 1, 3]});
-      assert.deepEqual(topology.objects.edca, {type: "LineString", arcs: [~2, ~1, ~0]});
-      assert.deepEqual(topology.objects.fdca, {type: "LineString", arcs: [~3, ~1, ~0]});
-      assert.deepEqual(topology.objects.edcb, {type: "LineString", arcs: [~2, ~1, ~4]});
-      assert.deepEqual(topology.objects.fdcb, {type: "LineString", arcs: [~3, ~1, ~4]});
+      assert.deepEqual(topology.objects.acde, {type: "LineString", arcs: [0, 1]});
+      assert.deepEqual(topology.objects.acdf, {type: "LineString", arcs: [0, 2]});
+      assert.deepEqual(topology.objects.edca, {type: "LineString", arcs: [~1, ~0]});
+    },
+
+    //
+    // A                 E
+    //  \               /
+    //   \             /
+    //    \           /
+    //     \         /
+    //      \       /
+    //       C-----D-----F
+    //
+    "the lines ACDE, ACDF and EDCA share three arcs": function() {
+      var topology = topojson.topology({
+        acde: {type: "LineString", coordinates: [[0, 0], [1, 1], [2, 1], [3, 0]]},
+        acdf: {type: "LineString", coordinates: [[0, 0], [1, 1], [2, 1], [3, 1]]},
+        edca: {type: "LineString", coordinates: [[3, 0], [2, 1], [1, 1], [0, 0]]}
+      }, {quantization: 4});
+      assert.deepEqual(topology.arcs, [
+        [[0, 0], [1, 3], [1, 0]], // ACD
+        [[2, 3], [1, -3]], // DE
+        [[2, 3], [1, 0]] // DF
+      ]);
+      assert.deepEqual(topology.objects.acde, {type: "LineString", arcs: [0, 1]});
+      assert.deepEqual(topology.objects.acdf, {type: "LineString", arcs: [0, 2]});
+      assert.deepEqual(topology.objects.edca, {type: "LineString", arcs: [~1, ~0]});
     },
 
     //
