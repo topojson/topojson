@@ -227,8 +227,8 @@ suite.addBatch({
         bar: {type: "Polygon", coordinates: [[[0, 0], [0, 1], [1, 1], [0, 0]]]},
         baz: {type: "MultiPoint", coordinates: [[-80, -80], [0, 0], [80, 80]]}
       }, {quantization: 3});
-      assert.deepEqual(topology.objects.foo, {type: "Polygon", arcs: [[0]]});
-      assert.deepEqual(topology.objects.bar, {type: "Polygon", arcs: [[0]]});
+      assert.deepEqual(topology.objects.foo, {type: "Polygon", arcs: [[0, 1]]});
+      assert.deepEqual(topology.objects.bar, {type: "Polygon", arcs: [[0, 2]]});
       assert.deepEqual(topology.arcs[0], [[1, 1]]);
     },
     "collapsed polygons in a MultiPolygon are preserved": function() {
@@ -237,14 +237,14 @@ suite.addBatch({
         [[[1/8, 1/16], [1/8, 1/16], [1/8, 1/16], [1/8, 1/16]]],
         [[[1/8, 1/16], [1/8, 1/4], [1/2, 1/4], [1/2, 1/16], [1/8, 1/16]]]
       ]}}, {quantization: 2});
-      assert.equal(topology.arcs.length, 2);
-      assert.deepEqual(topology.arcs[0], [[0, 0], [1, 0], [0, 1], [-1, 0], [0, -1]]);
-      assert.deepEqual(topology.objects.foo.arcs, [[[0]], [[1]], [[~0]]]);
+      assert.equal(topology.arcs.length, 6);
+      assert.deepEqual(topology.arcs[0], [[0, 0], [1, 0], [0, 1], [-1, 0]]);
+      assert.deepEqual(topology.objects.foo.arcs, [[[0, 1]], [[2, 3, 4]], [[5, ~0]]]);
     },
     "collapsed geometries in a GeometryCollection are preserved": function() {
       var topology = topojson.topology({collection: {type: "FeatureCollection", features: [{type: "Feature", geometry: {type: "MultiPolygon", coordinates: []}}]}}, {quantization: 2});
       assert.equal(topology.arcs.length, 0);
-      assert.deepEqual(topology.objects.collection, {type: "GeometryCollection", geometries: [{type: "MultiPolygon", arcs: []}]});
+      assert.deepEqual(topology.objects.collection, {type: "GeometryCollection", geometries: [{type: null}]});
     },
 
     // If one of the top-level objects in the input is empty, however, it is
@@ -252,7 +252,7 @@ suite.addBatch({
     "empty geometries are not removed": function() {
       var topology = topojson.topology({foo: {type: "MultiPolygon", coordinates: []}}, {quantization: 2});
       assert.equal(topology.arcs.length, 0);
-      assert.deepEqual(topology.objects.foo, {type: "MultiPolygon", arcs: []});
+      assert.deepEqual(topology.objects.foo, {type: null});
     },
     "empty polygons are not removed": function() {
       var topology = topojson.topology({
@@ -260,8 +260,8 @@ suite.addBatch({
         bar: {type: "Polygon", coordinates: []}
       });
       assert.equal(topology.arcs.length, 0);
-      assert.deepEqual(topology.objects.foo, {type: "GeometryCollection", geometries: [{type: "MultiPolygon", arcs: [[]]}]});
-      assert.deepEqual(topology.objects.bar, {type: "Polygon", arcs: []});
+      assert.deepEqual(topology.objects.foo, {type: "GeometryCollection", geometries: [{type: null}]});
+      assert.deepEqual(topology.objects.bar, {type: null});
     },
 
     //
@@ -327,6 +327,180 @@ suite.addBatch({
       ]);
       assert.deepEqual(topology.objects.acd, {type: "LineString", arcs: [0, 1]});
       assert.deepEqual(topology.objects.dcb, {type: "LineString", arcs: [~1, 2]});
+    },
+
+    //
+    // A
+    //  \
+    //   \
+    //    \
+    //     \
+    //      \
+    // B-----C-----D-----F
+    //
+    "the lines ACDF and BCDF share three arcs": function() {
+      var topology = topojson.topology({
+        acdf: {type: "LineString", coordinates: [[0, 0], [1, 1], [2, 1], [3, 1]]},
+        bcdf: {type: "LineString", coordinates: [[0, 1], [1, 1], [2, 1], [3, 1]]}
+      }, {quantization: 4});
+      assert.deepEqual(topology.arcs, [
+        [[0, 0], [1, 3]], // AC
+        [[1, 3], [1, 0], [1, 0]], // CDF
+        [[0, 3], [1, 0]] // BC
+      ]);
+      assert.deepEqual(topology.objects.acdf, {type: "LineString", arcs: [0, 1]});
+      assert.deepEqual(topology.objects.bcdf, {type: "LineString", arcs: [2, 1]});
+    },
+
+    //
+    //                   E
+    //                  /
+    //                 /
+    //                /
+    //               /
+    //              /
+    // B-----C-----D-----F
+    //
+    "the lines BCDE and BCDF share three arcs": function() {
+      var topology = topojson.topology({
+        bcde: {type: "LineString", coordinates: [[0, 1], [1, 1], [2, 1], [3, 0]]},
+        bcdf: {type: "LineString", coordinates: [[0, 1], [1, 1], [2, 1], [3, 1]]}
+      }, {quantization: 4});
+      assert.deepEqual(topology.arcs, [
+        [[0, 3], [1, 0], [1, 0]], // BCD
+        [[2, 3], [1, -3]], // DE
+        [[2, 3], [1, 0]] // DF
+      ]);
+      assert.deepEqual(topology.objects.bcde, {type: "LineString", arcs: [0, 1]});
+      assert.deepEqual(topology.objects.bcdf, {type: "LineString", arcs: [0, 2]});
+    },
+
+    //
+    // A                 E
+    //  \               /
+    //   \             /
+    //    \           /
+    //     \         /
+    //      \       /
+    //       C-----D
+    //
+    "the lines ACDE and CD share three arcs": function() {
+      var topology = topojson.topology({
+        acde: {type: "LineString", coordinates: [[0, 0], [1, 1], [2, 1], [3, 0]]},
+        cd: {type: "LineString", coordinates: [[1, 1], [2, 1]]}
+      }, {quantization: 4});
+      assert.deepEqual(topology.arcs, [
+        [[0, 0], [1, 3]], // AC
+        [[1, 3], [1, 0]], // CD
+        [[2, 3], [1, -3]] // DE
+      ]);
+      assert.deepEqual(topology.objects.acde, {type: "LineString", arcs: [0, 1, 2]});
+      assert.deepEqual(topology.objects.cd, {type: "LineString", arcs: [1]});
+    },
+
+    //
+    // A                 E
+    //  \               /
+    //   \             /
+    //    \           /
+    //     \         /
+    //      \       /
+    // B-----C-----D
+    //
+    "the lines ACDE and BCD share four arcs": function() {
+      var topology = topojson.topology({
+        acde: {type: "LineString", coordinates: [[0, 0], [1, 1], [2, 1], [3, 0]]},
+        bcd: {type: "LineString", coordinates: [[0, 1], [1, 1], [2, 1]]}
+      }, {quantization: 4});
+      assert.deepEqual(topology.arcs, [
+        [[0, 0], [1, 3]], // AC
+        [[1, 3], [1, 0]], // CD
+        [[2, 3], [1, -3]], // DE
+        [[0, 3], [1, 0]] // BC
+      ]);
+      assert.deepEqual(topology.objects.acde, {type: "LineString", arcs: [0, 1, 2]});
+      assert.deepEqual(topology.objects.bcd, {type: "LineString", arcs: [3, 1]});
+    },
+
+    //
+    // A                 E
+    //  \               /
+    //   \             /
+    //    \           /
+    //     \         /
+    //      \       /
+    //       C-----D-----F
+    //
+    "the lines ACDE and CDF share four arcs": function() {
+      var topology = topojson.topology({
+        acde: {type: "LineString", coordinates: [[0, 0], [1, 1], [2, 1], [3, 0]]},
+        cdf: {type: "LineString", coordinates: [[1, 1], [2, 1], [3, 1]]}
+      }, {quantization: 4});
+      assert.deepEqual(topology.arcs, [
+        [[0, 0], [1, 3]], // AC
+        [[1, 3], [1, 0]], // CD
+        [[2, 3], [1, -3]], // DE
+        [[2, 3], [1, 0]] // CF
+      ]);
+      assert.deepEqual(topology.objects.acde, {type: "LineString", arcs: [0, 1, 2]});
+      assert.deepEqual(topology.objects.cdf, {type: "LineString", arcs: [1, 3]});
+    },
+
+    //
+    // A                 E
+    //  \               /
+    //   \             /
+    //    \           /
+    //     \         /
+    //      \       /
+    // B-----C-----D-----F
+    //
+    "the lines ACDE and BCDF share five arcs": function() {
+      var topology = topojson.topology({
+        acde: {type: "LineString", coordinates: [[0, 0], [1, 1], [2, 1], [3, 0]]},
+        bcdf: {type: "LineString", coordinates: [[0, 1], [1, 1], [2, 1], [3, 1]]}
+      }, {quantization: 4});
+      assert.deepEqual(topology.arcs, [
+        [[0, 0], [1, 3]], // AC
+        [[1, 3], [1, 0]], // CD
+        [[2, 3], [1, -3]], // DE
+        [[0, 3], [1, 0]], // BC
+        [[2, 3], [1, 0]] // DF
+      ]);
+      assert.deepEqual(topology.objects.acde, {type: "LineString", arcs: [0, 1, 2]});
+      assert.deepEqual(topology.objects.bcdf, {type: "LineString", arcs: [3, 1, 4]});
+    },
+
+    //
+    // A                 E
+    //  \               /
+    //   \             /
+    //    \           /
+    //     \         /
+    //      \       /
+    //       C-----D-----F
+    //
+    "the lines ACDE, EDCA and ACDF share three arcs": function() {
+      var topology = topojson.topology({
+        acde: {type: "LineString", coordinates: [[0, 0], [1, 1], [2, 1], [3, 0]]},
+        edca: {type: "LineString", coordinates: [[3, 0], [2, 1], [1, 1], [0, 0]]},
+        acdf: {type: "LineString", coordinates: [[0, 0], [1, 1], [2, 1], [3, 1]]}
+      }, {quantization: 4});
+      assert.deepEqual(topology.arcs, [
+        [[0, 0], [1, 3]], // AC
+        [[1, 3], [1, 0]], // CD
+        [[2, 3], [1, -3]], // DE
+        [[2, 3], [1, 0]], // DF
+        [[0, 3], [1, 0]] // BC
+      ]);
+      assert.deepEqual(topology.objects.acde, {type: "LineString", arcs: [0, 1, 2]});
+      assert.deepEqual(topology.objects.acdf, {type: "LineString", arcs: [0, 1, 3]});
+      assert.deepEqual(topology.objects.bcde, {type: "LineString", arcs: [4, 1, 2]});
+      assert.deepEqual(topology.objects.bcdf, {type: "LineString", arcs: [4, 1, 3]});
+      assert.deepEqual(topology.objects.edca, {type: "LineString", arcs: [~2, ~1, ~0]});
+      assert.deepEqual(topology.objects.fdca, {type: "LineString", arcs: [~3, ~1, ~0]});
+      assert.deepEqual(topology.objects.edcb, {type: "LineString", arcs: [~2, ~1, ~4]});
+      assert.deepEqual(topology.objects.fdcb, {type: "LineString", arcs: [~3, ~1, ~4]});
     },
 
     //
