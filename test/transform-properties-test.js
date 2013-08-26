@@ -1,6 +1,6 @@
 var vows = require("vows"),
     assert = require("assert"),
-    transformProperties = require("../../lib/topojson/topology/transform-properties");
+    transformProperties = require("../lib/topojson/transform-properties");
 
 var suite = vows.describe("transform-properties");
 
