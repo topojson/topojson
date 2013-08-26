@@ -258,7 +258,7 @@ suite.addBatch({
       assert.deepEqual(topology.objects.foo.arcs, {start: 0, end: 1, next: {start: 1, end: 3, next: {start: 3, end: 4, next: null}}});
       assert.deepEqual(topology.objects.bar.arcs, {start: 4, end: 3, next: {start: 6, end: 7, next: {start: 1, end: 0, next: null}}});
     },
-    "when an arc ABCDBE self-intersects, it still only has one arc": function() {
+    "when an arc ABCDBE self-intersects with its middle, it still only has one arc": function() {
       var topology = unify({
         foo: {
           type: "LineString",
@@ -267,6 +267,26 @@ suite.addBatch({
       });
       assert.deepEqual(Array.apply([], topology.coordinates), [0, 0, 1, 0, 2, 0, 3, 0, 1, 0, 4, 0]);
       assert.deepEqual(topology.objects.foo.arcs, {start: 0, end: 5, next: null});
+    },
+    "when an arc ABCDBE self-intersects with its start, it still only has one arc": function() {
+      var topology = unify({
+        foo: {
+          type: "LineString",
+          coordinates: [[0, 0], [1, 0], [0, 0], [3, 0], [4, 0]]
+        }
+      });
+      assert.deepEqual(Array.apply([], topology.coordinates), [0, 0, 1, 0, 0, 0, 3, 0, 4, 0]);
+      assert.deepEqual(topology.objects.foo.arcs, {start: 0, end: 4, next: null});
+    },
+    "when an arc ABCDBE self-intersects with its end, it still only has one arc": function() {
+      var topology = unify({
+        foo: {
+          type: "LineString",
+          coordinates: [[0, 0], [1, 0], [4, 0], [3, 0], [4, 0]]
+        }
+      });
+      assert.deepEqual(Array.apply([], topology.coordinates), [0, 0, 1, 0, 4, 0, 3, 0, 4, 0]);
+      assert.deepEqual(topology.objects.foo.arcs, {start: 0, end: 4, next: null});
     },
     "when an old arc ABCDBE self-intersects and shares a point B, the old arc has multiple cuts": function() {
       var topology = unify({
