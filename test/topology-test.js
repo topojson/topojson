@@ -228,7 +228,7 @@ suite.addBatch({
         baz: {type: "MultiPoint", coordinates: [[-80, -80], [0, 0], [80, 80]]}
       }, {quantization: 3});
       assert.deepEqual(topology.objects.foo, {type: "Polygon", arcs: [[0, 1]]});
-      assert.deepEqual(topology.objects.bar, {type: "Polygon", arcs: [[0, 2]]});
+      assert.deepEqual(topology.objects.bar, {type: "Polygon", arcs: [[2, 1]]});
       assert.deepEqual(topology.arcs[0], [[1, 1]]);
     },
     "collapsed polygons in a MultiPolygon are preserved": function() {
@@ -644,15 +644,15 @@ suite.addBatch({
         bfcb: {type: "Polygon", coordinates: [[[1, 0], [2, 1], [1, 1], [1, 0]]]}
       }, {quantization: 3});
       assert.deepEqual(topology.arcs, [
+        [[1, 2], [-1, -2]], // CA
         [[0, 0], [1, 0]], // AB
         [[1, 0], [0, 2]], // BC
-        [[1, 2], [-1, -2]], // CA
         [[1, 2], [-1, 0], [0, -2]], // CDA
         [[1, 0], [1, 2], [-1, 0]] // BFC
       ]);
       assert.deepEqual(topology.objects.abca, {type: "Polygon", arcs: [[0, 1, 2]]});
-      assert.deepEqual(topology.objects.acda, {type: "Polygon", arcs: [[~2, 3]]});
-      assert.deepEqual(topology.objects.bfcb, {type: "Polygon", arcs: [[4, ~1]]});
+      assert.deepEqual(topology.objects.acda, {type: "Polygon", arcs: [[3, ~0]]});
+      assert.deepEqual(topology.objects.bfcb, {type: "Polygon", arcs: [[4, ~2]]});
     },
 
     //
@@ -720,7 +720,7 @@ suite.addBatch({
         bcdab: {type: "Polygon", coordinates: [[[1, 0], [1, 1], [0, 1], [0, 0], [1, 0]]]}
       }, {quantization: 2});
       assert.deepEqual(topology.arcs, [
-        [[0, 0], [1, 0], [0, 1], [-1, 0], [0, -1]] // ABCDA
+        [[1, 0], [0, 1], [-1, 0], [0, -1], [1, 0]] // BCDAB
       ]);
       assert.deepEqual(topology.objects.abcda, {type: "Polygon", arcs: [[0]]});
       assert.deepEqual(topology.objects.bcdab, {type: "Polygon", arcs: [[0]]});
@@ -770,7 +770,7 @@ suite.addBatch({
       }, {quantization: 4});
       assert.deepEqual(topology.arcs, [
         [[0, 0], [3, 0], [0, 3], [-3, 0], [0, -3]], // ABCDA
-        [[1, 1], [0, 1], [1, 0], [0, -1], [-1, 0]] // EHGFE
+        [[2, 1], [-1, 0], [0, 1], [1, 0], [0, -1]] // FEHGF
       ]);
       assert.deepEqual(topology.objects.abcda, {type: "Polygon", arcs: [[0], [1]]});
       assert.deepEqual(topology.objects.fghef, {type: "Polygon", arcs: [[~1]]});
