@@ -9,6 +9,7 @@ suite.addBatch({
     "computes the quantization transform": function() {
       assert.deepEqual(quantize({
         type: "Topology",
+        bbox: [0, 0, 1, 1],
         arcs: [
           [[0, 0], [1, 0], [0, 1], [0, 0]]
         ],
@@ -26,6 +27,7 @@ suite.addBatch({
     "converts arcs to fixed-point delta encoding": function() {
       assert.deepEqual(quantize({
         type: "Topology",
+        bbox: [0, 0, 1, 1],
         arcs: [
           [[0, 0], [1, 0], [0, 1], [0, 0]]
         ],
@@ -42,6 +44,7 @@ suite.addBatch({
     "uses a default quantization of 1e4": function() {
       assert.deepEqual(quantize({
         type: "Topology",
+        bbox: [0, 0, 1, 1],
         arcs: [
           [[0, 0], [1, 0], [0, 1], [0, 0]]
         ],
@@ -58,6 +61,7 @@ suite.addBatch({
     "observes the optional quantization parameter": function() {
       assert.deepEqual(quantize({
         type: "Topology",
+        bbox: [0, 0, 1, 1],
         arcs: [
           [[0, 0], [1, 0], [0, 1], [0, 0]]
         ],
@@ -91,6 +95,7 @@ suite.addBatch({
     "applies to points as well as arcs": function() {
       assert.deepEqual(quantize({
         type: "Topology",
+        bbox: [0, 0, 1, 1],
         arcs: [],
         objects: {
           foo: {
@@ -103,6 +108,7 @@ suite.addBatch({
     "skips coincident points post quantization": function() {
       assert.deepEqual(quantize({
         type: "Topology",
+        bbox: [0, 0, 2, 2],
         arcs: [
           [[0, 0], [0.9, 0.9], [1.1, 1.1], [2, 2]]
         ],
