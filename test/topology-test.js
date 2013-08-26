@@ -644,15 +644,15 @@ suite.addBatch({
         bfcb: {type: "Polygon", coordinates: [[[1, 0], [2, 1], [1, 1], [1, 0]]]}
       }, {quantization: 3});
       assert.deepEqual(topology.arcs, [
+        [[0, 0], [1, 0]], // AB
         [[1, 0], [0, 2]], // BC
         [[1, 2], [-1, -2]], // CA
-        [[0, 0], [1, 0]], // AB
         [[1, 2], [-1, 0], [0, -2]], // CDA
         [[1, 0], [1, 2], [-1, 0]] // BFC
       ]);
       assert.deepEqual(topology.objects.abca, {type: "Polygon", arcs: [[0, 1, 2]]});
-      assert.deepEqual(topology.objects.acda, {type: "Polygon", arcs: [[3, ~1]]});
-      assert.deepEqual(topology.objects.bfcb, {type: "Polygon", arcs: [[4, ~0]]});
+      assert.deepEqual(topology.objects.acda, {type: "Polygon", arcs: [[~2, 3]]});
+      assert.deepEqual(topology.objects.bfcb, {type: "Polygon", arcs: [[4, ~1]]});
     },
 
     //
@@ -673,14 +673,14 @@ suite.addBatch({
       assert.deepEqual(topology.arcs, [
         [[1, 0], [0, 3]], // BC
         [[1, 3], [-1, -3], [1, 0]], // CAB
+        [[1, 0], [1, 0]], // BE
         [[2, 0], [0, 3]], // EF
         [[2, 3], [-1, 0]], // FC
-        [[1, 0], [1, 0]], // BE
         [[2, 0], [1, 3], [-1, 0]] // EGF
       ]);
       assert.deepEqual(topology.objects.abca, {type: "Polygon", arcs: [[0, 1]]});
-      assert.deepEqual(topology.objects.befcb, {type: "Polygon", arcs: [[2, 3, ~0, 4]]});
-      assert.deepEqual(topology.objects.egfe, {type: "Polygon", arcs: [[5, ~2]]});
+      assert.deepEqual(topology.objects.befcb, {type: "Polygon", arcs: [[2, 3, 4, ~0]]});
+      assert.deepEqual(topology.objects.egfe, {type: "Polygon", arcs: [[5, ~3]]});
     },
 
     //
