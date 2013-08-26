@@ -25,11 +25,11 @@ suite.addBatch({
         objects: {
           foo: {
             type: "LineString",
-            coordinates: [0]
+            arcs: [0]
           },
           bar: {
             type: "LineString",
-            coordinates: [0]
+            arcs: [0]
           }
         }
       });
@@ -53,11 +53,11 @@ suite.addBatch({
         objects: {
           foo: {
             type: "LineString",
-            coordinates: [0]
+            arcs: [0]
           },
           bar: {
             type: "LineString",
-            coordinates: [~0]
+            arcs: [~0]
           }
         }
       });
@@ -82,11 +82,11 @@ suite.addBatch({
         objects: {
           foo: {
             type: "LineString",
-            coordinates: [0, 1]
+            arcs: [0, 1]
           },
           bar: {
             type: "LineString",
-            coordinates: [0]
+            arcs: [0]
           }
         }
       });
@@ -111,11 +111,11 @@ suite.addBatch({
         objects: {
           foo: {
             type: "LineString",
-            coordinates: [0, 1]
+            arcs: [0, 1]
           },
           bar: {
             type: "LineString",
-            coordinates: [~1]
+            arcs: [~1]
           }
         }
       });
@@ -140,11 +140,11 @@ suite.addBatch({
         objects: {
           foo: {
             type: "LineString",
-            coordinates: [0]
+            arcs: [0]
           },
           bar: {
             type: "LineString",
-            coordinates: [1]
+            arcs: [1]
           }
         }
       });
@@ -169,11 +169,11 @@ suite.addBatch({
         objects: {
           foo: {
             type: "LineString",
-            coordinates: [0]
+            arcs: [0]
           },
           bar: {
             type: "LineString",
-            coordinates: [1]
+            arcs: [1]
           }
         }
       });
@@ -198,11 +198,11 @@ suite.addBatch({
         objects: {
           foo: {
             type: "LineString",
-            coordinates: [0]
+            arcs: [0]
           },
           bar: {
             type: "LineString",
-            coordinates: [0, 1]
+            arcs: [0, 1]
           }
         }
       });
@@ -227,11 +227,11 @@ suite.addBatch({
         objects: {
           foo: {
             type: "LineString",
-            coordinates: [0]
+            arcs: [0]
           },
           bar: {
             type: "LineString",
-            coordinates: [~0, 1]
+            arcs: [~0, 1]
           }
         }
       });
@@ -256,11 +256,11 @@ suite.addBatch({
         objects: {
           foo: {
             type: "LineString",
-            coordinates: [0, 1]
+            arcs: [0, 1]
           },
           bar: {
             type: "LineString",
-            coordinates: [1]
+            arcs: [1]
           }
         }
       });
@@ -285,11 +285,11 @@ suite.addBatch({
         objects: {
           foo: {
             type: "LineString",
-            coordinates: [0, 1]
+            arcs: [0, 1]
           },
           bar: {
             type: "LineString",
-            coordinates: [~0]
+            arcs: [~0]
           }
         }
       });
@@ -315,11 +315,11 @@ suite.addBatch({
         objects: {
           foo: {
             type: "LineString",
-            coordinates: [0, 1]
+            arcs: [0, 1]
           },
           bar: {
             type: "LineString",
-            coordinates: [0, 2]
+            arcs: [0, 2]
           }
         }
       });
@@ -345,11 +345,11 @@ suite.addBatch({
         objects: {
           foo: {
             type: "LineString",
-            coordinates: [0, 1]
+            arcs: [0, 1]
           },
           bar: {
             type: "LineString",
-            coordinates: [~1, 2]
+            arcs: [~1, 2]
           }
         }
       });
@@ -375,11 +375,11 @@ suite.addBatch({
         objects: {
           foo: {
             type: "LineString",
-            coordinates: [0, 1]
+            arcs: [0, 1]
           },
           bar: {
             type: "LineString",
-            coordinates: [2, 1]
+            arcs: [2, 1]
           }
         }
       });
@@ -405,11 +405,11 @@ suite.addBatch({
         objects: {
           foo: {
             type: "LineString",
-            coordinates: [0, 1]
+            arcs: [0, 1]
           },
           bar: {
             type: "LineString",
-            coordinates: [2, ~0]
+            arcs: [2, ~0]
           }
         }
       });
@@ -436,11 +436,11 @@ suite.addBatch({
         objects: {
           foo: {
             type: "LineString",
-            coordinates: [0, 1]
+            arcs: [0, 1]
           },
           bar: {
             type: "LineString",
-            coordinates: [2, 3]
+            arcs: [2, 3]
           }
         }
       });
@@ -467,11 +467,11 @@ suite.addBatch({
         objects: {
           foo: {
             type: "LineString",
-            coordinates: [0, 1, 2]
+            arcs: [0, 1, 2]
           },
           bar: {
             type: "LineString",
-            coordinates: [0, 3, 2]
+            arcs: [0, 3, 2]
           }
         }
       });
@@ -498,11 +498,11 @@ suite.addBatch({
         objects: {
           foo: {
             type: "LineString",
-            coordinates: [0, 1, 2]
+            arcs: [0, 1, 2]
           },
           bar: {
             type: "LineString",
-            coordinates: [~2, 3, ~0]
+            arcs: [~2, 3, ~0]
           }
         }
       });
@@ -522,7 +522,7 @@ suite.addBatch({
         objects: {
           foo: {
             type: "LineString",
-            coordinates: [0]
+            arcs: [0]
           }
         }
       });
@@ -550,11 +550,11 @@ suite.addBatch({
         objects: {
           foo: {
             type: "LineString",
-            coordinates: [0, 1, 2]
+            arcs: [0, 1, 2]
           },
           bar: {
             type: "LineString",
-            coordinates: [3, 4]
+            arcs: [3, 4]
           }
         }
       });
@@ -574,7 +574,7 @@ suite.addBatch({
         objects: {
           foo: {
             type: "LineString",
-            coordinates: [0]
+            arcs: [0]
           }
         }
       });
@@ -598,11 +598,11 @@ suite.addBatch({
         objects: {
           foo: {
             type: "LineString",
-            coordinates: [0]
+            arcs: [0]
           },
           bar: {
             type: "LineString",
-            coordinates: [0]
+            arcs: [0]
           }
         }
       });
@@ -626,11 +626,11 @@ suite.addBatch({
         objects: {
           foo: {
             type: "LineString",
-            coordinates: [0]
+            arcs: [0]
           },
           bar: {
             type: "LineString",
-            coordinates: [~0]
+            arcs: [~0]
           }
         }
       });
@@ -654,11 +654,11 @@ suite.addBatch({
         objects: {
           foo: {
             type: "LineString",
-            coordinates: [0]
+            arcs: [0]
           },
           bar: {
             type: "LineString",
-            coordinates: [0]
+            arcs: [0]
           }
         }
       });
@@ -682,11 +682,11 @@ suite.addBatch({
         objects: {
           foo: {
             type: "LineString",
-            coordinates: [0]
+            arcs: [0]
           },
           bar: {
             type: "LineString",
-            coordinates: [~0]
+            arcs: [~0]
           }
         }
       });
@@ -712,11 +712,11 @@ suite.addBatch({
         objects: {
           foo: {
             type: "LineString",
-            coordinates: [0]
+            arcs: [0]
           },
           bar: {
             type: "LineString",
-            coordinates: [1, 2]
+            arcs: [1, 2]
           }
         }
       });

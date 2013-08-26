@@ -57,11 +57,11 @@ suite.addBatch({
       assert.deepEqual(topology.objects, {
         foo: {
           type: "LineString",
-          coordinates: {start: 0, end: 2, next: null}
+          arcs: {start: 0, end: 2, next: null}
         },
         bar: {
           type: "LineString",
-          coordinates: {start: 3, end: 5, next: null}
+          arcs: {start: 3, end: 5, next: null}
         }
       });
     },
@@ -107,7 +107,7 @@ suite.addBatch({
       });
       assert.deepEqual(topology.objects.foo, {
         type: "LineString",
-        coordinates: {start: 0, end: 1, next: null}
+        arcs: {start: 0, end: 1, next: null}
       });
     },
     "converts singular multipolygons to polygons": function() {
@@ -119,7 +119,7 @@ suite.addBatch({
       });
       assert.deepEqual(topology.objects.foo, {
         type: "Polygon",
-        coordinates: [{start: 0, end: 3, next: null}]
+        arcs: [{start: 0, end: 3, next: null}]
       });
     },
     "preserves properties and id on top-level features": function() {
@@ -137,15 +137,12 @@ suite.addBatch({
         }
       });
       assert.deepEqual(topology.objects.foo, {
-        type: "Feature",
+        type: "LineString",
         id: "foo",
         properties: {
           "foo": 42,
         },
-        geometry: {
-          type: "LineString",
-          coordinates: {start: 0, end: 1, next: null}
-        }
+        arcs: {start: 0, end: 1, next: null}
       });
     },
     "preserves properties and id on feature in collections": function() {
@@ -166,17 +163,14 @@ suite.addBatch({
         }
       });
       assert.deepEqual(topology.objects.foo, {
-        type: "FeatureCollection",
-        features: [{
-          type: "Feature",
+        type: "GeometryCollection",
+        geometries: [{
+          type: "LineString",
           id: "foo",
           properties: {
             "foo": 42,
           },
-          geometry: {
-            type: "LineString",
-            coordinates: {start: 0, end: 1, next: null}
-          }
+          arcs: {start: 0, end: 1, next: null}
         }]
       });
     },
@@ -194,14 +188,11 @@ suite.addBatch({
         }
       });
       assert.deepEqual(topology.objects.foo, {
-        type: "Feature",
-        geometry: {
-          type: "GeometryCollection",
-          geometries: [{
-            type: "LineString",
-            coordinates: {start: 0, end: 1, next: null}
-          }]
-        }
+        type: "GeometryCollection",
+        geometries: [{
+          type: "LineString",
+          arcs: {start: 0, end: 1, next: null}
+        }]
       });
     }
   }
