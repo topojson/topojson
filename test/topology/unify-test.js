@@ -59,7 +59,7 @@ suite.addBatch({
           coordinates: [[0, 0], [1, 0]]
         }
       });
-      assert.deepEqual(Array.apply([], topology.coordinates), [2, 0, 1, 0, 0, 0, 0, 0, 1, 0]);
+      assert.deepEqual(topology.coordinates, [[2, 0], [1, 0], [0, 0], [0, 0], [1, 0]]);
       assert.deepEqual(topology.objects.foo.arcs, {start: 0, end: 1, next: {start: 1, end: 2, next: null}});
       assert.deepEqual(topology.objects.bar.arcs, {start: 2, end: 1, next: null});
     },
@@ -74,7 +74,7 @@ suite.addBatch({
           coordinates: [[0, 0], [1, 1], [2, 1]]
         }
       });
-      assert.deepEqual(Array.apply([], topology.coordinates), [0, 0, 1, 0, 2, 0, 0, 0, 1, 1, 2, 1]);
+      assert.deepEqual(topology.coordinates, [[0, 0], [1, 0], [2, 0], [0, 0], [1, 1], [2, 1]]);
       assert.deepEqual(topology.objects.foo.arcs, {start: 0, end: 2, next: null});
       assert.deepEqual(topology.objects.bar.arcs, {start: 3, end: 5, next: null});
     },
@@ -89,7 +89,7 @@ suite.addBatch({
           coordinates: [[0, 1], [1, 1], [2, 0]]
         }
       });
-      assert.deepEqual(Array.apply([], topology.coordinates), [0, 0, 1, 0, 2, 0, 0, 1, 1, 1, 2, 0]);
+      assert.deepEqual(topology.coordinates, [[0, 0], [1, 0], [2, 0], [0, 1], [1, 1], [2, 0]]);
       assert.deepEqual(topology.objects.foo.arcs, {start: 0, end: 2, next: null});
       assert.deepEqual(topology.objects.bar.arcs, {start: 3, end: 5, next: null});
     },
@@ -104,7 +104,7 @@ suite.addBatch({
           coordinates: [[0, 0], [1, 0], [2, 0]]
         }
       });
-      assert.deepEqual(Array.apply([], topology.coordinates), [0, 0, 1, 0, 0, 0, 1, 0, 2, 0]);
+      assert.deepEqual(topology.coordinates, [[0, 0], [1, 0], [0, 0], [1, 0], [2, 0]]);
       assert.deepEqual(topology.objects.foo.arcs, {start: 0, end: 1, next: null});
       assert.deepEqual(topology.objects.bar.arcs, {start: 0, end: 1, next: {start: 3, end: 4, next: null}});
     },
@@ -119,7 +119,7 @@ suite.addBatch({
           coordinates: [[0, 0], [1, 0], [2, 0]]
         }
       });
-      assert.deepEqual(Array.apply([], topology.coordinates), [1, 0, 0, 0, 0, 0, 1, 0, 2, 0]);
+      assert.deepEqual(topology.coordinates, [[1, 0], [0, 0], [0, 0], [1, 0], [2, 0]]);
       assert.deepEqual(topology.objects.foo.arcs, {start: 0, end: 1, next: null});
       assert.deepEqual(topology.objects.bar.arcs, {start: 1, end: 0, next: {start: 3, end: 4, next: null}});
     },
@@ -134,7 +134,7 @@ suite.addBatch({
           coordinates: [[1, 0], [2, 0]]
         }
       });
-      assert.deepEqual(Array.apply([], topology.coordinates), [0, 0, 1, 0, 2, 0, 1, 0, 2, 0]);
+      assert.deepEqual(topology.coordinates, [[0, 0], [1, 0], [2, 0], [1, 0], [2, 0]]);
       assert.deepEqual(topology.objects.foo.arcs, {start: 0, end: 1, next: {start: 1, end: 2, next: null}});
       assert.deepEqual(topology.objects.bar.arcs, {start: 1, end: 2, next: null});
     },
@@ -149,7 +149,7 @@ suite.addBatch({
           coordinates: [[1, 0], [2, 0]]
         }
       });
-      assert.deepEqual(Array.apply([], topology.coordinates), [2, 0, 1, 0, 0, 0, 1, 0, 2, 0]);
+      assert.deepEqual(topology.coordinates, [[2, 0], [1, 0], [0, 0], [1, 0], [2, 0]]);
       assert.deepEqual(topology.objects.foo.arcs, {start: 0, end: 1, next: {start: 1, end: 2, next: null}});
       assert.deepEqual(topology.objects.bar.arcs, {start: 1, end: 0, next: null});
     },
@@ -164,7 +164,7 @@ suite.addBatch({
           coordinates: [[0, 0], [1, 0], [3, 0]]
         }
       });
-      assert.deepEqual(Array.apply([], topology.coordinates), [0, 0, 1, 0, 2, 0, 0, 0, 1, 0, 3, 0]);
+      assert.deepEqual(topology.coordinates, [[0, 0], [1, 0], [2, 0], [0, 0], [1, 0], [3, 0]]);
       assert.deepEqual(topology.objects.foo.arcs, {start: 0, end: 1, next: {start: 1, end: 2, next: null}});
       assert.deepEqual(topology.objects.bar.arcs, {start: 0, end: 1, next: {start: 4, end: 5, next: null}});
     },
@@ -179,7 +179,7 @@ suite.addBatch({
           coordinates: [[0, 0], [1, 0], [3, 0]]
         }
       });
-      assert.deepEqual(Array.apply([], topology.coordinates), [2, 0, 1, 0, 0, 0, 0, 0, 1, 0, 3, 0]);
+      assert.deepEqual(topology.coordinates, [[2, 0], [1, 0], [0, 0], [0, 0], [1, 0], [3, 0]]);
       assert.deepEqual(topology.objects.foo.arcs, {start: 0, end: 1, next: {start: 1, end: 2, next: null}});
       assert.deepEqual(topology.objects.bar.arcs, {start: 2, end: 1, next: {start: 4, end: 5, next: null}});
     },
@@ -194,7 +194,7 @@ suite.addBatch({
           coordinates: [[3, 0], [1, 0], [2, 0]]
         }
       });
-      assert.deepEqual(Array.apply([], topology.coordinates), [0, 0, 1, 0, 2, 0, 3, 0, 1, 0, 2, 0]);
+      assert.deepEqual(topology.coordinates, [[0, 0], [1, 0], [2, 0], [3, 0], [1, 0], [2, 0]]);
       assert.deepEqual(topology.objects.foo.arcs, {start: 0, end: 1, next: {start: 1, end: 2, next: null}});
       assert.deepEqual(topology.objects.bar.arcs, {start: 3, end: 4, next: {start: 1, end: 2, next: null}});
     },
@@ -209,7 +209,7 @@ suite.addBatch({
           coordinates: [[3, 0], [1, 0], [2, 0]]
         }
       });
-      assert.deepEqual(Array.apply([], topology.coordinates), [2, 0, 1, 0, 0, 0, 3, 0, 1, 0, 2, 0]);
+      assert.deepEqual(topology.coordinates, [[2, 0], [1, 0], [0, 0], [3, 0], [1, 0], [2, 0]]);
       assert.deepEqual(topology.objects.foo.arcs, {start: 0, end: 1, next: {start: 1, end: 2, next: null}});
       assert.deepEqual(topology.objects.bar.arcs, {start: 3, end: 4, next: {start: 1, end: 0, next: null}});
     },
@@ -224,7 +224,7 @@ suite.addBatch({
           coordinates: [[0, 1], [1, 0], [2, 1]]
         }
       });
-      assert.deepEqual(Array.apply([], topology.coordinates), [0, 0, 1, 0, 2, 0, 0, 1, 1, 0, 2, 1]);
+      assert.deepEqual(topology.coordinates, [[0, 0], [1, 0], [2, 0], [0, 1], [1, 0], [2, 1]]);
       assert.deepEqual(topology.objects.foo.arcs, {start: 0, end: 1, next: {start: 1, end: 2, next: null}});
       assert.deepEqual(topology.objects.bar.arcs, {start: 3, end: 4, next: {start: 4, end: 5, next: null}});
     },
@@ -239,7 +239,7 @@ suite.addBatch({
           coordinates: [[0, 0], [1, 0], [3, 0], [4, 0]]
         }
       });
-      assert.deepEqual(Array.apply([], topology.coordinates), [0, 0, 1, 0, 2, 0, 3, 0, 4, 0, 0, 0, 1, 0, 3, 0, 4, 0]);
+      assert.deepEqual(topology.coordinates, [[0, 0], [1, 0], [2, 0], [3, 0], [4, 0], [0, 0], [1, 0], [3, 0], [4, 0]]);
       assert.deepEqual(topology.objects.foo.arcs, {start: 0, end: 1, next: {start: 1, end: 3, next: {start: 3, end: 4, next: null}}});
       assert.deepEqual(topology.objects.bar.arcs, {start: 0, end: 1, next: {start: 6, end: 7, next: {start: 3, end: 4, next: null}}});
     },
@@ -254,7 +254,7 @@ suite.addBatch({
           coordinates: [[0, 0], [1, 0], [3, 0], [4, 0]]
         }
       });
-      assert.deepEqual(Array.apply([], topology.coordinates), [4, 0, 3, 0, 2, 0, 1, 0, 0, 0, 0, 0, 1, 0, 3, 0, 4, 0]);
+      assert.deepEqual(topology.coordinates, [[4, 0], [3, 0], [2, 0], [1, 0], [0, 0], [0, 0], [1, 0], [3, 0], [4, 0]]);
       assert.deepEqual(topology.objects.foo.arcs, {start: 0, end: 1, next: {start: 1, end: 3, next: {start: 3, end: 4, next: null}}});
       assert.deepEqual(topology.objects.bar.arcs, {start: 4, end: 3, next: {start: 6, end: 7, next: {start: 1, end: 0, next: null}}});
     },
@@ -265,7 +265,7 @@ suite.addBatch({
           coordinates: [[0, 0], [1, 0], [2, 0], [3, 0], [1, 0], [4, 0]]
         }
       });
-      assert.deepEqual(Array.apply([], topology.coordinates), [0, 0, 1, 0, 2, 0, 3, 0, 1, 0, 4, 0]);
+      assert.deepEqual(topology.coordinates, [[0, 0], [1, 0], [2, 0], [3, 0], [1, 0], [4, 0]]);
       assert.deepEqual(topology.objects.foo.arcs, {start: 0, end: 5, next: null});
     },
     "when an arc ABCDBE self-intersects with its start, it still only has one arc": function() {
@@ -275,7 +275,7 @@ suite.addBatch({
           coordinates: [[0, 0], [1, 0], [0, 0], [3, 0], [4, 0]]
         }
       });
-      assert.deepEqual(Array.apply([], topology.coordinates), [0, 0, 1, 0, 0, 0, 3, 0, 4, 0]);
+      assert.deepEqual(topology.coordinates, [[0, 0], [1, 0], [0, 0], [3, 0], [4, 0]]);
       assert.deepEqual(topology.objects.foo.arcs, {start: 0, end: 4, next: null});
     },
     "when an arc ABCDBE self-intersects with its end, it still only has one arc": function() {
@@ -285,7 +285,7 @@ suite.addBatch({
           coordinates: [[0, 0], [1, 0], [4, 0], [3, 0], [4, 0]]
         }
       });
-      assert.deepEqual(Array.apply([], topology.coordinates), [0, 0, 1, 0, 4, 0, 3, 0, 4, 0]);
+      assert.deepEqual(topology.coordinates, [[0, 0], [1, 0], [4, 0], [3, 0], [4, 0]]);
       assert.deepEqual(topology.objects.foo.arcs, {start: 0, end: 4, next: null});
     },
     "when an old arc ABCDBE self-intersects and shares a point B, the old arc has multiple cuts": function() {
@@ -299,7 +299,7 @@ suite.addBatch({
           coordinates: [[0, 1], [1, 0], [2, 1]]
         }
       });
-      assert.deepEqual(Array.apply([], topology.coordinates), [0, 0, 1, 0, 2, 0, 3, 0, 1, 0, 4, 0, 0, 1, 1, 0, 2, 1]);
+      assert.deepEqual(topology.coordinates, [[0, 0], [1, 0], [2, 0], [3, 0], [1, 0], [4, 0], [0, 1], [1, 0], [2, 1]]);
       assert.deepEqual(topology.objects.foo.arcs, {start: 0, end: 1, next: {start: 1, end: 4, next: {start: 4, end: 5, next: null}}});
       assert.deepEqual(topology.objects.bar.arcs, {start: 6, end: 7, next: {start: 7, end: 8, next: null}});
     },
@@ -310,7 +310,7 @@ suite.addBatch({
           coordinates: [[0, 0], [1, 0], [0, 1], [0, 0]]
         }
       });
-      assert.deepEqual(Array.apply([], topology.coordinates), [0, 0, 1, 0, 0, 1, 0, 0]);
+      assert.deepEqual(topology.coordinates, [[0, 0], [1, 0], [0, 1], [0, 0]]);
       assert.deepEqual(topology.objects.foo.arcs, {start: 0, end: 3, next: null});
     },
     "exact duplicate closed lines ABCA & ABCA share the arc ABCA": function() {
@@ -324,7 +324,7 @@ suite.addBatch({
           coordinates: [[0, 0], [1, 0], [0, 1], [0, 0]]
         }
       });
-      assert.deepEqual(Array.apply([], topology.coordinates), [0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0]);
+      assert.deepEqual(topology.coordinates, [[0, 0], [1, 0], [0, 1], [0, 0], [0, 0], [1, 0], [0, 1], [0, 0]]);
       assert.deepEqual(topology.objects.foo.arcs, {start: 0, end: 3, next: null});
       assert.deepEqual(topology.objects.bar.arcs, {start: 0, end: 3, next: null});
     },
@@ -339,7 +339,7 @@ suite.addBatch({
           coordinates: [[0, 0], [0, 1], [1, 0], [0, 0]]
         }
       });
-      assert.deepEqual(Array.apply([], topology.coordinates), [0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0]);
+      assert.deepEqual(topology.coordinates, [[0, 0], [1, 0], [0, 1], [0, 0], [0, 0], [0, 1], [1, 0], [0, 0]]);
       assert.deepEqual(topology.objects.foo.arcs, {start: 0, end: 3, next: null});
       assert.deepEqual(topology.objects.bar.arcs, {start: 3, end: 0, next: null});
     },
@@ -354,7 +354,7 @@ suite.addBatch({
           coordinates: [[1, 0], [0, 1], [0, 0], [1, 0]]
         }
       });
-      assert.deepEqual(Array.apply([], topology.coordinates), [1, 0, 0, 1, 0, 0, 1, 0, 1, 0, 0, 1, 0, 0, 1, 0]);
+      assert.deepEqual(topology.coordinates, [[1, 0], [0, 1], [0, 0], [1, 0], [1, 0], [0, 1], [0, 0], [1, 0]]);
       assert.deepEqual(topology.objects.foo.arcs, {start: 0, end: 3, next: null});
       assert.deepEqual(topology.objects.bar.arcs, {start: 0, end: 3, next: null});
     },
@@ -369,7 +369,7 @@ suite.addBatch({
           coordinates: [[1, 0], [0, 0], [0, 1], [1, 0]]
         }
       });
-      assert.deepEqual(Array.apply([], topology.coordinates), [1, 0, 0, 1, 0, 0, 1, 0, 1, 0, 0, 0, 0, 1, 1, 0]);
+      assert.deepEqual(topology.coordinates, [[1, 0], [0, 1], [0, 0], [1, 0], [1, 0], [0, 0], [0, 1], [1, 0]]);
       assert.deepEqual(topology.objects.foo.arcs, {start: 0, end: 3, next: null});
       assert.deepEqual(topology.objects.bar.arcs, {start: 3, end: 0, next: null});
     },
@@ -384,7 +384,7 @@ suite.addBatch({
           coordinates: [[2, 1], [1, 0], [2, 2]]
         }
       });
-      assert.deepEqual(Array.apply([], topology.coordinates), [1, 0, 0, 1, 0, 0, 1, 0, 2, 1, 1, 0, 2, 2]);
+      assert.deepEqual(topology.coordinates, [[1, 0], [0, 1], [0, 0], [1, 0], [2, 1], [1, 0], [2, 2]]);
       assert.deepEqual(topology.objects.foo.arcs, {start: 0, end: 3, next: null});
       assert.deepEqual(topology.objects.bar.arcs, {start: 4, end: 5, next: {start: 5, end: 6, next: null}});
     }

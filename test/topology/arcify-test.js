@@ -17,7 +17,7 @@ suite.addBatch({
           coordinates: [[0, 0], [1, 0], [2, 0]]
         }
       });
-      assert.deepEqual(Array.apply([], topology.coordinates), [0, 0, 1, 0, 2, 0, 0, 0, 1, 0, 2, 0]);
+      assert.deepEqual(topology.coordinates, [[0, 0], [1, 0], [2, 0], [0, 0], [1, 0], [2, 0]]);
     },
     "does not copy point geometries into the coordinate buffer": function() {
       var topology = arcify({
@@ -30,7 +30,7 @@ suite.addBatch({
           coordinates: [[0, 0], [1, 0], [2, 0]]
         }
       });
-      assert.deepEqual(Array.apply([], topology.coordinates), []);
+      assert.deepEqual(topology.coordinates, []);
       assert.deepEqual(topology.objects.foo.coordinates, [0, 0]);
       assert.deepEqual(topology.objects.bar.coordinates, [[0, 0], [1, 0], [2, 0]]);
     },
@@ -41,7 +41,7 @@ suite.addBatch({
           coordinates: [[[0, 0], [1, 0], [2, 0], [0, 0]]]
         }
       });
-      assert.deepEqual(Array.apply([], topology.coordinates), [0, 0, 1, 0, 2, 0, 0, 0]);
+      assert.deepEqual(topology.coordinates, [[0, 0], [1, 0], [2, 0], [0, 0]]);
     },
     "represents arcs as contiguous slices of the coordinate buffer": function() {
       var topology = arcify({
