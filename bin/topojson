@@ -235,15 +235,15 @@ function output(error) {
     "coordinate-system": argv.spherical ? "spherical" : argv.cartesian ? "cartesian" : "auto",
     "stitch-poles": argv["stitch-poles"],
     "id": id,
-    "property-transform": propertyTransform
+    "property-transform": propertyTransform,
+    "minimum-area": +argv.s,
+    "retain-proportion": +argv["simplify-proportion"],
+    "force-clockwise": false
   };
 
   // Reproject (and force inputs to be clockwise before projecting, if needed).
   if (argv.projection) for (var key in objects) {
-    if (!!argv["force-clockwise"]) topojson.clockwise(objects[key], {
-      "verbose": true,
-      "coordinate-system": "spherical"
-    });
+    if (!!argv["force-clockwise"]) topojson.clockwise(objects[key], {"verbose": true, "coordinate-system": "spherical"});
     objects[key] = d3.geo.project(objects[key], argv.projection);
   }
 
@@ -277,25 +277,13 @@ function output(error) {
   }
 
   // Simplify.
-  if (+argv.s > 0 || +argv["simplify-proportion"] > 0) topojson.simplify(object, {
-    "verbose": true,
-    "coordinate-system": options["coordinate-system"],
-    "minimum-area": +argv.s,
-    "retain-proportion": +argv["simplify-proportion"]
-  });
+  if (+argv.s > 0 || +argv["simplify-proportion"] > 0) topojson.simplify(object, options);
 
   // Force clockwise polygons, as appropriate.
-  if (!!argv["force-clockwise"]) topojson.clockwise(object, {
-    "verbose": true,
-    "coordinate-system": options["coordinate-system"]
-  });
+  if (!!argv["force-clockwise"]) topojson.clockwise(object, options);
 
   // Remove empty (collapsed) features.
-  if (!argv["allow-empty"]) topojson.filter(object, {
-    "verbose": true,
-    "coordinate-system": options["coordinate-system"],
-    "force-clockwise": false
-  });
+  if (!argv["allow-empty"]) topojson.filter(object, options);
 
   // Bind with external properties.
   if (argv.e) topojson.bind(object, externalProperties);
