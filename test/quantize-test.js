@@ -82,6 +82,26 @@ suite.addBatch({
       assert.deepEqual(sink.points, [
         [0, 0], [1, 1], [1, 1], [2, 2], [0, 0]
       ]);
+    },
+    "includes closing point in degenerate lines": function() {
+      var sink = bufferStream();
+      d3.geo.stream({
+        type: "LineString",
+        coordinates: [[1, 1], [1, 1], [1, 1]]
+      }, quantize([0, 0, 2, 2], 3)(sink));
+      assert.deepEqual(sink.points, [
+        [1, 1], [1, 1]
+      ]);
+    },
+    "includes closing point in degenerate polygons": function() {
+      var sink = bufferStream();
+      d3.geo.stream({
+        type: "Polygon",
+        coordinates: [[[1, 1], [1, 1], [1, 1], [1, 1]]]
+      }, quantize([0, 0, 2, 2], 3)(sink));
+      assert.deepEqual(sink.points, [
+        [1, 1], [1, 1]
+      ]);
     }
   }
 });
