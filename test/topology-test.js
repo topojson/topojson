@@ -212,12 +212,12 @@ suite.addBatch({
         bar: {type: "LineString", coordinates: [[-80, -80], [0, 0], [80, 80]]}
       }, {quantization: 3});
       assert.deepEqual(topology.objects.foo, {type: "LineString", arcs: [0]});
-      assert.deepEqual(topology.arcs[0], [[1, 1]]);
+      assert.deepEqual(topology.arcs[0], [[1, 1], [0, 0]]);
     },
     "collapsed lines in a MultiLineString are preserved": function() {
       var topology = topojson.topology({foo: {type: "MultiLineString", coordinates: [[[1/8, 1/16], [1/2, 1/4]], [[1/8, 1/16], [1/8, 1/16]], [[1/2, 1/4], [1/8, 1/16]]]}}, {quantization: 2});
       assert.equal(topology.arcs.length, 2);
-      assert.deepEqual(topology.arcs[1], [[0, 0]]);
+      assert.deepEqual(topology.arcs[1], [[0, 0], [0, 0]]);
       assert.deepEqual(topology.arcs[0], [[0, 0], [1, 1]]);
       assert.deepEqual(topology.objects.foo.arcs, [[0], [1], [~0]]);
     },
@@ -227,9 +227,9 @@ suite.addBatch({
         bar: {type: "Polygon", coordinates: [[[0, 0], [0, 1], [1, 1], [0, 0]]]},
         baz: {type: "MultiPoint", coordinates: [[-80, -80], [0, 0], [80, 80]]}
       }, {quantization: 3});
-      assert.deepEqual(topology.objects.foo, {type: "Polygon", arcs: [[0, 1]]});
-      assert.deepEqual(topology.objects.bar, {type: "Polygon", arcs: [[2, 1]]});
-      assert.deepEqual(topology.arcs[0], [[1, 1]]);
+      assert.deepEqual(topology.objects.foo, {type: "Polygon", arcs: [[0]]});
+      assert.deepEqual(topology.objects.bar, {type: "Polygon", arcs: [[0]]});
+      assert.deepEqual(topology.arcs[0], [[1, 1], [0, 0], [0, 0]]);
     },
     "collapsed polygons in a MultiPolygon are preserved": function() {
       var topology = topojson.topology({foo: {type: "MultiPolygon", coordinates: [
