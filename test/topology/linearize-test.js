@@ -1,13 +1,13 @@
 var vows = require("vows"),
     assert = require("assert"),
-    arcify = require("../../lib/topojson/topology/arcify");
+    linearize = require("../../lib/topojson/topology/linearize");
 
-var suite = vows.describe("arcify");
+var suite = vows.describe("linearize");
 
 suite.addBatch({
-  "arcify": {
+  "linearize": {
     "copies coordinates sequentially into a buffer": function() {
-      var topology = arcify({
+      var topology = linearize({
         foo: {
           type: "LineString",
           coordinates: [[0, 0], [1, 0], [2, 0]]
@@ -20,7 +20,7 @@ suite.addBatch({
       assert.deepEqual(topology.coordinates, [[0, 0], [1, 0], [2, 0], [0, 0], [1, 0], [2, 0]]);
     },
     "does not copy point geometries into the coordinate buffer": function() {
-      var topology = arcify({
+      var topology = linearize({
         foo: {
           type: "Point",
           coordinates: [0, 0]
@@ -35,7 +35,7 @@ suite.addBatch({
       assert.deepEqual(topology.objects.bar.coordinates, [[0, 0], [1, 0], [2, 0]]);
     },
     "includes closing coordinates in polygons": function() {
-      var topology = arcify({
+      var topology = linearize({
         foo: {
           type: "Polygon",
           coordinates: [[[0, 0], [1, 0], [2, 0], [0, 0]]]
@@ -43,8 +43,8 @@ suite.addBatch({
       });
       assert.deepEqual(topology.coordinates, [[0, 0], [1, 0], [2, 0], [0, 0]]);
     },
-    "represents arcs as contiguous slices of the coordinate buffer": function() {
-      var topology = arcify({
+    "represents lines as contiguous slices of the coordinate buffer": function() {
+      var topology = linearize({
         foo: {
           type: "LineString",
           coordinates: [[0, 0], [1, 0], [2, 0]]
@@ -57,16 +57,38 @@ suite.addBatch({
       assert.deepEqual(topology.objects, {
         foo: {
           type: "LineString",
-          arcs: {start: 0, end: 2, next: null}
+          arcs: [0, 2]
         },
         bar: {
           type: "LineString",
-          arcs: {start: 3, end: 5, next: null}
+          arcs: [3, 5]
         }
       });
     },
-    "exposes the constructed arcs in the order of construction": function() {
-      var topology = arcify({
+    "represents rings as contiguous slices of the coordinate buffer": function() {
+      var topology = linearize({
+        foo: {
+          type: "Polygon",
+          coordinates: [[[0, 0], [1, 0], [2, 0], [0, 0]]]
+        },
+        bar: {
+          type: "Polygon",
+          coordinates: [[[0, 0], [1, 0], [2, 0], [0, 0]]]
+        }
+      });
+      assert.deepEqual(topology.objects, {
+        foo: {
+          type: "Polygon",
+          arcs: [[0, 3]]
+        },
+        bar: {
+          type: "Polygon",
+          arcs: [[4, 7]]
+        }
+      });
+    },
+    "exposes the constructed lines and rings in the order of construction": function() {
+      var topology = linearize({
         line: {
           type: "LineString",
           coordinates: [[0, 0], [1, 0], [2, 0]]
@@ -80,14 +102,16 @@ suite.addBatch({
           coordinates: [[[0, 0], [1, 0], [2, 0], [0, 0]]]
         }
       });
-      assert.deepEqual(topology.arcs, [
-        {start: 0, end: 2, next: null},
-        {start: 3, end: 5, next: null},
-        {start: 6, end: 9, next: null}
+      assert.deepEqual(topology.lines, [
+        [0, 2],
+        [3, 5]
+      ]);
+      assert.deepEqual(topology.rings, [
+        [6, 9]
       ]);
     },
     "converts singular multipoints to points": function() {
-      var topology = arcify({
+      var topology = linearize({
         foo: {
           type: "MultiPoint",
           coordinates: [[0, 0]]
@@ -99,7 +123,7 @@ suite.addBatch({
       });
     },
     "converts singular multilines to lines": function() {
-      var topology = arcify({
+      var topology = linearize({
         foo: {
           type: "MultiLineString",
           coordinates: [[[0, 0], [0, 1]]]
@@ -107,11 +131,11 @@ suite.addBatch({
       });
       assert.deepEqual(topology.objects.foo, {
         type: "LineString",
-        arcs: {start: 0, end: 1, next: null}
+        arcs: [0, 1]
       });
     },
     "converts singular multipolygons to polygons": function() {
-      var topology = arcify({
+      var topology = linearize({
         foo: {
           type: "MultiPolygon",
           coordinates: [[[[0, 0], [0, 1], [1, 0], [0, 0]]]]
@@ -119,11 +143,11 @@ suite.addBatch({
       });
       assert.deepEqual(topology.objects.foo, {
         type: "Polygon",
-        arcs: [{start: 0, end: 3, next: null}]
+        arcs: [[0, 3]]
       });
     },
     "preserves properties and id on top-level features": function() {
-      var topology = arcify({
+      var topology = linearize({
         foo: {
           type: "Feature",
           id: "foo",
@@ -142,11 +166,11 @@ suite.addBatch({
         properties: {
           "foo": 42,
         },
-        arcs: {start: 0, end: 1, next: null}
+        arcs: [0, 1]
       });
     },
     "preserves properties and id on feature in collections": function() {
-      var topology = arcify({
+      var topology = linearize({
         foo: {
           type: "FeatureCollection",
           features: [{
@@ -170,12 +194,12 @@ suite.addBatch({
           properties: {
             "foo": 42,
           },
-          arcs: {start: 0, end: 1, next: null}
+          arcs: [0, 1]
         }]
       });
     },
     "supports nested geometry collections": function() {
-      var topology = arcify({
+      var topology = linearize({
         foo: {
           type: "Feature",
           geometry: {
@@ -191,7 +215,7 @@ suite.addBatch({
         type: "GeometryCollection",
         geometries: [{
           type: "LineString",
-          arcs: {start: 0, end: 1, next: null}
+          arcs: [0, 1]
         }]
       });
     }
