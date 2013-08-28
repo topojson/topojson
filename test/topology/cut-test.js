@@ -352,6 +352,18 @@ suite.addBatch({
         bacb: {type: "Polygon", arcs: [[4, 7]]}
       });
     },
+    "coincident rings ABCDA, EFAE & GHCG are cut into ABC-CDA, EFAE and GHCG": function() {
+      var topology = cut(linearize({
+        abcda: {type: "Polygon", coordinates: [[[0, 0], [1, 0], [1, 1], [0, 1], [0, 0]]]},
+        efae: {type: "Polygon", coordinates: [[[0, -1], [1, -1], [0, 0], [0, -1]]]},
+        ghcg: {type: "Polygon", coordinates: [[[0, 2], [1, 2], [1, 1], [0, 2]]]}
+      }));
+      assert.deepEqual(topology.objects, {
+        abcda: {type: "Polygon", arcs: [{0: 0, 1: 2, next: [2, 4]}]},
+        efae: {type: "Polygon", arcs: [[5, 8]]},
+        ghcg: {type: "Polygon", arcs: [[9, 12]]}
+      });
+    },
     "coincident rings ABCA & DBED have no cuts, but are rotated to share B": function() {
       var topology = cut(linearize({
         abca: {type: "Polygon", coordinates: [[[0, 0], [1, 0], [0, 1], [0, 0]]]},
