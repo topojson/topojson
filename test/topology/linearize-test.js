@@ -146,18 +146,15 @@ suite.addBatch({
         arcs: [[0, 3]]
       });
     },
-    "preserves properties and id on top-level features": function() {
+    "preserves properties and id on top-level geometries": function() {
       var topology = linearize({
         foo: {
-          type: "Feature",
+          type: "LineString",
           id: "foo",
           properties: {
             "foo": 42,
           },
-          geometry: {
-            type: "LineString",
-            coordinates: [[0, 0], [0, 1]]
-          }
+          coordinates: [[0, 0], [0, 1]]
         }
       });
       assert.deepEqual(topology.objects.foo, {
@@ -169,20 +166,17 @@ suite.addBatch({
         arcs: [0, 1]
       });
     },
-    "preserves properties and id on feature in collections": function() {
+    "preserves properties and id on geometries in collections": function() {
       var topology = linearize({
         foo: {
-          type: "FeatureCollection",
-          features: [{
-            type: "Feature",
+          type: "GeometryCollection",
+          geometries: [{
+            type: "LineString",
             id: "foo",
             properties: {
               "foo": 42,
             },
-            geometry: {
-              type: "LineString",
-              coordinates: [[0, 0], [0, 1]]
-            }
+            coordinates: [[0, 0], [0, 1]]
           }]
         }
       });
@@ -201,21 +195,24 @@ suite.addBatch({
     "supports nested geometry collections": function() {
       var topology = linearize({
         foo: {
-          type: "Feature",
-          geometry: {
+          type: "GeometryCollection",
+          geometries: [{
             type: "GeometryCollection",
             geometries: [{
               type: "LineString",
               coordinates: [[0, 0], [0, 1]]
             }]
-          }
+          }]
         }
       });
       assert.deepEqual(topology.objects.foo, {
         type: "GeometryCollection",
         geometries: [{
-          type: "LineString",
-          arcs: [0, 1]
+          type: "GeometryCollection",
+          geometries: [{
+            type: "LineString",
+            arcs: [0, 1]
+          }]
         }]
       });
     }
