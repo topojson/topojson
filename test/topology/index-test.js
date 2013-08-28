@@ -507,7 +507,7 @@ suite.addBatch({
         }
       });
     },
-    "when an arc ABCDBE self-intersects, it still only has one arc": function() {
+    "when an arc ABCDBE self-intersects, it is cut into three arcs": function() {
       var topology = index({
         foo: {
           type: "LineString",
@@ -517,12 +517,14 @@ suite.addBatch({
       assert.deepEqual(topology, {
         type: "Topology",
         arcs: [
-          [[0, 0], [1, 0], [2, 0], [3, 0], [1, 0], [4, 0]]
+          [[0, 0], [1, 0]],
+          [[1, 0], [2, 0], [3, 0], [1, 0]],
+          [[1, 0], [4, 0]]
         ],
         objects: {
           foo: {
             type: "LineString",
-            arcs: [0]
+            arcs: [0, 1, 2]
           }
         }
       });
@@ -635,88 +637,57 @@ suite.addBatch({
         }
       });
     },
-    "coincident closed lines ABCA & BCAB share the arc BCAB": function() {
+    "coincident closed polygons ABCA & BCAB share the arc BCAB": function() {
       var topology = index({
-        foo: {
-          type: "LineString",
-          coordinates: [[0, 0], [1, 0], [0, 1], [0, 0]] // is rotated left by 1
-        },
-        bar: {
-          type: "LineString",
-          coordinates: [[1, 0], [0, 1], [0, 0], [1, 0]]
-        }
+        abca: {type: "Polygon", coordinates: [[[0, 0], [1, 0], [0, 1], [0, 0]]]},
+        bcab: {type: "Polygon", coordinates: [[[1, 0], [0, 1], [0, 0], [1, 0]]]}
       });
       assert.deepEqual(topology, {
         type: "Topology",
         arcs: [
-          [[1, 0], [0, 1], [0, 0], [1, 0]]
+          [[0, 0], [1, 0], [0, 1], [0, 0]]
         ],
         objects: {
-          foo: {
-            type: "LineString",
-            arcs: [0]
-          },
-          bar: {
-            type: "LineString",
-            arcs: [0]
-          }
+          abca: {type: "Polygon", arcs: [[0]]},
+          bcab: {type: "Polygon", arcs: [[0]]}
         }
       });
     },
-    "coincident closed lines ABCA & BACB share the arc BCAB": function() {
+    "coincident reversed closed polygons ABCA & BACB share the arc BCAB": function() {
       var topology = index({
-        foo: {
-          type: "LineString",
-          coordinates: [[0, 0], [1, 0], [0, 1], [0, 0]] // is rotated left by 1
-        },
-        bar: {
-          type: "LineString",
-          coordinates: [[1, 0], [0, 0], [0, 1], [1, 0]]
-        }
+        abca: {type: "Polygon", coordinates: [[[0, 0], [1, 0], [0, 1], [0, 0]]]},
+        bacb: {type: "Polygon", coordinates: [[[1, 0], [0, 0], [0, 1], [1, 0]]]}
       });
       assert.deepEqual(topology, {
         type: "Topology",
         arcs: [
-          [[1, 0], [0, 1], [0, 0], [1, 0]]
+          [[0, 0], [1, 0], [0, 1], [0, 0]]
         ],
         objects: {
-          foo: {
-            type: "LineString",
-            arcs: [0]
-          },
-          bar: {
-            type: "LineString",
-            arcs: [~0]
-          }
+          abca: {type: "Polygon", arcs: [[0]]},
+          bacb: {type: "Polygon", arcs: [[~0]]}
         }
       });
     },
-    "coincident closed lines ABCA & DBE share the point B": function() {
+    "coincident closed polygons ABCA & DBED share the point B": function() {
       var topology = index({
-        foo: {
-          type: "LineString",
-          coordinates: [[0, 0], [1, 0], [0, 1], [0, 0]] // is rotated left by 1
-        },
-        bar: {
-          type: "LineString",
-          coordinates: [[2, 1], [1, 0], [2, 2]]
-        }
+        abca: {type: "Polygon", coordinates: [[[0, 0], [1, 0], [0, 1], [0, 0]]]},
+        dbed: {type: "Polygon", coordinates: [[[2, 1], [1, 0], [2, 2], [2, 1]]]}
       });
       assert.deepEqual(topology, {
         type: "Topology",
         arcs: [
           [[1, 0], [0, 1], [0, 0], [1, 0]],
-          [[2, 1], [1, 0]],
-          [[1, 0], [2, 2]]
+          [[1, 0], [2, 2], [2, 1], [1, 0]]
         ],
         objects: {
-          foo: {
-            type: "LineString",
-            arcs: [0]
+          abca: {
+            type: "Polygon",
+            arcs: [[0]]
           },
-          bar: {
-            type: "LineString",
-            arcs: [1, 2]
+          dbed: {
+            type: "Polygon",
+            arcs: [[1]]
           }
         }
       });

@@ -375,6 +375,16 @@ suite.addBatch({
       });
       assert.deepEqual(topology.coordinates.slice(0, 4), [[1, 0], [0, 1], [0, 0], [1, 0]]);
       assert.deepEqual(topology.coordinates.slice(4, 8), [[1, 0], [2, 2], [2, 1], [1, 0]]);
+    },
+    "overlapping rings ABCDA and BEFCB are cut into BC-CDAB and BEFC-CB": function() {
+      var topology = cut(linearize({
+        abcda: {type: "Polygon", coordinates: [[[0, 0], [1, 0], [1, 1], [0, 1], [0, 0]]]}, // rotated to BCDAB, cut BC-CDAB
+        befcb: {type: "Polygon", coordinates: [[[1, 0], [2, 0], [2, 1], [1, 1], [1, 0]]]},
+      }));
+      assert.deepEqual(topology.objects, {
+        abcda: {type: "Polygon", arcs: [{0: 0, 1: 1, next: {0: 1, 1: 4}}]},
+        befcb: {type: "Polygon", arcs: [{0: 5, 1: 8, next: {0: 8, 1: 9}}]}
+      });
     }
   }
 });
