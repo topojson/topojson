@@ -507,7 +507,7 @@ suite.addBatch({
         }
       });
     },
-    "when an arc ABCDBE self-intersects, it is cut into three arcs": function() {
+    "when an arc ABCDBE self-intersects, it is still one arc": function() {
       var topology = index({
         foo: {
           type: "LineString",
@@ -517,14 +517,12 @@ suite.addBatch({
       assert.deepEqual(topology, {
         type: "Topology",
         arcs: [
-          [[0, 0], [1, 0]],
-          [[1, 0], [2, 0], [3, 0], [1, 0]],
-          [[1, 0], [4, 0]]
+          [[0, 0], [1, 0], [2, 0], [3, 0], [1, 0], [4, 0]]
         ],
         objects: {
           foo: {
             type: "LineString",
-            arcs: [0, 1, 2]
+            arcs: [0]
           }
         }
       });

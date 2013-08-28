@@ -263,12 +263,12 @@ suite.addBatch({
         abde: {type: "LineString", arcs: {0: 4, 1: 3, next: {0: 6, 1: 7, next: {0: 1, 1: 0}}}}
       });
     },
-    "when an line ABCDBE self-intersects with its middle, it is cut into AB-BCDB-BE": function() { // TODO ignore self-intersection?
+    "when an line ABCDBE self-intersects with its middle, it is not cut": function() {
       var topology = dedup(cut(linearize({
         abcdbe: {type: "LineString", coordinates: [[0, 0], [1, 0], [2, 0], [3, 0], [1, 0], [4, 0]]}
       })));
       assert.deepEqual(topology.objects, {
-        abcdbe: {type: "LineString", arcs: {0: 0, 1: 1, next: {0: 1, 1: 4, next: {0: 4, 1: 5}}}}
+        abcdbe: {type: "LineString", arcs: {0: 0, 1: 5}}
       });
     },
     "when an line ABACD self-intersects with its start, it is cut into ABA-ACD": function() {
