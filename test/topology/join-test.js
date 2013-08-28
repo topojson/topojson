@@ -266,12 +266,19 @@ suite.addBatch({
       }));
       assert.deepEqual(junctionByPoint.keys(), []);
     },
-    "coincident rings ABCA & DBE share the point B": function() {
+    "coincident rings ABCA & DBED share the point B": function() {
       var junctionByPoint = join(linearize({
         abca: {type: "Polygon", coordinates: [[[0, 0], [1, 0], [0, 1], [0, 0]]]},
-        dbe: {type: "Polygon", coordinates: [[[2, 1], [1, 0], [2, 2]]]}
+        dbed: {type: "Polygon", coordinates: [[[2, 1], [1, 0], [2, 2], [2, 1]]]}
       }));
       assert.deepEqual(junctionByPoint.keys(), [[1, 0]]);
+    },
+    "coincident ring ABCA & line DBE share the point B": function() {
+      var junctionByPoint = join(linearize({
+        abca: {type: "Polygon", coordinates: [[[0, 0], [1, 0], [0, 1], [0, 0]]]},
+        dbe: {type: "LineString", coordinates: [[2, 1], [1, 0], [2, 2]]}
+      }));
+      assert.deepEqual(junctionByPoint.keys(), [[2, 1], [2, 2], [1, 0]]);
     }
   }
 });
