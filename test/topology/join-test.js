@@ -201,19 +201,19 @@ suite.addBatch({
       }));
       assert.deepEqual(junctionByPoint.keys(), [[4, 0], [0, 0], [1, 0], [3, 0]]);
     },
-    "when an line ABCDBE self-intersects with its middle, there are no junctions": function() {
+    "when a line ABCDBE self-intersects with its middle, there are no junctions": function() {
       var junctionByPoint = join(linearize({
         abcdbe: {type: "LineString", coordinates: [[0, 0], [1, 0], [2, 0], [3, 0], [1, 0], [4, 0]]}
       }));
       assert.deepEqual(junctionByPoint.keys(), [[0, 0], [4, 0]]);
     },
-    "when an line ABACD self-intersects with its start, there are no junctions": function() {
+    "when a line ABACD self-intersects with its start, there are no junctions": function() {
       var junctionByPoint = join(linearize({
         abacd: {type: "LineString", coordinates: [[0, 0], [1, 0], [0, 0], [3, 0], [4, 0]]}
       }));
       assert.deepEqual(junctionByPoint.keys(), [[0, 0], [4, 0]]);
     },
-    "when an line ABCDBD self-intersects with its end, there are no junctions": function() {
+    "when a line ABCDBD self-intersects with its end, there are no junctions": function() {
       var junctionByPoint = join(linearize({
         abcdbd: {type: "LineString", coordinates: [[0, 0], [1, 0], [4, 0], [3, 0], [4, 0]]}
       }));
@@ -226,7 +226,7 @@ suite.addBatch({
       }));
       assert.deepEqual(junctionByPoint.keys(), [[0, 0], [4, 0], [1, 0], [0, 1], [2, 1]]);
     },
-    "when an line ABCA is closed, there is a junction at A": function() {
+    "when a line ABCA is closed, there is a junction at A": function() {
       var junctionByPoint = join(linearize({
         abca: {type: "LineString", coordinates: [[0, 0], [1, 0], [0, 1], [0, 0]]}
       }));

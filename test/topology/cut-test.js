@@ -262,7 +262,7 @@ suite.addBatch({
         abde: {type: "LineString", arcs: {0: 5, 1: 6, next: {0: 6, 1: 7, next: {0: 7, 1: 8}}}}
       });
     },
-    "when an line ABCDBE self-intersects with its middle, it is not cut": function() {
+    "when a line ABCDBE self-intersects with its middle, it is not cut": function() {
       var topology = cut(linearize({
         abcdbe: {type: "LineString", coordinates: [[0, 0], [1, 0], [2, 0], [3, 0], [1, 0], [4, 0]]}
       }));
@@ -270,7 +270,7 @@ suite.addBatch({
         abcdbe: {type: "LineString", arcs: {0: 0, 1: 5}}
       });
     },
-    "when an line ABACD self-intersects with its start, it is cut into ABA-ACD": function() {
+    "when a line ABACD self-intersects with its start, it is cut into ABA-ACD": function() {
       var topology = cut(linearize({
         abacd: {type: "LineString", coordinates: [[0, 0], [1, 0], [0, 0], [3, 0], [4, 0]]}
       }));
@@ -278,7 +278,7 @@ suite.addBatch({
         abacd: {type: "LineString", arcs: {0: 0, 1: 2, next: {0: 2, 1: 4}}}
       });
     },
-    "when an line ABDCD self-intersects with its end, it is cut into ABD-DCD": function() {
+    "when a line ABDCD self-intersects with its end, it is cut into ABD-DCD": function() {
       var topology = cut(linearize({
         abdcd: {type: "LineString", coordinates: [[0, 0], [1, 0], [4, 0], [3, 0], [4, 0]]}
       }));
@@ -296,7 +296,7 @@ suite.addBatch({
         fbg: {type: "LineString", arcs: {0: 6, 1: 7, next: {0: 7, 1: 8}}}
       });
     },
-    "when an line ABCA is closed, there are no cuts": function() {
+    "when a line ABCA is closed, there are no cuts": function() {
       var topology = cut(linearize({
         abca: {type: "LineString", coordinates: [[0, 0], [1, 0], [0, 1], [0, 0]]}
       }));
