@@ -1,6 +1,6 @@
 var vows = require("vows"),
     assert = require("assert"),
-    delta = require("../../lib/topojson/topology/delta");
+    delta = require("../lib/topojson/delta");
 
 var suite = vows.describe("delta");
 

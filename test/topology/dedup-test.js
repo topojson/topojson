@@ -135,12 +135,12 @@ suite.addBatch({
         aa: {type: "Polygon", arcs: [{0: 0, 1: 1}]}
       });
     },
-    "degenerate ring A is nullified": function() {
+    "degenerate ring A has no cuts": function() {
       var topology = dedup(cut(linearize({
         a: {type: "Polygon", coordinates: [[[0, 0]]]},
       })));
       assert.deepEqual(topology.objects, {
-        a: {type: null}
+        a: {type: "Polygon", arcs: [{0: 0, 1: 0}]}
       });
     },
     "when a new line DEC shares its end with an old line ABC, there are no cuts": function() {

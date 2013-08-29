@@ -1,6 +1,6 @@
 var vows = require("vows"),
     assert = require("assert"),
-    geomify = require("../../lib/topojson/topology/geomify");
+    geomify = require("../lib/topojson/geomify");
 
 var suite = vows.describe("geomify");
 
@@ -157,6 +157,146 @@ suite.addBatch({
           properties: {},
           type: "LineString",
           coordinates: [[0, 0]]
+        }
+      });
+    },
+    "converts singular multipoints to points": function() {
+      assert.deepEqual(geomify({
+        foo: {
+          type: "MultiPoint",
+          coordinates: [[0, 0]]
+        }
+      }), {
+        foo: {
+          type: "Point",
+          coordinates: [0, 0]
+        }
+      });
+    },
+    "converts empty multipoints to null": function() {
+      assert.deepEqual(geomify({
+        foo: {
+          type: "MultiPoint",
+          coordinates: []
+        }
+      }), {
+        foo: {
+          type: null
+        }
+      });
+    },
+    "converts singular multilines to lines": function() {
+      assert.deepEqual(geomify({
+        foo: {
+          type: "MultiLineString",
+          coordinates: [[[0, 0], [0, 1]]]
+        }
+      }), {
+        foo: {
+          type: "LineString",
+          coordinates: [[0, 0], [0, 1]]
+        }
+      });
+    },
+    "converts empty lines to null": function() {
+      assert.deepEqual(geomify({
+        foo: {
+          type: "LineString",
+          coordinates: []
+        }
+      }), {
+        foo: {
+          type: null
+        }
+      });
+    },
+    "converts empty multilines to null": function() {
+      assert.deepEqual(geomify({
+        foo: {
+          type: "MultiLineString",
+          coordinates: []
+        },
+        bar: {
+          type: "MultiLineString",
+          coordinates: [[]]
+        }
+      }), {
+        foo: {
+          type: null
+        },
+        bar: {
+          type: null
+        }
+      });
+    },
+    "strips empty rings in polygons": function() {
+      assert.deepEqual(geomify({
+        foo: {
+          type: "Polygon",
+          coordinates: [[[0, 0], [1, 0], [1, 1], [0, 0]], []]
+        }
+      }), {
+        foo: {
+          type: "Polygon",
+          coordinates: [[[0, 0], [1, 0], [1, 1], [0, 0]]]
+        }
+      });
+    },
+    "strips empty lines in multilines": function() {
+      assert.deepEqual(geomify({
+        foo: {
+          type: "MultiLineString",
+          coordinates: [[[0, 0], [1, 0], [1, 1], [0, 0]], [], [[0, 0], [1, 0]]]
+        }
+      }), {
+        foo: {
+          type: "MultiLineString",
+          coordinates: [[[0, 0], [1, 0], [1, 1], [0, 0]], [[0, 0], [1, 0]]]
+        }
+      });
+    },
+    "converts empty polygons to null": function() {
+      assert.deepEqual(geomify({
+        foo: {
+          type: "Polygon",
+          coordinates: []
+        },
+        bar: {
+          type: "Polygon",
+          coordinates: [[]]
+        }
+      }), {
+        foo: {
+          type: null
+        },
+        bar: {
+          type: null
+        }
+      });
+    },
+    "strips empty polygons in multipolygons": function() {
+      assert.deepEqual(geomify({
+        foo: {
+          type: "MultiPolygon",
+          coordinates: [[[[0, 0], [1, 0], [1, 1], [0, 0]], []], [], [[]]]
+        }
+      }), {
+        foo: {
+          type: "Polygon",
+          coordinates: [[[0, 0], [1, 0], [1, 1], [0, 0]]]
+        }
+      });
+    },
+    "converts singular multipolygons to polygons": function() {
+      assert.deepEqual(geomify({
+        foo: {
+          type: "MultiPolygon",
+          coordinates: [[[[0, 0], [0, 1], [1, 0], [0, 0]]]]
+        }
+      }), {
+        foo: {
+          type: "Polygon",
+          coordinates: [[[0, 0], [0, 1], [1, 0], [0, 0]]]
         }
       });
     }

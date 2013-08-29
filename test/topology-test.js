@@ -229,7 +229,7 @@ suite.addBatch({
       }, {quantization: 3});
       assert.deepEqual(topology.objects.foo, {type: "Polygon", arcs: [[0]]});
       assert.deepEqual(topology.objects.bar, {type: "Polygon", arcs: [[0]]});
-      assert.deepEqual(topology.arcs[0], [[1, 1], [0, 0], [0, 0]]);
+      assert.deepEqual(topology.arcs[0], [[1, 1], [0, 0], [0, 0], [0, 0]]);
     },
     "collapsed polygons in a MultiPolygon are preserved": function() {
       var topology = topojson.topology({foo: {type: "MultiPolygon", coordinates: [
