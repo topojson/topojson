@@ -44,6 +44,15 @@ suite.addBatch({
           key = {hash: 1};
       assert.equal(map.set(key, 42), 42);
     },
+    "set throws an error when full": function() {
+      var map = hashtable(16, hash, equals),
+          keys = [];
+      for (var i = 0; i < 16; ++i) map.set(keys[i] = {hash: i}, true);
+      for (var i = 0; i < 16; ++i) map.set(keys[i], true); // replacing is okay
+      assert.throws(function() { map.set({hash: 16}, true); });
+      map.remove(keys[15]); // removing frees a spot
+      map.set({hash: 16}, true);
+    },
     "when a hash collision occurs, set checks that the keys are equal": function() {
       var map = hashtable(10, hash, equals),
           keyA = {hash: 1},
