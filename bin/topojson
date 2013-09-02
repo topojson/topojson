@@ -277,6 +277,7 @@ function output(error) {
   }
 
   // Simplify.
+  // TODO If simplify-proportion is specified, compute minimum-area for prefilter.
   if (+argv.s > 0 || +argv["simplify-proportion"] > 0) topojson.simplify(object, options);
 
   // Force clockwise polygons, as appropriate.
