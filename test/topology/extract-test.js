@@ -1,13 +1,13 @@
 var vows = require("vows"),
     assert = require("assert"),
-    linearize = require("../../lib/topojson/topology/linearize");
+    extract = require("../../lib/topojson/topology/extract");
 
-var suite = vows.describe("linearize");
+var suite = vows.describe("extract");
 
 suite.addBatch({
-  "linearize": {
+  "extract": {
     "copies coordinates sequentially into a buffer": function() {
-      var topology = linearize({
+      var topology = extract({
         foo: {
           type: "LineString",
           coordinates: [[0, 0], [1, 0], [2, 0]]
@@ -20,7 +20,7 @@ suite.addBatch({
       assert.deepEqual(topology.coordinates, [[0, 0], [1, 0], [2, 0], [0, 0], [1, 0], [2, 0]]);
     },
     "does not copy point geometries into the coordinate buffer": function() {
-      var topology = linearize({
+      var topology = extract({
         foo: {
           type: "Point",
           coordinates: [0, 0]
@@ -35,7 +35,7 @@ suite.addBatch({
       assert.deepEqual(topology.objects.bar.coordinates, [[0, 0], [1, 0], [2, 0]]);
     },
     "includes closing coordinates in polygons": function() {
-      var topology = linearize({
+      var topology = extract({
         foo: {
           type: "Polygon",
           coordinates: [[[0, 0], [1, 0], [2, 0], [0, 0]]]
@@ -44,7 +44,7 @@ suite.addBatch({
       assert.deepEqual(topology.coordinates, [[0, 0], [1, 0], [2, 0], [0, 0]]);
     },
     "represents lines as contiguous slices of the coordinate buffer": function() {
-      var topology = linearize({
+      var topology = extract({
         foo: {
           type: "LineString",
           coordinates: [[0, 0], [1, 0], [2, 0]]
@@ -66,7 +66,7 @@ suite.addBatch({
       });
     },
     "represents rings as contiguous slices of the coordinate buffer": function() {
-      var topology = linearize({
+      var topology = extract({
         foo: {
           type: "Polygon",
           coordinates: [[[0, 0], [1, 0], [2, 0], [0, 0]]]
@@ -88,7 +88,7 @@ suite.addBatch({
       });
     },
     "exposes the constructed lines and rings in the order of construction": function() {
-      var topology = linearize({
+      var topology = extract({
         line: {
           type: "LineString",
           coordinates: [[0, 0], [1, 0], [2, 0]]
@@ -111,7 +111,7 @@ suite.addBatch({
       ]);
     },
     "supports nested geometry collections": function() {
-      var topology = linearize({
+      var topology = extract({
         foo: {
           type: "GeometryCollection",
           geometries: [{
