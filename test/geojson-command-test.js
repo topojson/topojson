@@ -17,6 +17,12 @@ suite.addBatch({
     },
     "-- test/topojson/polygon.json"
   ),
+  "Non-quantized Polygons": testConversion(
+    {
+      polygon: "polygon-feature"
+    },
+    "-- test/topojson/polygon-no-quantization.json"
+  ),
   "Projected polygons": testConversion(
     {
       clockwise: "polygon-feature-mercator",

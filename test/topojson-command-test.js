@@ -28,6 +28,12 @@ suite.addBatch({
     + " counterclockwise=test/geojson/polygon-counterclockwise.json"
   ),
 
+  "Polygons with --no-quantization": testConversion(
+    "polygon-no-quantization",
+    "--no-quantization"
+    + " -- polygon=test/geojson/polygon-clockwise.json"
+  ),
+
   "Empty geometries": testConversion(
     "empty",
     "-- multilinestring=test/geojson/empty-multilinestring.json"
