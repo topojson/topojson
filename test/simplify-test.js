@@ -122,6 +122,19 @@ suite.addBatch({
         [[10, 0], [0, 10]]
       ]);
       assert.deepEqual(topology.objects.foo.arcs, [0, 1, 2]);
+    },
+    "minimum area is zero on empty input when retain-proportion is specified": function() {
+      var options = {
+        "retain-proportion": 1,
+        "coordinate-system": "cartesian"
+      };
+      var topology = simplify({
+        transform: {scale: [1, 1], translate: [0, 0]},
+        objects: {},
+        arcs: []
+      }, options);
+      assert.equal(options["minimum-area"], 0);
+      assert.deepEqual(topology.arcs, []);
     }
   }
 });
