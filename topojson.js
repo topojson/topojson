@@ -157,27 +157,21 @@ topojson = (function() {
   }
 
   function object(topology, o) {
-    var tf = topology.transform,
-        kx = tf.scale[0],
-        ky = tf.scale[1],
-        dx = tf.translate[0],
-        dy = tf.translate[1],
+    var absolute = transformAbsolute(topology.transform),
         arcs = topology.arcs;
 
     function arc(i, points) {
       if (points.length) points.pop();
-      for (var a = arcs[i < 0 ? ~i : i], k = 0, n = a.length, x = 0, y = 0, p; k < n; ++k) {
+      for (var a = arcs[i < 0 ? ~i : i], k = 0, n = a.length, p; k < n; ++k) {
         points.push(p = a[k].slice());
-        p[0] = (x += p[0]) * kx + dx;
-        p[1] = (y += p[1]) * ky + dy;
+        absolute(p, k);
       }
       if (i < 0) reverse(points, n);
     }
 
     function point(p) {
       p = p.slice();
-      p[0] = p[0] * kx + dx;
-      p[1] = p[1] * ky + dy;
+      absolute(p, 0);
       return p;
     }
 
@@ -276,7 +270,9 @@ topojson = (function() {
   }
 
   function presimplify(topology, triangleArea) {
-    var heap = minHeap(compareArea),
+    var absolute = transformAbsolute(topology.transform),
+        relative = transformRelative(topology.transform),
+        heap = minHeap(compareArea),
         maxArea = 0,
         triangle;
 
@@ -285,7 +281,7 @@ topojson = (function() {
     topology.arcs.forEach(function(arc) {
       var triangles = [];
 
-      arc.forEach(transformAbsolute(topology.transform));
+      arc.forEach(absolute);
 
       for (var i = 1, n = arc.length - 1; i < n; ++i) {
         triangle = arc.slice(i - 1, i + 2);
@@ -329,7 +325,7 @@ topojson = (function() {
     }
 
     topology.arcs.forEach(function(arc) {
-      arc.forEach(transformRelative(topology.transform));
+      arc.forEach(relative);
     });
 
     function update(triangle) {
@@ -414,26 +410,30 @@ topojson = (function() {
   }
 
   function transformAbsolute(transform) {
-    var x0 = 0,
-        y0 = 0,
+    if (!transform) return noop;
+    var x0,
+        y0,
         kx = transform.scale[0],
         ky = transform.scale[1],
         dx = transform.translate[0],
         dy = transform.translate[1];
-    return function(point) {
+    return function(point, i) {
+      if (!i) x0 = y0 = 0;
       point[0] = (x0 += point[0]) * kx + dx;
       point[1] = (y0 += point[1]) * ky + dy;
     };
   }
 
   function transformRelative(transform) {
-    var x0 = 0,
-        y0 = 0,
+    if (!transform) return noop;
+    var x0,
+        y0,
         kx = transform.scale[0],
         ky = transform.scale[1],
         dx = transform.translate[0],
         dy = transform.translate[1];
-    return function(point) {
+    return function(point, i) {
+      if (!i) x0 = y0 = 0;
       var x1 = (point[0] - dx) / kx | 0,
           y1 = (point[1] - dy) / ky | 0;
       point[0] = x1 - x0;
@@ -443,8 +443,10 @@ topojson = (function() {
     };
   }
 
+  function noop() {}
+
   return {
-    version: "1.3.0",
+    version: "1.4.0",
     mesh: mesh,
     feature: featureOrCollection,
     neighbors: neighbors,
