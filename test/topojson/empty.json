@@ -5,8 +5,8 @@
     "translate": [0, 0]
   },
   "objects": {
-    "multilinestring": {"type": "MultiLineString", "arcs": []},
-    "multipoint": {"type": "MultiPoint", "coordinates": []},
+    "multilinestring": {"type": null},
+    "multipoint": {"type": null},
     "multipolygon": {"type": null},
     "multipolygon2": {"type": null},
     "polygon": {"type": null}

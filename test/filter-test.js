@@ -15,8 +15,8 @@ suite.addBatch({
         geometry: null
       });
       filter(topology, {"coordinate-system": "spherical"});
-      assert.deepEqual(topology.objects.feature, {});
-      assert.deepEqual(topology.objects.geometry, {});
+      assert.deepEqual(topology.objects.feature, {type: null});
+      assert.deepEqual(topology.objects.geometry, {type: null});
     },
     "empty top-level feature collections are converted to null": function(filter) {
       var topology = topojson.topology({
