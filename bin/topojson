@@ -6,6 +6,7 @@ var path = require("path"),
     optimist = require("optimist"),
     shapefile = require("shapefile"),
     queue = require("queue-async"),
+    jsonWrite = require("json-write"),
     topojson = require("../");
 
 require("d3-geo-projection")(d3);
@@ -294,9 +295,11 @@ function output(error) {
   if (!argv["bbox"]) delete object.bbox;
 
   // Output JSON.
-  var json = JSON.stringify(object);
-  if (argv.o === "/dev/stdout") console.log(json);
-  else fs.writeFileSync(argv.o, json, "utf8");
+  jsonWrite()
+      .end(object)
+      .pipe(argv.o === "/dev/stdout"
+          ? process.stdout
+          : fs.createWriteStream(argv.o, "utf8"));
 }
 
 function qualify(file) {
