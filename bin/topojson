@@ -295,11 +295,9 @@ function output(error) {
   if (!argv["bbox"]) delete object.bbox;
 
   // Output JSON.
-  jsonWrite()
-      .end(object)
-      .pipe(argv.o === "/dev/stdout"
-          ? process.stdout
-          : fs.createWriteStream(argv.o, "utf8"));
+  var writer = jsonWrite();
+  writer.pipe(argv.o === "/dev/stdout" ? process.stdout : fs.createWriteStream(argv.o, "utf8"));
+  writer.end(object);
 }
 
 function qualify(file) {
