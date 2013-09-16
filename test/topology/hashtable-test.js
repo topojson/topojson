@@ -45,7 +45,7 @@ suite.addBatch({
       assert.equal(map.set(key, 42), 42);
     },
     "set throws an error when full": function() {
-      var map = hashtable(16, hash, equals),
+      var map = hashtable(0, hash, equals), // minimum size of 16
           keys = [];
       for (var i = 0; i < 16; ++i) map.set(keys[i] = {hash: i}, true);
       for (var i = 0; i < 16; ++i) map.set(keys[i], true); // replacing is okay
