@@ -39,6 +39,14 @@ suite.addBatch({
       map.set(key, 42);
       assert.equal(map.get(key), 42);
     },
+    "can set an object by key if not already set": function() {
+      var map = hashmap(10, hash, equals),
+          key = {hash: 1};
+      assert.equal(map.maybeSet(key, 42), 42);
+      assert.equal(map.get(key), 42);
+      assert.equal(map.maybeSet(key, 43), 42);
+      assert.equal(map.get(key), 42);
+    },
     "set returns the set value": function() {
       var map = hashmap(10, hash, equals),
           key = {hash: 1};
