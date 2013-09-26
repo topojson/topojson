@@ -385,6 +385,15 @@ suite.addBatch({
         abcda: {type: "Polygon", arcs: [{0: 0, 1: 1, next: {0: 1, 1: 4}}]},
         befcb: {type: "Polygon", arcs: [{0: 5, 1: 8, next: {0: 8, 1: 9}}]}
       });
+    },
+    "self-intersecting ring ABCDEBA": function() {
+      var topology = cut(extract({
+        abcdeba: {type: "Polygon", coordinates: [[[0, 0], [0, 1], [-1, 2], [0, 3], [1, 2], [0, 1], [0, 0]]]}
+      }));
+      assert.deepEqual(topology.objects, {
+        abcda: {type: "Polygon", arcs: [{0: 0, 1: 1, next: {0: 1, 1: 4}}]},
+        befcb: {type: "Polygon", arcs: [{0: 5, 1: 8, next: {0: 8, 1: 9}}]}
+      });
     }
   }
 });

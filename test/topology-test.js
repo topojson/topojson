@@ -175,10 +175,10 @@ suite.addBatch({
 
     // When rounding, we must be careful not to exceed [±180°, ±90°]!
     "quantization precisely preserves minimum and maximum values": function() {
-      var topology = topojson.topology({foo: {type: "LineString", coordinates: [[-180, -90], [0, 0], [180, 90]]}}, {quantization: 3});
-      assert.deepEqual(topojson.feature(topology, topology.objects.foo).geometry.coordinates, [[-180, -90], [0, 0], [180, 90]]);
-      assert.deepEqual(topology.arcs, [[[0, 0], [1, 1], [1, 1]]]);
-      assert.deepEqual(topology.transform, {scale: [180, 90], translate: [-180, -90]});
+      var topology = topojson.topology({foo: {type: "LineString", coordinates: [[-180, 1e-6 - 90], [180 - 1e-6, 90 - 1e-6]]}}, {quantization: 2});
+      assert.deepEqual(topojson.feature(topology, topology.objects.foo).geometry.coordinates, [[-180, 1e-6 - 90], [180 - 1e-6, 90 - 1e-6]]);
+      assert.deepEqual(topology.arcs, [[[0, 0], [1, 1]]]);
+      assert.deepEqual(topology.transform, {scale: [360 - 1e-6, 180 - 2e-6], translate: [-180, 1e-6 - 90]});
     },
 
     // GeoJSON inputs are in floating point format, so some error may creep in
@@ -797,6 +797,21 @@ suite.addBatch({
     },
 
     //
+    // A-----B-----C
+    // |     |\----/
+    // |     |
+    // E-----D
+    "a self-intersecting polygon ABCBDEA becomes ABDE": function() {
+      var topology = topojson.topology({
+        abcbdea: {type: "Polygon", coordinates: [[[0, 0], [1, 0], [2, 0], [1, 0], [1, 1], [0, 1], [0, 0]]]}
+      }, {quantization: 5});
+      assert.deepEqual(topology.objects.abcbdea, {type: "Polygon", arcs: [[0]]});
+      assert.deepEqual(topology.arcs, [
+        [[2, 0], [0, 4], [-2, 0], [0, -4], [2, 0]]
+      ]);
+    },
+
+    //
     // A-----B-----C-----D-----E
     // |                       |
     // |                       |
@@ -809,7 +824,7 @@ suite.addBatch({
           [-180, -80]
         ]]}}, {quantization: 4});
       assert.deepEqual(topology.arcs, [
-        [[0, 0], [1, 0], [1, 0], [1, 0], [-3, 0]]
+        [[0, 3], [1, 0], [1, 0], [1, 0], [-3, 0]]
       ]);
       assert.deepEqual(topology.objects.polygon, {type: "Polygon", arcs: [[0]]});
     },
