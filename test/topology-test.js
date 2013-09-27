@@ -174,13 +174,12 @@ suite.addBatch({
     },
 
     // When rounding, we must be careful not to exceed [±180°, ±90°]!
-    /*
     "quantization precisely preserves minimum and maximum values": function() {
       var topology = topojson.topology({foo: {type: "LineString", coordinates: [[-180, -90], [0, 0], [180, 90]]}}, {quantization: 3});
       assert.deepEqual(topojson.feature(topology, topology.objects.foo).geometry.coordinates, [[-180, -90], [0, 0], [180, 90]]);
       assert.deepEqual(topology.arcs, [[[0, 0], [1, 1], [1, 1]]]);
       assert.deepEqual(topology.transform, {scale: [180, 90], translate: [-180, -90]});
-    },*/
+    },
 
     // GeoJSON inputs are in floating point format, so some error may creep in
     // that prevents you from using exact match to determine shared points. The
