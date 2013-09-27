@@ -810,7 +810,7 @@ suite.addBatch({
           [-180, -80]
         ]]}}, {quantization: 4});
       assert.deepEqual(topology.arcs, [
-        [[0, 3], [1, 0], [1, 0], [1, 0], [-3, 0]]
+        [[0, 3], [1, 0], [1, 0], [-2, 0]]
       ]);
       assert.deepEqual(topology.objects.polygon, {type: "Polygon", arcs: [[0]]});
     },
@@ -831,7 +831,7 @@ suite.addBatch({
           [-180, -85]
         ]]}}, {quantization: 4});
       assert.deepEqual(topology.arcs, [
-        [[0, 3], [1, 0], [1, 0], [1, 0], [-3, 0]]
+        [[0, 3], [1, 0], [1, 0], [-2, 0]]
       ]);
       assert.deepEqual(topology.objects.polygon, {type: "Polygon", arcs: [[0]]});
     },
