@@ -829,9 +829,9 @@ suite.addBatch({
           [-180, -85], [-180, -80], [-90, -80], [0, -80], [90, -80], [180, -80],
           [180, -85], [180, -90], [90, -90], [0, -90], [-90, -90], [-180, -90],
           [-180, -85]
-        ]]}}, {quantization: 4});
+        ]]}}, {quantization: 5});
       assert.deepEqual(topology.arcs, [
-        [[0, 3], [1, 0], [1, 0], [-2, 0]]
+        [[0, 4], [1, 0], [1, 0], [1, 0], [-3, 0]]
       ]);
       assert.deepEqual(topology.objects.polygon, {type: "Polygon", arcs: [[0]]});
     },
