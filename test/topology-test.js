@@ -809,7 +809,7 @@ suite.addBatch({
           [-180, -80]
         ]]}}, {quantization: 4});
       assert.deepEqual(topology.arcs, [
-        [[0, 0], [1, 0], [1, 0], [1, 0], [-3, 0]]
+        [[0, 3], [1, 0], [1, 0], [-2, 0]]
       ]);
       assert.deepEqual(topology.objects.polygon, {type: "Polygon", arcs: [[0]]});
     },
@@ -828,11 +828,35 @@ suite.addBatch({
           [-180, -85], [-180, -80], [-90, -80], [0, -80], [90, -80], [180, -80],
           [180, -85], [180, -90], [90, -90], [0, -90], [-90, -90], [-180, -90],
           [-180, -85]
-        ]]}}, {quantization: 4});
+        ]]}}, {quantization: 5});
       assert.deepEqual(topology.arcs, [
-        [[0, 0], [0, 3], [1, 0], [1, 0], [1, 0], [-3, -3]]
+        [[0, 4], [1, 0], [1, 0], [1, 0], [-3, 0]]
       ]);
       assert.deepEqual(topology.objects.polygon, {type: "Polygon", arcs: [[0]]});
+    },
+
+    //
+    // A-----B-----C-----D
+    // |                 |
+    // N                 E
+    //  \               /
+    //   M             F
+    //  /               \
+    // L                 G
+    // |                 |
+    // K-----J-----I-----H
+    "a large polygon with a hole across the antimeridian and cut along the antimeridian": function() {
+      var topology = topojson.topology({
+        polygon: {type: "Polygon", coordinates: [[
+          [-180, -60], [-180, -30], [-150, 0], [-180, 30], [-180, 60], [-60, 60], [60, 60],
+          [180, 60], [180, 30], [150, 0], [180, -30], [180, -60], [60, -60], [-60, -60], [-180, -60]
+        ]]}}, {quantization: 8});
+      assert.deepEqual(topology.arcs, [
+        [[0, 7], [2, 0], [3, 0], [-5, 0]],
+        [[0, 0], [5, 0], [-3, 0], [-2, 0]],
+        [[0, 5], [6, -1], [-6, -2], [1, 2], [-1, 1]]
+      ]);
+      assert.deepEqual(topology.objects.polygon, {type: "Polygon", arcs: [[0], [1], [2]]});
     }
   }
 });

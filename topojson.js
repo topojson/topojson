@@ -446,7 +446,7 @@ topojson = (function() {
   function noop() {}
 
   return {
-    version: "1.4.0",
+    version: "1.4.1",
     mesh: mesh,
     feature: featureOrCollection,
     neighbors: neighbors,
