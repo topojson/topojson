@@ -350,6 +350,7 @@ function parsePropertyTransform(properties) {
 }
 
 function readExternalProperties(file) {
+  var text = fs.readFileSync(file, "utf-8");
 
   // Infer the file type from the name.
   // If that doesn't work, look for a tab and hope for the best!
@@ -358,7 +359,7 @@ function readExternalProperties(file) {
         : text.indexOf("\t") ? d3.tsv
         : d3.csv;
 
-  type.parse(fs.readFileSync(file, "utf-8")).forEach(function(row) {
+  type.parse(text).forEach(function(row) {
     var i = id(row), properties = externalProperties[i] || (externalProperties[i] = {});
     for (var key in row) if (key != "id") propertyTransform(properties, key, row[key]);
   });
