@@ -60,8 +60,8 @@ suite.addBatch({
       });
       filter(topology, {"coordinate-system": "spherical"});
       assert.deepEqual(topology.objects.collection, {type: "GeometryCollection", geometries: [
-        {type: "Polygon", arcs: [[0, 1]]},
-        {type: "Polygon", arcs: [[~1, ~0]]}
+        {type: "Polygon", arcs: [[~0, ~1]]},
+        {type: "Polygon", arcs: [[~0, ~1]]}
       ]});
     },
     "empty top-level geometry objects are converted to null": function(filter) {
