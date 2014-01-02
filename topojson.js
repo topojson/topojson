@@ -1,4 +1,17 @@
-topojson = (function() {
+(function (root, factory) {
+  if (typeof define === 'function' && define.amd) {
+    // AMD. Register as an anonymous module.
+    define(factory);
+  } else if (typeof exports === 'object') {
+    // Node. Does not work with strict CommonJS, but
+    // only CommonJS-like enviroments that support module.exports,
+    // like Node.
+    module.exports = factory();
+  } else {
+    // Browser global (root is window)
+    root.topojson = factory();
+  }
+}(this, function() {
 
   function merge(topology, arcs) {
     var fragmentByStart = {},
@@ -452,4 +465,4 @@ topojson = (function() {
     neighbors: neighbors,
     presimplify: presimplify
   };
-})();
+}));
