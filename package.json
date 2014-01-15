@@ -33,6 +33,6 @@
     "geojson": "./bin/geojson"
   },
   "scripts": {
-    "test": "./node_modules/.bin/vows; echo"
+    "test": "vows; echo"
   }
 }
