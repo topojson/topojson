@@ -1,4 +1,11 @@
-topojson = (function() {
+!function() {
+  var topojson = {
+    version: "1.4.6",
+    mesh: mesh,
+    feature: featureOrCollection,
+    neighbors: neighbors,
+    presimplify: presimplify
+  };
 
   function merge(topology, arcs) {
     var fragmentByStart = {},
@@ -445,11 +452,7 @@ topojson = (function() {
 
   function noop() {}
 
-  return {
-    version: "1.4.5",
-    mesh: mesh,
-    feature: featureOrCollection,
-    neighbors: neighbors,
-    presimplify: presimplify
-  };
-})();
+  if (typeof define === "function" && define.amd) define(topojson);
+  else if (typeof module === "object" && module.exports) module.exports = topojson;
+  else this.topojson = topojson;
+}();

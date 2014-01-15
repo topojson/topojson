@@ -1,6 +1,4 @@
-var fs = require("fs");
-
-var topojson = module.exports = new Function("topojson", "return " + fs.readFileSync(__dirname + "/topojson.js", "utf8"))();
+var topojson = module.exports = require("./topojson");
 topojson.topology = require("./lib/topojson/topology");
 topojson.simplify = require("./lib/topojson/simplify");
 topojson.clockwise = require("./lib/topojson/clockwise");

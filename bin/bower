@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-require("../topojson");
+var topojson = require("../topojson");
 
 console.log(JSON.stringify({
   "name": "topojson",
