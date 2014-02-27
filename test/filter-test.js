@@ -64,6 +64,59 @@ suite.addBatch({
         {type: "Polygon", arcs: [[~0, ~1]]}
       ]});
     },
+    "large interior rings (holes) are preserved": function(filter) {
+      var topology = topojson.topology({
+        collection: {type: "GeometryCollection", geometries: [
+          {type: "Polygon", coordinates: [
+            [[0, 0], [0, 20], [20, 20], [20, 0], [0, 0]], // area ~0.12
+            [[5, 5], [15, 5], [15, 15], [5, 15], [5, 5]] // area ~0.03
+          ]}
+        ]}
+      });
+      filter(topology, {"coordinate-system": "spherical", "minimum-area": 0.01});
+      assert.deepEqual(topology.objects.collection, {type: "GeometryCollection", geometries: [
+        {type: "Polygon", arcs: [[0], [1]]}
+      ]});
+    },
+    "small interior rings (holes) are removed": function(filter) {
+      var topology = topojson.topology({
+        collection: {type: "GeometryCollection", geometries: [
+          {type: "Polygon", coordinates: [
+            [[0, 0], [0, 20], [20, 20], [20, 0], [0, 0]], // area ~0.12
+            [[5, 5], [15, 5], [15, 15], [5, 15], [5, 5]] // area ~0.03
+          ]}
+        ]}
+      });
+      filter(topology, {"coordinate-system": "spherical", "minimum-area": 0.1});
+      assert.deepEqual(topology.objects.collection, {type: "GeometryCollection", geometries: [
+        {type: "Polygon", arcs: [[0]]}
+      ]});
+    },
+    "small exterior rings with large interior rings are removed": function(filter) {
+      var topology = topojson.topology({
+        collection: {type: "GeometryCollection", geometries: [
+          {type: "Polygon", coordinates: [
+            [[0, 0], [0, 20], [20, 20], [20, 0], [0, 0]], // area ~0.12
+            [[5, 5], [5, 15], [15, 15], [15, 5], [5, 5]] // clockwise! area ~12.54
+          ]}
+        ]}
+      });
+      filter(topology, {"coordinate-system": "spherical", "minimum-area": 0.2});
+      assert.deepEqual(topology.objects.collection, {type: null});
+    },
+    "very large exterior rings are preserved": function(filter) {
+      var topology = topojson.topology({
+        collection: {type: "GeometryCollection", geometries: [
+          {type: "Polygon", coordinates: [
+            [[0, 0], [20, 0], [20, 20], [0, 20], [0, 0]] // area ~12.45
+          ]}
+        ]}
+      });
+      filter(topology, {"coordinate-system": "spherical", "minimum-area": 0.01, "force-clockwise": false});
+      assert.deepEqual(topology.objects.collection, {type: "GeometryCollection", geometries: [
+        {type: "Polygon", arcs: [[0]]}
+      ]});
+    },
     "empty top-level geometry objects are converted to null": function(filter) {
       var topology = topojson.topology({line: {type: "Polygon", coordinates: [[[0, 0], [1, 1], [1, 1], [0, 0]]]}});
       filter(topology, {"coordinate-system": "spherical"});
