@@ -117,6 +117,18 @@ suite.addBatch({
         {type: "Polygon", arcs: [[0]]}
       ]});
     },
+    "polygons with no rings are removed": function(filter) {
+      var topology = {
+        objects: {
+          collection: {type: "GeometryCollection", geometries: [
+            {type: "Polygon", arcs: []}
+          ]}
+        },
+        arcs: []
+      };
+      filter(topology, {"coordinate-system": "spherical"});
+      assert.deepEqual(topology.objects.collection, {type: null});
+    },
     "empty top-level geometry objects are converted to null": function(filter) {
       var topology = topojson.topology({line: {type: "Polygon", coordinates: [[[0, 0], [1, 1], [1, 1], [0, 0]]]}});
       filter(topology, {"coordinate-system": "spherical"});
