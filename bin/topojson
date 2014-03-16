@@ -32,11 +32,11 @@ var argv = optimist
     })
     .options("s", {
       alias: "simplify",
-      describe: "precision threshold for Visvalingam simplification, in area units (steradians for spherical coordinates)",
+      describe: "area threshold for simplification (steradians for spherical coordinates)",
       default: 0,
     })
     .options("simplify-proportion", {
-      describe: "proportion of points to retain for Visvalingam simplification",
+      describe: "proportion of points to retain for simplification",
       default: 0,
     })
     .options("cartesian", {
@@ -59,8 +59,13 @@ var argv = optimist
       type: "boolean",
       default: true
     })
+    .options("filter", {
+      describe: "which rings to remove after simplifying; one of {" + topojson.filter.modes.join(",") + "}",
+      type: "string",
+      default: "small-detached"
+    })
     .options("allow-empty", {
-      describe: "preserve null or empty features (e.g., zero-area polygons)",
+      describe: "deprecated; use --filter=none intead",
       type: "boolean",
       default: false
     })
@@ -127,9 +132,11 @@ var argv = optimist
       if (!argv._.length) throw new Error("input required");
       if (+argv.s && +argv["simplify-proportion"]) throw new Error("--simplify and --simplify-proportion are exclusive");
       if (+argv["simplify-proportion"] < 0 || +argv["simplify-proportion"] >= 1) throw new Error("--simplify-proportion must be between 0 and 1");
+      if (argv["allow-empty"]) argv.filter = "none";
       if (argv.projection) argv.spherical = false, argv.cartesian = true, argv.projection = new Function("d3", "return " + argv.projection)(d3);
       if (argv.cartesian && argv.spherical) throw new Error("--spherical and --cartesian are exclusive");
       if (argv.spherical && (+argv.width || +argv.height)) throw new Error("--width and --height requires Cartesian coordinates");
+      if (topojson.filter.modes.indexOf(argv.filter) < 0) throw new Error("unknown --filter mode: " + argv.filter);
       if (typeof argv.p === "string") argv.p = argv.p.split(",");
       argv.width = +argv.width;
       argv.height = +argv.height;
@@ -238,6 +245,7 @@ function output(error) {
     "id": id,
     "property-transform": propertyTransform,
     "minimum-area": +argv.s,
+    "preserve-attached": argv.filter !== "small",
     "retain-proportion": +argv["simplify-proportion"],
     "force-clockwise": false
   };
@@ -285,7 +293,7 @@ function output(error) {
   if (!!argv["force-clockwise"]) topojson.clockwise(object, options);
 
   // Remove empty (collapsed) features.
-  if (!argv["allow-empty"]) topojson.filter(object, options);
+  if (argv["filter"] !== "none") topojson.filter(object, options);
 
   // Bind with external properties.
   if (argv.e) topojson.bind(object, externalProperties);
