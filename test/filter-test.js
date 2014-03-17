@@ -58,7 +58,7 @@ suite.addBatch({
           {type: "Polygon", coordinates: [[[0, 0], [0, 1], [1, 1], [1, 0], [0, 0]], [[0, 0], [1, 1], [1, 1], [0, 0]]]}
         ]}
       });
-      filter(topology, {"coordinate-system": "spherical"});
+      filter(topology, {"coordinate-system": "spherical", "preserve-attached": false});
       assert.deepEqual(topology.objects.collection, {type: "GeometryCollection", geometries: [
         {type: "Polygon", arcs: [[~0, ~1]]},
         {type: "Polygon", arcs: [[~0, ~1]]}
@@ -115,6 +115,42 @@ suite.addBatch({
       filter(topology, {"coordinate-system": "spherical", "minimum-area": 0.01, "force-clockwise": false});
       assert.deepEqual(topology.objects.collection, {type: "GeometryCollection", geometries: [
         {type: "Polygon", arcs: [[0]]}
+      ]});
+    },
+    "small exterior rings attached to other rings are preserved": function(filter) {
+      var topology = topojson.topology({
+        collection: {type: "GeometryCollection", geometries: [
+          {type: "MultiPolygon", coordinates: [
+            [[[0, 0], [0, 1], [1, 1], [1, 0], [0, 0]]], // area 1
+            [[[0, 1], [0, 2], [1, 2], [1, 1], [0, 1]]] // area 1
+          ]}
+        ]}
+      });
+      filter(topology, {"coordinate-system": "cartesian", "minimum-area": 2});
+      assert.deepEqual(topology.objects.collection, {type: "GeometryCollection", geometries: [
+        {type: "MultiPolygon", arcs: [
+          [[-1, -2]],
+          [[1, -3]]
+        ]}
+      ]});
+    },
+    "zero-area exterior rings coincident with other rings are removed": function(filter) {
+      var topology = topojson.topology({
+        collection: {type: "GeometryCollection", geometries: [
+          {type: "MultiPolygon", coordinates: [
+            [[[0, 0], [0, 1], [1, 1], [1, 0], [0, 0]]], // area 1
+            [[[0, 0], [0, 0], [0, 0], [0, 0]]], // area 0
+            [[[1, 0], [1, 0], [1, 0], [1, 0]]], // area 0
+            [[[0, 1], [0, 1], [0, 1], [0, 1]]], // area 0
+            [[[1, 1], [1, 1], [1, 1], [1, 1]]] // area 0
+          ]}
+        ]}
+      });
+      filter(topology, {"coordinate-system": "cartesian", "minimum-area": .5});
+      assert.deepEqual(topology.objects.collection, {type: "GeometryCollection", geometries: [
+        {type: "MultiPolygon", arcs: [
+          [[-1, -2, -3, -4]]
+        ]}
       ]});
     },
     "polygons with no rings are removed": function(filter) {
