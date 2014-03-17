@@ -10,6 +10,8 @@ var path = require("path"),
 
 require("d3-geo-projection")(d3);
 
+var filterModes = ["none", "small", "small-detached"];
+
 var argv = optimist
     .usage("Usage: \033[1mtopojson\033[0m [options] [file …]\n\n"
 
@@ -60,7 +62,7 @@ var argv = optimist
       default: true
     })
     .options("filter", {
-      describe: "which rings to remove after simplifying; one of {" + topojson.filter.modes.join(",") + "}",
+      describe: "which rings to remove after simplifying; one of {" + filterModes.join(",") + "}",
       type: "string",
       default: "small-detached"
     })
@@ -136,7 +138,7 @@ var argv = optimist
       if (argv.projection) argv.spherical = false, argv.cartesian = true, argv.projection = new Function("d3", "return " + argv.projection)(d3);
       if (argv.cartesian && argv.spherical) throw new Error("--spherical and --cartesian are exclusive");
       if (argv.spherical && (+argv.width || +argv.height)) throw new Error("--width and --height requires Cartesian coordinates");
-      if (topojson.filter.modes.indexOf(argv.filter) < 0) throw new Error("unknown --filter mode: " + argv.filter);
+      if (filterModes.indexOf(argv.filter) < 0) throw new Error("unknown --filter value: " + argv.filter);
       if (typeof argv.p === "string") argv.p = argv.p.split(",");
       argv.width = +argv.width;
       argv.height = +argv.height;
