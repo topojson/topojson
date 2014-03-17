@@ -24,7 +24,7 @@ console.log(JSON.stringify({
     "d3-geo-projection": "0.2",
     "optimist": "0.3",
     "queue-async": "1.0",
-    "shapefile": "0.1"
+    "shapefile": "0.3"
   },
   "devDependencies": {
     "vows": "0.7",

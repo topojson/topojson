@@ -201,15 +201,17 @@ function inputDsv(dsv) {
 function inputShapefile(file, callback) {
   file = qualify(file);
 
-  var object = objects[file.name] = {
-    type: "FeatureCollection",
-    features: []
-  };
+  var reader = shapefile.reader(file.path, {encoding: argv["shapefile-encoding"], "ignore-properties": !!argv["ignore-shapefile-properties"]});
 
-  shapefile.readStream(file.path, {encoding: argv["shapefile-encoding"], "ignore-properties": !!argv["ignore-shapefile-properties"]})
-      .on("error", callback)
-      .on("feature", function(feature) { object.features.push(feature); })
-      .on("end", callback);
+  queue(1)
+      .defer(reader.readHeader)
+      .defer(reader.readAllRecords)
+      .defer(reader.close)
+      .await(function(error, header, records) {
+        if (error) return callback(error);
+        objects[file.name] = {type: "FeatureCollection", features: records};
+        callback(null);
+      });
 }
 
 function inputJson(file, callback) {
