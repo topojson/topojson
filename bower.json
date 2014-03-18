@@ -1,6 +1,6 @@
 {
   "name": "topojson",
-  "version": "1.5.0",
+  "version": "1.5.1",
   "main": "topojson.js",
   "scripts": [
     "topojson.js"

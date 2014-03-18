@@ -1,6 +1,6 @@
 !function() {
   var topojson = {
-    version: "1.5.0",
+    version: "1.5.1",
     mesh: mesh,
     feature: featureOrCollection,
     neighbors: neighbors,
