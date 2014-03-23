@@ -248,9 +248,12 @@ function output(error) {
   };
 
   // Reproject (and force inputs to be clockwise before projecting, if needed).
-  if (argv.projection) for (var key in objects) {
-    if (!!argv["force-clockwise"]) topojson.clockwise(objects[key], {"verbose": true, "coordinate-system": "spherical"});
-    objects[key] = d3.geo.project(objects[key], argv.projection);
+  if (argv.projection) {
+    if (!!argv["stitch-poles"]) topojson.stitch(objects);
+    for (var key in objects) {
+      if (!!argv["force-clockwise"]) topojson.clockwise(objects[key], {"verbose": true, "coordinate-system": "spherical"});
+      objects[key] = d3.geo.project(objects[key], argv.projection);
+    }
   }
 
   // Convert GeoJSON to TopoJSON.
