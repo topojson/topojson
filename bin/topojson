@@ -129,8 +129,14 @@ var argv = optimist
       type: "boolean",
       default: false
     })
+    .options("version", {
+      describe: "print the version number and exit",
+      type: "boolean",
+      default: false
+    })
     .check(function(argv) {
       if (argv.help) return;
+      if (argv.version) return console.log(topojson.version), process.exit(0);
       if (!argv._.length) throw new Error("input required");
       if (+argv.s && +argv["simplify-proportion"]) throw new Error("--simplify and --simplify-proportion are exclusive");
       if (+argv["simplify-proportion"] < 0 || +argv["simplify-proportion"] >= 1) throw new Error("--simplify-proportion must be between 0 and 1");
