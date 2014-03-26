@@ -2,6 +2,7 @@
   var topojson = {
     version: "1.5.4",
     mesh: mesh,
+    arcmesh: arcmesh,
     feature: featureOrCollection,
     neighbors: neighbors,
     presimplify: presimplify
@@ -98,7 +99,11 @@
     return fragments;
   }
 
-  function mesh(topology, o, filter) {
+  function mesh(topology) {
+    return object(topology, arcmesh.apply(this, arguments));
+  }
+
+  function arcmesh(topology, o, filter) {
     var arcs = [];
 
     if (arguments.length > 1) {
@@ -142,7 +147,7 @@
       for (var i = 0, n = topology.arcs.length; i < n; ++i) arcs.push(i);
     }
 
-    return object(topology, {type: "MultiLineString", arcs: merge(topology, arcs)});
+    return {type: "MultiLineString", arcs: merge(topology, arcs)};
   }
 
   function featureOrCollection(topology, o) {
