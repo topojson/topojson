@@ -7,3 +7,4 @@ topojson.prune = require("./lib/topojson/prune");
 topojson.bind = require("./lib/topojson/bind");
 topojson.stitch = require("./lib/topojson/stitch");
 topojson.scale = require("./lib/topojson/scale");
+topojson.merge = require("./lib/topojson/merge");
