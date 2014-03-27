@@ -3,7 +3,7 @@ var fs = require("fs"),
     path = require("path"),
     child = require("child_process"),
     vows = require("vows"),
-    assert = require("./assert");
+    assert = require("assert");
 
 var suite = vows.describe("bin/geojson");
 
