@@ -33,8 +33,7 @@ console.log(JSON.stringify({
     "world-atlas": "0.0"
   },
   "bin": {
-    "topojson": "./bin/topojson",
-    "geojson": "./bin/geojson"
+    "topojson": "./bin/topojson"
   },
   "scripts": {
     "test": "vows; echo"
