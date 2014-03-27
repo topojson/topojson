@@ -89,13 +89,20 @@
     });
 
     function ends(i) {
-      var arc = topology.arcs[i], p0 = arc[0], p1 = [0, 0];
-      arc.forEach(function(dp) { p1[0] += dp[0], p1[1] += dp[1]; });
+      var arc = topology.arcs[i], p0 = arc[0], p1;
+      if (topology.transform) p1 = [0, 0], arc.forEach(function(dp) { p1[0] += dp[0], p1[1] += dp[1]; });
+      else p1 = arc[arc.length - 1];
       return [p0, p1];
     }
 
     var fragments = [];
-    for (var k in fragmentByEnd) fragments.push(fragmentByEnd[k]);
+    for (var k in fragmentByEnd) {
+      var f = fragmentByEnd[k];
+      delete f.start;
+      delete f.end;
+      fragments.push(f);
+    }
+
     return fragments;
   }
 
@@ -125,10 +132,7 @@
 
       function geometry(o) {
         if (o.type === "GeometryCollection") o.geometries.forEach(geometry);
-        else if (o.type in geometryType) {
-          geom = o;
-          geometryType[o.type](o.arcs);
-        }
+        else if (o.type in geometryType) geom = o, geometryType[o.type](o.arcs);
       }
 
       var geometryType = {
