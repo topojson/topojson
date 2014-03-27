@@ -89,10 +89,10 @@
     });
 
     function ends(i) {
-      var arc = topology.arcs[i], p0 = arc[0], p1;
+      var arc = topology.arcs[i < 0 ? ~i : i], p0 = arc[0], p1;
       if (topology.transform) p1 = [0, 0], arc.forEach(function(dp) { p1[0] += dp[0], p1[1] += dp[1]; });
       else p1 = arc[arc.length - 1];
-      return [p0, p1];
+      return i < 0 ? [p1, p0] : [p0, p1];
     }
 
     var fragments = [];
@@ -118,8 +118,8 @@
           geom;
 
       function arc(i) {
-        if (i < 0) i = ~i;
-        (geomsByArc[i] || (geomsByArc[i] = [])).push(geom);
+        var j = i < 0 ? ~i : i;
+        (geomsByArc[j] || (geomsByArc[j] = [])).push({i: i, g: geom});
       }
 
       function line(arcs) {
@@ -145,8 +145,8 @@
       geometry(o);
 
       geomsByArc.forEach(arguments.length < 3
-          ? function(geoms, i) { arcs.push(i); }
-          : function(geoms, i) { if (filter(geoms[0], geoms[geoms.length - 1])) arcs.push(i); });
+          ? function(geoms) { arcs.push(geoms[0].i); }
+          : function(geoms) { if (filter(geoms[0].g, geoms[geoms.length - 1].g)) arcs.push(geoms[0].i); });
     } else {
       for (var i = 0, n = topology.arcs.length; i < n; ++i) arcs.push(i);
     }
