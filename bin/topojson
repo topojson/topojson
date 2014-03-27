@@ -115,6 +115,11 @@ var argv = optimist
       describe: "scale and translate to fit a viewport of the specified height",
       default: null
     })
+    .options("invert", {
+      describe: "in conjunction with --width or --height, whether to invert y",
+      type: "boolean",
+      default: true
+    })
     .options("margin", {
       describe: "pixels of margin to reserve when scaling to fit a viewport",
       default: 0
@@ -270,6 +275,7 @@ function output(error) {
     if (options["coordinate-system"] !== "cartesian") throw new Error("--width and --height require Cartesian coordinates");
     var dx = object.bbox[2] - object.bbox[0],
         dy = object.bbox[3] - object.bbox[1],
+        sy = argv.invert ? -1 : 1,
         m = argv.margin,
         w = Math.max(0, argv.width - m * 2),
         h = Math.max(0, argv.height - m * 2),
@@ -286,9 +292,9 @@ function output(error) {
     }
 
     object.transform.scale[0] *= k;
-    object.transform.scale[1] *= -k;
+    object.transform.scale[1] *= k * sy;
     object.transform.translate[0] = (w - dx * k) / 2 + m;
-    object.transform.translate[1] = (h + dy * k) / 2 + m;
+    object.transform.translate[1] = (h - dy * k * sy) / 2 + m;
   }
 
   // Simplify.
