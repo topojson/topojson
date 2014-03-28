@@ -119,6 +119,11 @@ var argv = optimist
       describe: "pixels of margin to reserve when scaling to fit a viewport",
       default: 0
     })
+    .options("invert", {
+      describe: "in conjunction with --width or --height, whether to invert y",
+      type: "boolean",
+      default: "auto"
+    })
     .options("bbox", {
       describe: "include bbox property in generated topology",
       type: "boolean",
@@ -144,6 +149,7 @@ var argv = optimist
       if (argv.projection) argv.spherical = false, argv.cartesian = true, argv.projection = new Function("d3", "return " + argv.projection)(d3);
       if (argv.cartesian && argv.spherical) throw new Error("--spherical and --cartesian are exclusive");
       if (argv.spherical && (+argv.width || +argv.height)) throw new Error("--width and --height requires Cartesian coordinates");
+      if (argv.invert === "auto") argv.invert = !argv.projection;
       if (filterModes.indexOf(argv.filter) < 0) throw new Error("unknown --filter value: " + argv.filter);
       if (typeof argv.p === "string") argv.p = argv.p.split(",");
       argv.width = +argv.width;
@@ -271,7 +277,8 @@ function output(error) {
     topojson.scale(object, {
       width: argv.width,
       height: argv.height,
-      margin: argv.margin
+      margin: argv.margin,
+      invert: argv.invert
     });
   }
 
