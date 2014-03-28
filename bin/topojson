@@ -268,27 +268,11 @@ function output(error) {
   // Translate and scale to fit the viewport.
   if (argv.width || argv.height) {
     if (options["coordinate-system"] !== "cartesian") throw new Error("--width and --height require Cartesian coordinates");
-    var dx = object.bbox[2] - object.bbox[0],
-        dy = object.bbox[3] - object.bbox[1],
-        m = argv.margin,
-        w = Math.max(0, argv.width - m * 2),
-        h = Math.max(0, argv.height - m * 2),
-        k;
-
-    if (w && h) {
-      k = Math.min(w / dx, h / dy);
-    } else if (w) {
-      k = w / dx;
-      h = k * dy;
-    } else {
-      k = h / dy;
-      w = k * dx;
-    }
-
-    object.transform.scale[0] *= k;
-    object.transform.scale[1] *= -k;
-    object.transform.translate[0] = (w - dx * k) / 2 + m;
-    object.transform.translate[1] = (h + dy * k) / 2 + m;
+    topojson.scale(object, {
+      width: argv.width,
+      height: argv.height,
+      margin: argv.margin
+    });
   }
 
   // Simplify.
