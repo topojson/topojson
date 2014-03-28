@@ -10,7 +10,7 @@ var path = require("path"),
 
 require("d3-geo-projection")(d3);
 
-var filterModes = ["none", "small", "small-detached"];
+var filterModes = ["none", "empty", "small", "small-detached"];
 
 var argv = optimist
     .usage("Usage: \033[1mtopojson\033[0m [options] [file …]\n\n"
@@ -248,7 +248,7 @@ function output(error) {
     "id": id,
     "property-transform": propertyTransform,
     "minimum-area": +argv.s,
-    "preserve-attached": argv.filter !== "small",
+    "preserve-attached": argv.filter === "small-detached",
     "retain-proportion": +argv["simplify-proportion"],
     "force-clockwise": false
   };
@@ -298,7 +298,10 @@ function output(error) {
   if (!!argv["force-clockwise"]) topojson.clockwise(object, options);
 
   // Remove empty (collapsed) features.
-  if (argv["filter"] !== "none") topojson.filter(object, options);
+  if (argv["filter"] !== "none") {
+    if (argv.filter === "empty") options["minimum-area"] = 0;
+    topojson.filter(object, options);
+  }
 
   // Bind with external properties.
   if (argv.e) topojson.bind(object, externalProperties);
