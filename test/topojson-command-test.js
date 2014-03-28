@@ -65,7 +65,7 @@ function testConversion(output, options) {
     },
     "has the expected output": function(actual) {
       var expected = JSON.parse(fs.readFileSync("test/topojson/" + output + ".json", "utf-8"));
-      assert.deepEqual(actual, expected);
+      assert.inDelta(actual, expected);
     }
   };
 }

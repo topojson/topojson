@@ -60,7 +60,7 @@ function testConversion(output, options) {
     },
     "has the expected output": function(actual) {
       for (var file in output) {
-        assert.deepEqual(actual[file], JSON.parse(fs.readFileSync("test/geojson/" + output[file] + ".json", "utf-8")));
+        assert.inDelta(actual[file], JSON.parse(fs.readFileSync("test/geojson/" + output[file] + ".json", "utf-8")));
       }
     }
   };

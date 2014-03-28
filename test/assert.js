@@ -3,13 +3,31 @@ var assert = require("assert");
 assert = module.exports = Object.create(assert);
 
 assert.inDelta = function(actual, expected, delta, message) {
+  if (arguments.length < 3) delta = 1e-6;
   if (!inDelta(actual, expected, delta)) {
     assert.fail(actual, expected, message || "expected {actual} to be in within *" + delta + "* of {expected}", null, assert.inDelta);
   }
 };
 
 function inDelta(actual, expected, delta) {
-  return (Array.isArray(expected) ? inDeltaArray : inDeltaNumber)(actual, expected, delta);
+  if (Array.isArray(expected)) return inDeltaArray(actual, expected, delta);
+  if (typeof expected === "number") return inDeltaNumber(actual, expected, delta);
+  if (typeof expected === "object") return inDeltaObject(actual, expected, delta);
+  return actual == expected;
+}
+
+function inDeltaObject(actual, expected, delta) {
+  for (var key in expected) {
+    if (!(key in actual) || !inDelta(actual[key], expected[key], delta)) {
+      return false;
+    }
+  }
+  for (var key in actual) {
+    if (!(key in expected)) {
+      return false;
+    }
+  }
+  return true;
 }
 
 function inDeltaArray(actual, expected, delta) {
