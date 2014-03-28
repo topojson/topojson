@@ -1,5 +1,5 @@
 var vows = require("vows"),
-    assert = require("./assert"),
+    assert = require("assert"),
     topojson = require("../");
 
 var suite = vows.describe("topojson.topology");

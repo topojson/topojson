@@ -1,5 +1,5 @@
 var vows = require("vows"),
-    assert = require("./assert"),
+    assert = require("assert"),
     simplify = require("../lib/topojson/simplify");
 
 var suite = vows.describe("simplify");
