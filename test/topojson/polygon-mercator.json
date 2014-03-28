@@ -1,20 +1,20 @@
 {
   "type": "Topology",
   "transform": {
-    "scale": [0.045770440458280465, -0.04600460046004601],
-    "translate": [251.17068292882684, 480]
+    "scale": [0.045770440458280465, 0.04600460046004601],
+    "translate": [251.17068292882684, 20]
   },
   "objects": {
     "clockwise": {
       "type": "Polygon",
       "arcs": [
-        [-1]
+        [0]
       ]
     },
     "counterclockwise": {
       "type": "Polygon",
       "arcs": [
-        [-1]
+        [0]
       ]
     }
   },
