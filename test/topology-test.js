@@ -165,9 +165,9 @@ suite.addBatch({
       assert.deepEqual(topology.objects.foo, {type: "MultiPoint", coordinates: [[0, 0], [1, 1]]});
     },
 
-    // Rounding is more accurate than flooring.
-    "quantization rounds to the closest integer coordinate to minimize error": function() {
-      var topology = topojson.topology({foo: {type: "LineString", coordinates: [[0.0, 0.0], [0.5, 0.5], [1.6, 1.6], [3.0, 3.0], [4.1, 4.1], [4.9, 4.9], [5.9, 5.9], [6.5, 6.5], [7.0, 7.0], [8.4, 8.4], [8.5, 8.5], [10, 10]]}}, {quantization: 11});
+    // Flooring allows us to apply additional post-quantization without introducing aliasing.
+    "quantization rounds down to the closest integer coordinate": function() {
+      var topology = topojson.topology({foo: {type: "LineString", coordinates: [[0.0, 0.0], [1.5, 1.5], [2.6, 2.6], [3.0, 3.0], [4.1, 4.1], [5.0, 5.0], [6.1, 6.1], [7.5, 7.5], [8.01, 8.01], [9.4, 9.4], [10, 10]]}}, {quantization: 11});
       assert.deepEqual(topojson.feature(topology, topology.objects.foo).geometry.coordinates, [[0, 0], [1, 1], [2, 2], [3, 3], [4, 4], [5, 5], [6, 6], [7, 7], [8, 8], [9, 9], [10, 10]]);
       assert.deepEqual(topology.arcs, [[[0, 0], [1, 1], [1, 1], [1, 1], [1, 1], [1, 1], [1, 1], [1, 1], [1, 1], [1, 1], [1, 1]]]);
       assert.deepEqual(topology.transform, {scale: [1, 1], translate: [0, 0]});
@@ -852,9 +852,9 @@ suite.addBatch({
           [180, 60], [180, 30], [150, 0], [180, -30], [180, -60], [60, -60], [-60, -60], [-180, -60]
         ]]}}, {quantization: 8});
       assert.deepEqual(topology.arcs, [
-        [[0, 7], [2, 0], [3, 0], [-5, 0]],
-        [[0, 0], [5, 0], [-3, 0], [-2, 0]],
-        [[0, 5], [6, -1], [-6, -2], [1, 2], [-1, 1]]
+        [[0, 7], [2, 0], [2, 0], [-4, 0]],
+        [[0, 0], [4, 0], [-2, 0], [-2, 0]],
+        [[0, 5], [6, -2], [-6, -2], [0, 4]]
       ]);
       assert.deepEqual(topology.objects.polygon, {type: "Polygon", arcs: [[0], [1], [2]]});
     }

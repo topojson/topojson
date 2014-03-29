@@ -25,21 +25,31 @@ var argv = optimist
     .options("o", {
       alias: "out",
       describe: "output TopoJSON file name",
-      default: "/dev/stdout",
+      default: "/dev/stdout"
     })
     .options("q", {
       alias: "quantization",
+      describe: "convenience option for setting pre- and post-quantization",
+      default: undefined
+    })
+    .options("q0", {
+      alias: "pre-quantization",
       describe: "maximum number of differentiable points along either dimension",
-      default: 1e4,
+      default: 1e6
+    })
+    .options("q1", {
+      alias: "post-quantization",
+      describe: "maximum number of differentiable points along either dimension",
+      default: 1e4
     })
     .options("s", {
       alias: "simplify",
       describe: "area threshold for simplification (steradians for spherical coordinates)",
-      default: 0,
+      default: 0
     })
     .options("simplify-proportion", {
       describe: "proportion of points to retain for simplification",
-      default: 0,
+      default: 0
     })
     .options("cartesian", {
       describe: "assume Cartesian input coordinates",
@@ -152,6 +162,7 @@ var argv = optimist
       if (argv.invert === "auto") argv.invert = !argv.projection;
       if (filterModes.indexOf(argv.filter) < 0) throw new Error("unknown --filter value: " + argv.filter);
       if (typeof argv.p === "string") argv.p = argv.p.split(",");
+      if (argv.q !== undefined) argv.q0 = argv.q1 = argv.q;
       argv.width = +argv.width;
       argv.height = +argv.height;
       argv.margin = +argv.margin;
@@ -248,7 +259,8 @@ function output(error) {
   if (error) return console.trace(error);
   var options = {
     "verbose": true,
-    "quantization": +argv.q,
+    "pre-quantization": +argv.q0,
+    "post-quantization": +argv.q1,
     "coordinate-system": argv.spherical ? "spherical" : argv.cartesian ? "cartesian" : "auto",
     "stitch-poles": argv["stitch-poles"],
     "id": id,
