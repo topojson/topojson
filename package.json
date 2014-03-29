@@ -30,7 +30,7 @@
   },
   "bin": {
     "topojson": "./bin/topojson",
-    "geojson": "./bin/geojson"
+    "topojson-merge": "./bin/topojson-merge"
   },
   "scripts": {
     "test": "vows; echo"

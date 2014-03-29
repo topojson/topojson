@@ -33,7 +33,8 @@ console.log(JSON.stringify({
     "world-atlas": "0.0"
   },
   "bin": {
-    "topojson": "./bin/topojson"
+    "topojson": "./bin/topojson",
+    "topojson-merge": "./bin/topojson-merge"
   },
   "scripts": {
     "test": "vows; echo"
