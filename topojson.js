@@ -142,18 +142,23 @@
 
     polygons.forEach(function(polygon) {
       if (!polygon._) {
-        var component = [];
+        var component = [],
+            neighbors = [polygon];
+        polygon._ = 1;
         components.push(component);
-        (function connect(polygon) {
-          if (polygon._) return;
-          polygon._ = 1;
+        while (polygon = neighbors.pop()) {
           component.push(polygon);
           polygon.forEach(function(ring) {
             ring.forEach(function(arc) {
-              polygonsByArc[arc < 0 ? ~arc : arc].forEach(connect);
+              polygonsByArc[arc < 0 ? ~arc : arc].forEach(function(polygon) {
+                if (!polygon._) {
+                  polygon._ = 1;
+                  neighbors.push(polygon);
+                }
+              });
             });
           });
-        })(polygon);
+        }
       }
     });
 
