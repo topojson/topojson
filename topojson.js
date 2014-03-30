@@ -131,11 +131,17 @@
       else if (o.type === "MultiPolygon") o.arcs.forEach(recordPolygon);
     });
 
-    function recordPolygon(polygon) {
-      for (var ring = polygon[0], i = 0, n = ring.length, arc; i < n; ++i) {
-        arc = ring[i]; if (arc < 0) arc = ~arc;
-        (polygonsByArc[arc] || (polygonsByArc[arc] = [])).push(polygon);
+    function forEachArc(polygon, callback) {
+      for (var i = 0, n = polygon.length; i < n; ++i) {
+        for (var ring = polygon[i], j = 0, m = ring.length, arc; j < m; ++j) {
+          arc = ring[j];
+          callback(arc < 0 ? ~arc : arc, arc);
+        }
       }
+    }
+
+    function recordPolygon(polygon) {
+      forEachArc(polygon, function(arc) { (polygonsByArc[arc] || (polygonsByArc[arc] = [])).push(polygon); });
       polygons.push(polygon);
     }
 
@@ -147,9 +153,7 @@
           if (polygon.component) return;
           polygon.component = component;
           component.push(polygon);
-          for (var ring = polygon[0], i = 0, n = ring.length, arc; i < n; ++i) {
-            polygonsByArc[(arc = ring[i]) < 0 ? ~arc : arc].forEach(add);
-          }
+          forEachArc(polygon, function(arc) { polygonsByArc[arc].forEach(add); });
         })(polygon);
       }
     });
@@ -161,17 +165,14 @@
     return object(topology, {
       type: "MultiPolygon",
       arcs: components.map(function(polygons) {
-        for (var i = 0, n = polygons.length, exterior = [], rings = []; i < n; ++i) {
-          for (var polygon = polygons[i], ring = polygon[0], j = 0, m = ring.length, arc; j < m; ++j) {
-            arc = ring[j];
-            if (polygonsByArc[arc < 0 ? ~arc : arc].length === 1) exterior.push(arc);
-          }
-          for (var j = 1, m = polygon.length; j < m; ++j) {
-            rings.push(polygon[j]);
-          }
+        for (var i = 0, n = polygons.length, exterior = []; i < n; ++i) {
+          forEachArc(polygons[i], function(arc, signedArc) {
+            if (polygonsByArc[arc].length === 1) {
+              exterior.push(signedArc);
+            }
+          });
         }
-        rings.unshift(stitch(topology, exterior)[0]); // TODO leftover rings?
-        return rings;
+        return stitch(topology, exterior);
       })
     });
   }
