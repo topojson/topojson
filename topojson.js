@@ -73,7 +73,11 @@
     return fragments;
   }
 
-  function mesh(topology, o, filter) {
+  function mesh(topology) {
+    return object(topology, arcmesh.apply(this, arguments));
+  }
+
+  function arcmesh(topology, o, filter) {
     var arcs = [];
 
     if (arguments.length > 1) {
@@ -114,21 +118,62 @@
       for (var i = 0, n = topology.arcs.length; i < n; ++i) arcs.push(i);
     }
 
-    return object(topology, {type: "MultiLineString", arcs: stitch(topology, arcs)});
+    return {type: "MultiLineString", arcs: stitch(topology, arcs)};
   }
 
-  function merge(polygons) {
-    var arcs = [];
+  function merge(topology, objects) {
+    var polygonsByArc = {},
+        polygons = [],
+        components = [];
+
+    objects.forEach(function(o) {
+      if (o.type === "Polygon") recordPolygon(o.arcs);
+      else if (o.type === "MultiPolygon") o.arcs.forEach(recordPolygon);
+    });
+
+    function recordPolygon(polygon) {
+      for (var ring = polygon[0], i = 0, n = ring.length, arc; i < n; ++i) {
+        arc = ring[i]; if (arc < 0) arc = ~arc;
+        (polygonsByArc[arc] || (polygonsByArc[arc] = [])).push(polygon);
+      }
+      polygons.push(polygon);
+    }
 
     polygons.forEach(function(polygon) {
-      if (polygon.type === "Polygon") {
-        arcs.push(polygon.arcs);
-      } else if (polygon.type === "MultiPolygon") {
-        polygon.arcs.forEach(function(polygon) { arcs.push(polygon); });
+      if (!polygon.component) {
+        var component = [];
+        components.push(component);
+        (function add(polygon) {
+          if (polygon.component) return;
+          polygon.component = component;
+          component.push(polygon);
+          for (var ring = polygon[0], i = 0, n = ring.length, arc; i < n; ++i) {
+            polygonsByArc[(arc = ring[i]) < 0 ? ~arc : arc].forEach(add);
+          }
+        })(polygon);
       }
     });
 
-    return {type: "MultiPolygon", arcs: arcs}; // TODO
+    polygons.forEach(function(polygon) {
+      delete polygon.component;
+    });
+
+    return object(topology, {
+      type: "MultiPolygon",
+      arcs: components.map(function(polygons) {
+        for (var i = 0, n = polygons.length, exterior = [], rings = []; i < n; ++i) {
+          for (var polygon = polygons[i], ring = polygon[0], j = 0, m = ring.length, arc; j < m; ++j) {
+            arc = ring[j];
+            if (polygonsByArc[arc < 0 ? ~arc : arc].length === 1) exterior.push(arc);
+          }
+          for (var j = 1, m = polygon.length; j < m; ++j) {
+            rings.push(polygon[j]);
+          }
+        }
+        rings.unshift(stitch(topology, exterior)[0]); // TODO leftover rings?
+        return rings;
+      })
+    });
   }
 
   function featureOrCollection(topology, o) {
