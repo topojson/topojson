@@ -1,14 +1,16 @@
 !function() {
   var topojson = {
     version: "1.5.4",
-    mesh: mesh,
-    merge: merge,
+    mesh: function(topology) { return object(topology, meshArcs.apply(this, arguments)); },
+    meshArcs: meshArcs,
+    merge: function(topology) { return object(topology, mergeArcs.apply(this, arguments)); },
+    mergeArcs: mergeArcs,
     feature: featureOrCollection,
     neighbors: neighbors,
     presimplify: presimplify
   };
 
-  function stitch(topology, arcs) {
+  function stitchArcs(topology, arcs) {
     var stitchedArcs = {},
         fragmentByStart = {},
         fragmentByEnd = {},
@@ -82,11 +84,7 @@
     return fragments;
   }
 
-  function mesh(topology) {
-    return object(topology, arcmesh.apply(this, arguments));
-  }
-
-  function arcmesh(topology, o, filter) {
+  function meshArcs(topology, o, filter) {
     var arcs = [];
 
     if (arguments.length > 1) {
@@ -127,10 +125,10 @@
       for (var i = 0, n = topology.arcs.length; i < n; ++i) arcs.push(i);
     }
 
-    return {type: "MultiLineString", arcs: stitch(topology, arcs)};
+    return {type: "MultiLineString", arcs: stitchArcs(topology, arcs)};
   }
 
-  function merge(topology, objects) {
+  function mergeArcs(topology, objects) {
     var polygonsByArc = {},
         polygons = [],
         components = [];
@@ -175,7 +173,7 @@
       delete polygon._;
     });
 
-    return object(topology, {
+    return {
       type: "MultiPolygon",
       arcs: components.map(function(polygons) {
         var exterior = [];
@@ -188,9 +186,9 @@
             });
           });
         });
-        return stitch(topology, exterior);
+        return stitchArcs(topology, exterior);
       })
-    });
+    };
   }
 
   function featureOrCollection(topology, o) {

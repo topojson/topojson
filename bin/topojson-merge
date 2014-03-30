@@ -43,27 +43,28 @@ var argv = optimist
       if (argv._.length !== 1) throw new Error("one input file required");
       if (!argv.io) throw new Error("input object name required");
       if (!argv.oo) throw new Error("output object name required");
-      argv.k = new Function("d", "return " + argv.k);
+      if (argv.k) argv.k = new Function("d", "return " + argv.k);
     })
     .argv;
 
 if (argv.help) return optimist.showHelp();
 
-var topo = JSON.parse(fs.readFileSync(argv._[0], "utf8"));
+var topology = JSON.parse(fs.readFileSync(argv._[0], "utf8"));
 
-topo.objects[argv.oo] = {
+topology.objects[argv.oo] = argv.k ? {
   type: "GeometryCollection",
   geometries: d3.nest()
       .key(argv.k)
-      .entries(topo.objects[argv.io].geometries)
+      .entries(topology.objects[argv.io].geometries)
       .map(function(entry) {
-        var polygon = topojson.merge(entry.values);
-        polygon.id = argv.k(entry.values[0]);
+        var polygon = topojson.mergeArcs(topology, entry.values),
+            id = argv.k(entry.values[0]);
+        if (id != null) polygon.id = id;
         return polygon;
       })
-};
+} : topojson.mergeArcs(topology, topology.objects[argv.io].geometries);
 
 // Output JSON.
-var json = JSON.stringify(topo);
+var json = JSON.stringify(topology);
 if (argv.o === "/dev/stdout") console.log(json);
 else fs.writeFileSync(argv.o, json, "utf8");
