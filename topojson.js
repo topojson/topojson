@@ -127,51 +127,53 @@
         components = [];
 
     objects.forEach(function(o) {
-      if (o.type === "Polygon") recordPolygon(o.arcs);
-      else if (o.type === "MultiPolygon") o.arcs.forEach(recordPolygon);
+      if (o.type === "Polygon") register(o.arcs);
+      else if (o.type === "MultiPolygon") o.arcs.forEach(register);
     });
 
-    function forEachArc(polygon, callback) {
-      for (var i = 0, n = polygon.length; i < n; ++i) {
-        for (var ring = polygon[i], j = 0, m = ring.length, arc; j < m; ++j) {
-          arc = ring[j];
-          callback(arc < 0 ? ~arc : arc, arc);
-        }
-      }
-    }
-
-    function recordPolygon(polygon) {
-      forEachArc(polygon, function(arc) { (polygonsByArc[arc] || (polygonsByArc[arc] = [])).push(polygon); });
+    function register(polygon) {
+      polygon.forEach(function(ring) {
+        ring.forEach(function(arc) {
+          (polygonsByArc[arc = arc < 0 ? ~arc : arc] || (polygonsByArc[arc] = [])).push(polygon);
+        });
+      });
       polygons.push(polygon);
     }
 
     polygons.forEach(function(polygon) {
-      if (!polygon.component) {
+      if (!polygon._) {
         var component = [];
         components.push(component);
-        (function add(polygon) {
-          if (polygon.component) return;
-          polygon.component = component;
+        (function connect(polygon) {
+          if (polygon._) return;
+          polygon._ = 1;
           component.push(polygon);
-          forEachArc(polygon, function(arc) { polygonsByArc[arc].forEach(add); });
+          polygon.forEach(function(ring) {
+            ring.forEach(function(arc) {
+              polygonsByArc[arc < 0 ? ~arc : arc].forEach(connect);
+            });
+          });
         })(polygon);
       }
     });
 
     polygons.forEach(function(polygon) {
-      delete polygon.component;
+      delete polygon._;
     });
 
     return object(topology, {
       type: "MultiPolygon",
       arcs: components.map(function(polygons) {
-        for (var i = 0, n = polygons.length, exterior = []; i < n; ++i) {
-          forEachArc(polygons[i], function(arc, signedArc) {
-            if (polygonsByArc[arc].length === 1) {
-              exterior.push(signedArc);
-            }
+        var exterior = [];
+        polygons.forEach(function(polygon) {
+          polygon.forEach(function(ring) {
+            ring.forEach(function(arc) {
+              if (polygonsByArc[arc < 0 ? ~arc : arc].length < 2) {
+                exterior.push(arc);
+              }
+            });
           });
-        }
+        });
         return stitch(topology, exterior);
       })
     });
