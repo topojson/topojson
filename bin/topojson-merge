@@ -2,7 +2,8 @@
 
 var fs = require("fs");
 
-var topojson = require("../"),
+var d3 = require("d3"),
+    topojson = require("../"),
     optimist = require("optimist");
 
 var argv = optimist
@@ -50,7 +51,17 @@ if (argv.help) return optimist.showHelp();
 
 var topo = JSON.parse(fs.readFileSync(argv._[0], "utf8"));
 
-topo.objects[argv.oo] = topojson.merge(topo, topo.objects[argv.io], {key: argv.k});
+topo.objects[argv.oo] = {
+  type: "GeometryCollection",
+  geometries: d3.nest()
+      .key(argv.k)
+      .entries(topo.objects[argv.io].geometries)
+      .map(function(entry) {
+        var polygon = topojson.merge(entry.values);
+        polygon.id = argv.k(entry.values[0]);
+        return polygon;
+      })
+};
 
 // Output JSON.
 var json = JSON.stringify(topo);
