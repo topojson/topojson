@@ -12,7 +12,17 @@
     var stitchedArcs = {},
         fragmentByStart = {},
         fragmentByEnd = {},
-        fragments = [];
+        fragments = [],
+        emptyIndex = -1;
+
+    // Stitch empty arcs first, since they may be subsumed by other arcs.
+    // TODO Empty arcs should always have length 1?
+    arcs.forEach(function(i, j) {
+      var arc = topology.arcs[i < 0 ? ~i : i], t;
+      if (!arc[1] || !arc[2] && !arc[1][0] && !arc[1][1]) {
+        t = arcs[++emptyIndex], arcs[emptyIndex] = i, arcs[j] = t;
+      }
+    });
 
     arcs.forEach(function(i) {
       var e = ends(i),
