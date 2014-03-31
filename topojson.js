@@ -147,6 +147,10 @@
       polygons.push(polygon);
     }
 
+    function exterior(ring) {
+      return cartesianRingArea(object(topology, {type: "Polygon", arcs: [ring]}).coordinates[0]) > 0; // TODO allow spherical?
+    }
+
     polygons.forEach(function(polygon) {
       if (!polygon._) {
         var component = [],
@@ -176,17 +180,37 @@
     return {
       type: "MultiPolygon",
       arcs: components.map(function(polygons) {
-        var exterior = [];
+        var arcs = [];
+
+        // Extract the exterior (unique) arcs.
         polygons.forEach(function(polygon) {
           polygon.forEach(function(ring) {
             ring.forEach(function(arc) {
               if (polygonsByArc[arc < 0 ? ~arc : arc].length < 2) {
-                exterior.push(arc);
+                arcs.push(arc);
               }
             });
           });
         });
-        return stitchArcs(topology, exterior);
+
+        // Stitch the arcs into one or more rings.
+        arcs = stitchArcs(topology, arcs);
+
+        // If more than one ring is returned,
+        // at most one of these rings can be the exterior;
+        // this exterior ring has the same winding order
+        // as any exterior ring in the original polygons.
+        if ((n = arcs.length) > 1) {
+          var sgn = exterior(polygons[0][0]);
+          for (var i = 0, t; i < n; ++i) {
+            if (sgn === exterior(arcs[i])) {
+              t = arcs[0], arcs[0] = arcs[i], arcs[i] = t;
+              break;
+            }
+          }
+        }
+
+        return arcs;
       })
     };
   }
@@ -329,7 +353,7 @@
         maxArea = 0,
         triangle;
 
-    if (!triangleArea) triangleArea = cartesianArea;
+    if (!triangleArea) triangleArea = cartesianTriangleArea;
 
     topology.arcs.forEach(function(arc) {
       var triangles = [];
@@ -390,7 +414,17 @@
     return topology;
   };
 
-  function cartesianArea(triangle) {
+  function cartesianRingArea(ring) {
+    var i = 0,
+        n = ring.length,
+        area = ring[n - 1][1] * ring[0][0] - ring[n - 1][0] * ring[0][1];
+    while (++i < n) {
+      area += ring[i - 1][1] * ring[i][0] - ring[i - 1][0] * ring[i][1];
+    }
+    return -area * .5; // ensure clockwise pixel areas are positive
+  }
+
+  function cartesianTriangleArea(triangle) {
     return Math.abs(
       (triangle[0][0] - triangle[2][0]) * (triangle[1][1] - triangle[0][1])
       - (triangle[0][0] - triangle[1][0]) * (triangle[2][1] - triangle[0][1])
