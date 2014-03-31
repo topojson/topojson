@@ -87,7 +87,7 @@ suite.addBatch({
         }
       });
     },
-    "removes collapsed arcs": function() {
+    "does not remove collapsed arcs": function() {
       assert.deepEqual(prune({
         type: "Topology",
         arcs: [
@@ -106,13 +106,16 @@ suite.addBatch({
       }), {
         type: "Topology",
         arcs: [
+          [[0, 0], [0, 0]],
           [[0, 0], [2, 0]],
-          [[2, 0], [1, 0]]
+          [[2, 0], [0, 0]],
+          [[2, 0], [1, 0]],
+          [[3, 0], [0, 0]]
         ],
         objects: {
           foo: {
             type: "LineString",
-            arcs: [0, 1]
+            arcs: [0, 1, 2, 3, 4]
           }
         }
       });

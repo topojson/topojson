@@ -4,10 +4,12 @@ GENERATED_FILES = \
 	topojson.min.js \
 	examples/us-10m.json \
 	examples/world-50m.json \
-	examples/world-110m.json \
-	node_modules/us-atlas/topo/us-10m.json \
-	node_modules/world-atlas/topo/world-50m.json \
-	node_modules/world-atlas/topo/world-110m.json
+	examples/world-110m.json
+
+INTERMEDIATE_FILES = \
+	node_modules/us-atlas/topo/us-*10m.json \
+	node_modules/world-atlas/topo/world-*50m.json \
+	node_modules/world-atlas/topo/world-*110m.json
 
 .SECONDARY:
 
@@ -44,4 +46,4 @@ test: all
 	@npm test
 
 clean:
-	rm -f -- $(GENERATED_FILES)
+	rm -f -- $(GENERATED_FILES) $(INTERMEDIATE_FILES)

@@ -1,11 +1,11 @@
 var vows = require("vows"),
     assert = require("assert"),
-    quantize = require("../lib/topojson/quantize");
+    quantize = require("../lib/topojson/pre-quantize");
 
-var suite = vows.describe("quantize");
+var suite = vows.describe("pre-quantize");
 
 suite.addBatch({
-  "quantize": {
+  "pre-quantize": {
     "returns the quantization transform": function() {
       assert.deepEqual(quantize({}, [0, 0, 1, 1], 1e4), {
         scale: [1 / 9999, 1 / 9999],
