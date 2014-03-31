@@ -415,20 +415,24 @@
   };
 
   function cartesianRingArea(ring) {
-    var i = 0,
+    var i = -1,
         n = ring.length,
-        area = ring[n - 1][1] * ring[0][0] - ring[n - 1][0] * ring[0][1];
+        a,
+        b = ring[n - 1],
+        area = 0;
+
     while (++i < n) {
-      area += ring[i - 1][1] * ring[i][0] - ring[i - 1][0] * ring[i][1];
+      a = b;
+      b = ring[i];
+      area += a[0] * b[1] - a[1] * b[0];
     }
-    return -area * .5; // ensure clockwise pixel areas are positive
+
+    return area * .5;
   }
 
   function cartesianTriangleArea(triangle) {
-    return Math.abs(
-      (triangle[0][0] - triangle[2][0]) * (triangle[1][1] - triangle[0][1])
-      - (triangle[0][0] - triangle[1][0]) * (triangle[2][1] - triangle[0][1])
-    );
+    var a = triangle[0], b = triangle[1], c = triangle[2];
+    return Math.abs((a[0] - c[0]) * (b[1] - a[1]) - (a[0] - b[0]) * (c[1] - a[1]));
   }
 
   function compareArea(a, b) {
