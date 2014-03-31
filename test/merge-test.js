@@ -132,6 +132,30 @@ suite.addBatch({
         type: "MultiPolygon",
         coordinates: [[[[2, 0], [0, 0], [0, 3], [2, 3], [4, 3], [4, 0], [2, 0]], [[2, 2], [1, 2], [1, 1], [2, 1], [3, 1], [3, 2], [2, 2]]]]
       });
+    },
+
+    //
+    // +-------+-------+            +-------+-------+
+    // |       |       |            |               |
+    // |   +---+---+   |    ==>     |               |
+    // |   |   |   |   |            |               |
+    // |   +---+---+   |            |               |
+    // |       |       |            |               |
+    // +-------+-------+            +-------+-------+
+    //
+    "stitches together two horseshoe polygons surrounding two other polygons": function() {
+      var topology = topojson.topology({collection: {type: "FeatureCollection", features: [
+        {type: "Feature", geometry: {type: "Polygon", coordinates: [[[0, 0], [0, 3], [2, 3], [2, 2], [1, 2], [1, 1], [2, 1], [2, 0], [0, 0]]]}},
+        {type: "Feature", geometry: {type: "Polygon", coordinates: [[[2, 0], [2, 1], [3, 1], [3, 2], [2, 2], [2, 3], [4, 3], [4, 0], [2, 0]]]}},
+        {type: "Feature", geometry: {type: "Polygon", coordinates: [[[1, 1], [1, 2], [2, 2], [2, 1], [1, 1]]]}},
+        {type: "Feature", geometry: {type: "Polygon", coordinates: [[[2, 1], [2, 2], [3, 2], [3, 1], [2, 1]]]}}
+      ]}}, {
+        quantization: 0
+      });
+      assert.deepEqual(topojson.merge(topology, topology.objects.collection.geometries), {
+        type: "MultiPolygon",
+        coordinates: [[[[2, 0], [0, 0], [0, 3], [2, 3], [4, 3], [4, 0], [2, 0]]]]
+      });
     }
   }
 });
