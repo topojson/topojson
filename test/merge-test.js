@@ -34,7 +34,7 @@ suite.addBatch({
     // |    | |    |            |    | |    |
     // +----+ +----+            +----+ +----+
     //
-    "does not stitch together two disparate polygons": function() {
+    "does not stitch together two separated polygons": function() {
       var topology = topojson.topology({collection: {type: "FeatureCollection", features: [
         {type: "Feature", geometry: {type: "Polygon", coordinates: [[[0, 0], [0, 1], [1, 1], [1, 0], [0, 0]]]}},
         {type: "Feature", geometry: {type: "Polygon", coordinates: [[[2, 0], [2, 1], [3, 1], [3, 0], [2, 0]]]}}
