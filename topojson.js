@@ -1,6 +1,6 @@
 !function() {
   var topojson = {
-    version: "1.6.0",
+    version: "1.6.1",
     mesh: function(topology) { return object(topology, meshArcs.apply(this, arguments)); },
     meshArcs: meshArcs,
     merge: function(topology) { return object(topology, mergeArcs.apply(this, arguments)); },
