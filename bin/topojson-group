@@ -1,0 +1,88 @@
+#!/usr/bin/env node
+
+var fs = require("fs");
+
+var d3 = require("d3"),
+    topojson = require("../"),
+    optimist = require("optimist");
+
+var argv = optimist
+    .usage("Usage: \033[1mtopojson-group\033[0m [options] -- file\n\n"
+
++ "Version: " + topojson.version + "\n\n"
+
++ "Groups geometries with the same id into multi-geometries.")
+
+    .options("o", {
+      alias: "out",
+      describe: "output HTML file name",
+      default: "/dev/stdout",
+    })
+    .options("help", {
+      describe: "display this helpful message",
+      type: "boolean",
+      default: false
+    })
+    .check(function(argv) {
+      if (argv.help) return;
+      if (argv._.length !== 1) throw new Error("one input file required");
+    })
+    .argv;
+
+if (argv.help) return optimist.showHelp();
+
+var topology = JSON.parse(fs.readFileSync(argv._[0], "utf8"));
+
+for (var key in topology.objects) {
+  var object = topology.objects[key];
+
+  if (object.geometries) {
+    var groupById = d3.map(),
+        groups = [];
+
+    object.geometries.forEach(function(geometry) {
+      var group = groupById.get(geometry.id);
+      if (group) group.push(geometry);
+      else groups.push(groupById.set(geometry.id, [geometry]));
+    });
+
+    object.geometries = groups.map(function(group) {
+      return group.length === 1 ? group[0] : multi(group);
+    });
+  }
+}
+
+// Output JSON.
+var json = JSON.stringify(topology);
+if (argv.o === "/dev/stdout") console.log(json);
+else fs.writeFileSync(argv.o, json, "utf8");
+
+function multi(geometries) {
+  var type = geometries[0].type,
+      arcs = [],
+      properties = {};
+
+  geometries.forEach(function(geometry) {
+    for (var key in geometry.properties) {
+      if (key in properties) {
+        if (properties[key] !== geometry.properties[key]) {
+          properties[key] = undefined;
+        }
+      } else {
+        properties[key] = geometry.properties[key];
+      }
+    }
+    if (/^Multi/.test(geometry.type)) {
+      geometry.arcs.forEach(function(arc) { arcs.push(arc); });
+    } else {
+      arcs.push(geometry.arcs);
+    }
+  });
+
+  return {
+    id: geometries[0].id,
+    properties: properties,
+    type: /^Multi/.test(type) ? type : "Multi" + type,
+    arcs: arcs
+  };
+}
