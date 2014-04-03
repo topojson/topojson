@@ -30,7 +30,8 @@
   },
   "bin": {
     "topojson": "./bin/topojson",
-    "topojson-merge": "./bin/topojson-merge"
+    "topojson-merge": "./bin/topojson-merge",
+    "topojson-group": "./bin/topojson-group"
   },
   "scripts": {
     "test": "vows; echo"
