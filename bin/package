@@ -34,8 +34,9 @@ console.log(JSON.stringify({
   },
   "bin": {
     "topojson": "./bin/topojson",
-    "topojson-merge": "./bin/topojson-merge",
-    "topojson-group": "./bin/topojson-group"
+    "topojson-geojson": "./bin/topojson-geojson",
+    "topojson-group": "./bin/topojson-group",
+    "topojson-merge": "./bin/topojson-merge"
   },
   "scripts": {
     "test": "vows; echo"
