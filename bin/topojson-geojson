@@ -38,7 +38,6 @@ var precision = Math.pow(10, argv.precision), round = isNaN(precision)
 
 // Convert TopoJSON back to GeoJSON.
 argv._.forEach(function(file) {
-  console.log(file);
   var topology = JSON.parse(fs.readFileSync(file, "utf-8"));
   for (var key in topology.objects) {
     var object = topojson.feature(topology, topology.objects[key]);
