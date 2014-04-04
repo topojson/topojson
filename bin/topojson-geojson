@@ -7,7 +7,7 @@ var path = require("path"),
     topojson = require("../");
 
 var argv = optimist
-    .usage("Usage: \033[1mgeojson\033[0m [options] [file …]\n\n"
+    .usage("Usage: \033[1mtopojson-geojson\033[0m [options] [file …]\n\n"
 
 + "Converts the specified input TopoJSON objects to GeoJSON.")
 
@@ -38,6 +38,7 @@ var precision = Math.pow(10, argv.precision), round = isNaN(precision)
 
 // Convert TopoJSON back to GeoJSON.
 argv._.forEach(function(file) {
+  console.log(file);
   var topology = JSON.parse(fs.readFileSync(file, "utf-8"));
   for (var key in topology.objects) {
     var object = topojson.feature(topology, topology.objects[key]);
