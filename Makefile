@@ -7,9 +7,8 @@ GENERATED_FILES = \
 	examples/world-110m.json
 
 INTERMEDIATE_FILES = \
-	node_modules/us-atlas/topo/us-*10m.json \
-	node_modules/world-atlas/topo/world-*50m.json \
-	node_modules/world-atlas/topo/world-*110m.json
+	node_modules/us-atlas/topo/us-*.json \
+	node_modules/world-atlas/topo/world-*.json
 
 .SECONDARY:
 

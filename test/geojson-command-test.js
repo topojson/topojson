@@ -5,7 +5,7 @@ var fs = require("fs"),
     vows = require("vows"),
     assert = require("./assert");
 
-var suite = vows.describe("bin/geojson");
+var suite = vows.describe("bin/topojson-geojson");
 
 var tmpprefix = "geojson-command-test-" + process.pid + "-",
     testId = Math.random() * 0xffff | 0;
@@ -47,7 +47,7 @@ function testConversion(output, options) {
   return {
     topic: function() {
       var callback = this.callback;
-      child.exec("bin/geojson -o " + tmpdir + " " + options, function(error) {
+      child.exec("bin/topojson-geojson -o " + tmpdir + " " + options, function(error) {
         if (error) return void callback(error);
         var actual = {};
         fs.readdirSync(tmpdir).forEach(function(file) {

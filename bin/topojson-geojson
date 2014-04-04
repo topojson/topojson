@@ -7,7 +7,7 @@ var path = require("path"),
     topojson = require("../");
 
 var argv = optimist
-    .usage("Usage: \033[1mgeojson\033[0m [options] [file …]\n\n"
+    .usage("Usage: \033[1mtopojson-geojson\033[0m [options] [file …]\n\n"
 
 + "Converts the specified input TopoJSON objects to GeoJSON.")
 
