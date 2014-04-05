@@ -3,8 +3,9 @@
 var fs = require("fs");
 
 var d3 = require("d3"),
+    optimist = require("optimist"),
     topojson = require("../"),
-    optimist = require("optimist");
+    mergeProperties = require("../lib/topojson/merge-properties");
 
 var argv = optimist
     .usage("Usage: \033[1mtopojson-merge\033[0m --io=src --oo=dst [options] -- file\n\n"
@@ -33,6 +34,11 @@ var argv = optimist
       describe: "expression defining which geometries to merge, given d",
       default: "d.id"
     })
+    .options("p", {
+      alias: "properties",
+      describe: "properties to preserve in merged objects (if consistent)",
+      default: true
+    })
     .options("help", {
       describe: "display this helpful message",
       type: "boolean",
@@ -58,23 +64,16 @@ topology.objects[argv.oo] = argv.k ? {
       .entries(topology.objects[argv.io].geometries)
       .map(function(entry) {
         var polygon = topojson.mergeArcs(topology, entry.values),
-            id = argv.k(entry.values[0]),
-            properties = entry.values[0].properties;
+            id = argv.k(entry.values[0]);
+
         if (id != null) polygon.id = id;
-        if (properties != null) {
-          entry.values.forEach(function(geometry) {
-            for (var key in geometry.properties) {
-              if (key in properties) {
-                if (properties[key] !== geometry.properties[key]) {
-                  properties[key] = undefined;
-                }
-              } else {
-                properties[key] = geometry.properties[key];
-              }
-            }
-          });
-          polygon.properties = properties;
+
+        if (argv.p) {
+          var properties = mergeProperties();
+          entry.values.forEach(properties.merge);
+          properties.apply(polygon);
         }
+
         return polygon;
       })
 } : topojson.mergeArcs(topology, topology.objects[argv.io].geometries);
