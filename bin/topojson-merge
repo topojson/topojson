@@ -58,8 +58,23 @@ topology.objects[argv.oo] = argv.k ? {
       .entries(topology.objects[argv.io].geometries)
       .map(function(entry) {
         var polygon = topojson.mergeArcs(topology, entry.values),
-            id = argv.k(entry.values[0]);
+            id = argv.k(entry.values[0]),
+            properties = entry.values[0].properties;
         if (id != null) polygon.id = id;
+        if (properties != null) {
+          entry.values.forEach(function(geometry) {
+            for (var key in geometry.properties) {
+              if (key in properties) {
+                if (properties[key] !== geometry.properties[key]) {
+                  properties[key] = undefined;
+                }
+              } else {
+                properties[key] = geometry.properties[key];
+              }
+            }
+          });
+          polygon.properties = properties;
+        }
         return polygon;
       })
 } : topojson.mergeArcs(topology, topology.objects[argv.io].geometries);
