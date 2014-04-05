@@ -3,8 +3,9 @@
 var fs = require("fs");
 
 var d3 = require("d3"),
+    optimist = require("optimist"),
     topojson = require("../"),
-    optimist = require("optimist");
+    mergeProperties = require("../lib/topojson/merge-properties");
 
 var argv = optimist
     .usage("Usage: \033[1mtopojson-group\033[0m [options] -- file\n\n"
@@ -17,6 +18,11 @@ var argv = optimist
       alias: "out",
       describe: "output HTML file name",
       default: "/dev/stdout",
+    })
+    .options("p", {
+      alias: "properties",
+      describe: "properties to preserve in grouped objects (if consistent)",
+      default: true
     })
     .options("help", {
       describe: "display this helpful message",
@@ -59,19 +65,9 @@ else fs.writeFileSync(argv.o, json, "utf8");
 
 function multi(geometries) {
   var type = geometries[0].type,
-      arcs = [],
-      properties = {};
+      arcs = [];
 
   geometries.forEach(function(geometry) {
-    for (var key in geometry.properties) {
-      if (key in properties) {
-        if (properties[key] !== geometry.properties[key]) {
-          properties[key] = undefined;
-        }
-      } else {
-        properties[key] = geometry.properties[key];
-      }
-    }
     if (/^Multi/.test(geometry.type)) {
       geometry.arcs.forEach(function(arc) { arcs.push(arc); });
     } else {
@@ -79,10 +75,17 @@ function multi(geometries) {
     }
   });
 
-  return {
+  var geometry = {
     id: geometries[0].id,
-    properties: properties,
     type: /^Multi/.test(type) ? type : "Multi" + type,
     arcs: arcs
   };
+
+  if (argv.p) {
+    var properties = mergeProperties();
+    geometries.forEach(properties.merge);
+    properties.apply(geometry);
+  }
+
+  return geometry;
 }
