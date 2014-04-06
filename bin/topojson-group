@@ -31,13 +31,13 @@ var argv = optimist
     })
     .check(function(argv) {
       if (argv.help) return;
-      if (argv._.length !== 1) throw new Error("one input file required");
+      if (argv._.length > 1) throw new Error("maximum one input file allowed");
     })
     .argv;
 
 if (argv.help) return optimist.showHelp();
 
-var topology = JSON.parse(fs.readFileSync(argv._[0], "utf8"));
+var topology = JSON.parse(fs.readFileSync(argv._[0] || "/dev/stdin", "utf8"));
 
 for (var key in topology.objects) {
   var object = topology.objects[key];
