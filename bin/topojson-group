@@ -4,6 +4,7 @@ var fs = require("fs");
 
 var d3 = require("d3"),
     optimist = require("optimist"),
+    rw = require("rw"),
     topojson = require("../"),
     mergeProperties = require("../lib/topojson/merge-properties");
 
@@ -37,7 +38,7 @@ var argv = optimist
 
 if (argv.help) return optimist.showHelp();
 
-var topology = JSON.parse(fs.readFileSync(argv._[0] || "/dev/stdin", "utf8"));
+var topology = JSON.parse(rw.readSync(argv._[0] || "/dev/stdin", "utf8"));
 
 for (var key in topology.objects) {
   var object = topology.objects[key];
@@ -60,8 +61,7 @@ for (var key in topology.objects) {
 
 // Output JSON.
 var json = JSON.stringify(topology);
-if (argv.o === "/dev/stdout") console.log(json);
-else fs.writeFileSync(argv.o, json, "utf8");
+rw.writeSync(argv.o, json, "utf8");
 
 function multi(geometries) {
   var type = geometries[0].type,
