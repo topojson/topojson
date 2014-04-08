@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 var path = require("path"),
-    fs = require("fs"),
+    rw = require("rw"),
     d3 = require("d3"),
     optimist = require("optimist"),
     shapefile = require("shapefile"),
@@ -152,7 +152,7 @@ var argv = optimist
     .check(function(argv) {
       if (argv.help) return;
       if (argv.version) return console.log(topojson.version), process.exit(0);
-      if (!argv._.length) throw new Error("input required");
+      if (!argv._.length) argv._ = ["/dev/stdin"];
       if (+argv.s && +argv["simplify-proportion"]) throw new Error("--simplify and --simplify-proportion are exclusive");
       if (+argv["simplify-proportion"] < 0 || +argv["simplify-proportion"] >= 1) throw new Error("--simplify-proportion must be between 0 and 1");
       if (argv["allow-empty"]) argv.filter = "none";
@@ -203,7 +203,7 @@ q.await(output);
 function inputDsv(dsv) {
   return function(file, callback) {
     file = qualify(file);
-    fs.readFile(file.path, "utf8", function(error, text) {
+    rw.read(file.path, "utf8", function(error, text) {
       if (error) return callback(error);
 
       objects[file.name] = {
@@ -242,7 +242,7 @@ function inputShapefile(file, callback) {
 function inputJson(file, callback) {
   file = qualify(file);
 
-  var object = JSON.parse(fs.readFileSync(file.path));
+  var object = JSON.parse(rw.readSync(file.path, "utf8"));
 
   if (object.type === "Topology") {
     for (var key in object.objects) {
@@ -310,9 +310,7 @@ function output(error) {
   if (!argv["bbox"]) delete object.bbox;
 
   // Output JSON.
-  var json = JSON.stringify(object);
-  if (argv.o === "/dev/stdout") console.log(json);
-  else fs.writeFileSync(argv.o, json, "utf8");
+  rw.writeSync(argv.o, JSON.stringify(object), "utf8");
 }
 
 function qualify(file) {
@@ -366,7 +364,7 @@ function parsePropertyTransform(properties) {
 }
 
 function readExternalProperties(file) {
-  var text = fs.readFileSync(file, "utf-8");
+  var text = rw.readSync(file, "utf8");
 
   // Infer the file type from the name.
   // If that doesn't work, look for a tab and hope for the best!

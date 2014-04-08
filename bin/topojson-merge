@@ -4,6 +4,7 @@ var fs = require("fs");
 
 var d3 = require("d3"),
     optimist = require("optimist"),
+    rw = require("rw"),
     topojson = require("../"),
     mergeProperties = require("../lib/topojson/merge-properties");
 
@@ -46,7 +47,8 @@ var argv = optimist
     })
     .check(function(argv) {
       if (argv.help) return;
-      if (argv._.length !== 1) throw new Error("one input file required");
+      if (argv._.length > 1) throw new Error("at most one input file allowed");
+      if (!argv._.length) argv._[0] = "/dev/stdin";
       if (!argv.io) throw new Error("input object name required");
       if (!argv.oo) throw new Error("output object name required");
       if (argv.k) argv.k = new Function("d", "return " + argv.k);
@@ -55,7 +57,7 @@ var argv = optimist
 
 if (argv.help) return optimist.showHelp();
 
-var topology = JSON.parse(fs.readFileSync(argv._[0], "utf8"));
+var topology = JSON.parse(rw.readSync(argv._[0], "utf8"));
 
 topology.objects[argv.oo] = argv.k ? {
   type: "GeometryCollection",
@@ -79,6 +81,4 @@ topology.objects[argv.oo] = argv.k ? {
 } : topojson.mergeArcs(topology, topology.objects[argv.io].geometries);
 
 // Output JSON.
-var json = JSON.stringify(topology);
-if (argv.o === "/dev/stdout") console.log(json);
-else fs.writeFileSync(argv.o, json, "utf8");
+rw.writeSync(argv.o, JSON.stringify(topology), "utf8");
