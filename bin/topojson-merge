@@ -80,5 +80,7 @@ topology.objects[argv.oo] = argv.k ? {
       })
 } : topojson.mergeArcs(topology, topology.objects[argv.io].geometries);
 
+topojson.prune(topology, {verbose: true});
+
 // Output JSON.
 rw.writeSync(argv.o, JSON.stringify(topology), "utf8");
