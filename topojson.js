@@ -1,6 +1,6 @@
 !function() {
   var topojson = {
-    version: "1.6.7",
+    version: "1.6.8",
     mesh: function(topology) { return object(topology, meshArcs.apply(this, arguments)); },
     meshArcs: meshArcs,
     merge: function(topology) { return object(topology, mergeArcs.apply(this, arguments)); },
@@ -349,7 +349,7 @@
   function presimplify(topology, triangleArea) {
     var absolute = transformAbsolute(topology.transform),
         relative = transformRelative(topology.transform),
-        heap = minHeap(compareArea),
+        heap = minAreaHeap(),
         maxArea = 0,
         triangle;
 
@@ -439,61 +439,51 @@
     return a[1][2] - b[1][2];
   }
 
-  function minHeap(compare) {
+  function minAreaHeap() {
     var heap = {},
-        array = [];
+        array = [],
+        size = 0;
 
-    heap.push = function() {
-      for (var i = 0, n = arguments.length; i < n; ++i) {
-        var object = arguments[i];
-        up(object.index = array.push(object) - 1);
-      }
-      return array.length;
+    heap.push = function(object) {
+      up(array[object._ = size] = object, size++);
+      return size;
     };
 
     heap.pop = function() {
-      var removed = array[0],
-          object = array.pop();
-      if (array.length) {
-        array[object.index = 0] = object;
-        down(0);
-      }
+      if (size <= 0) return;
+      var removed = array[0], object;
+      if (--size > 0) object = array[size], down(array[object._ = 0] = object, 0);
       return removed;
     };
 
     heap.remove = function(removed) {
-      var i = removed.index,
-          object = array.pop();
-      if (i !== array.length) {
-        array[object.index = i] = object;
-        (compare(object, removed) < 0 ? up : down)(i);
-      }
+      var i = removed._, object;
+      if (array[i] !== removed) return; // invalid request
+      if (i !== --size) object = array[size], (compareArea(object, removed) < 0 ? up : down)(array[object._ = i] = object, i);
       return i;
     };
 
-    function up(i) {
-      var object = array[i];
+    function up(object, i) {
       while (i > 0) {
-        var up = ((i + 1) >> 1) - 1,
-            parent = array[up];
-        if (compare(object, parent) >= 0) break;
-        array[parent.index = i] = parent;
-        array[object.index = i = up] = object;
+        var j = ((i + 1) >> 1) - 1,
+            parent = array[j];
+        if (compareArea(object, parent) >= 0) break;
+        array[parent._ = i] = parent;
+        array[object._ = i = j] = object;
       }
     }
 
-    function down(i) {
-      var object = array[i];
+    function down(object, i) {
       while (true) {
-        var right = (i + 1) << 1,
-            left = right - 1,
-            down = i,
-            child = array[down];
-        if (left < array.length && compare(array[left], child) < 0) child = array[down = left];
-        if (right < array.length && compare(array[right], child) < 0) child = array[down = right];
-        if (down === i) break;
-        array[child.index = i] = child;
-        array[object.index = i = down] = object;
+        var r = (i + 1) << 1,
+            l = r - 1,
+            j = i,
+            child = array[j];
+        if (l < size && compareArea(array[l], child) < 0) child = array[j = l];
+        if (r < size && compareArea(array[r], child) < 0) child = array[j = r];
+        if (j === i) break;
+        array[child._ = i] = child;
+        array[object._ = i = j] = object;
       }
     }
 
