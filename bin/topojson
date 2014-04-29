@@ -283,6 +283,9 @@ function output(error) {
   // Convert GeoJSON to TopoJSON.
   var object = topojson.topology(objects, options);
 
+  // Clear the input objects hash to allow garbage collection.
+  objects = null;
+
   // Translate and scale to fit the viewport.
   if (argv.width || argv.height) {
     if (options["coordinate-system"] !== "cartesian") throw new Error("--width and --height require Cartesian coordinates");
