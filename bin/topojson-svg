@@ -29,6 +29,10 @@ var argv = optimist
       describe: "height of the output SVG",
       default: null
     })
+    .options("precision", {
+      describe: "number of digits after the decimal place to output",
+      default: undefined
+    })
     .options("help", {
       describe: "display this helpful message",
       type: "boolean",
@@ -43,9 +47,18 @@ var argv = optimist
 
 if (argv.help) return optimist.showHelp();
 
+var precision = Math.pow(10, argv.precision);
+
 var topology = JSON.parse(rw.readSync(argv._[0], "utf8"));
 
-var path = d3.geo.path().projection(null);
+var path = d3.geo.path().projection(isNaN(precision) ? null : d3.geo.transform({
+  point: function(x, y) {
+    this.stream.point(
+      Math.round(x * precision) / precision,
+      Math.round(y * precision) / precision
+    );
+  }
+}));
 
 var out = argv.o === "/dev/stdout"
     ? process.stdout
