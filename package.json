@@ -33,7 +33,8 @@
     "topojson": "./bin/topojson",
     "topojson-geojson": "./bin/topojson-geojson",
     "topojson-group": "./bin/topojson-group",
-    "topojson-merge": "./bin/topojson-merge"
+    "topojson-merge": "./bin/topojson-merge",
+    "topojson-svg": "./bin/topojson-svg"
   },
   "scripts": {
     "test": "vows; echo"
