@@ -41,10 +41,13 @@ var out = argv.o === "/dev/stdout"
     ? process.stdout
     : fs.createWriteStream(argv.o, "utf8");
 
-out.write("<svg>" + os.EOL);
+
+out.write("<?xml version=\"1.0\" encoding=\"utf-8\"?>" + os.EOL);
+out.write("<!DOCTYPE svg PUBLIC \"-//W3C//DTD SVG 1.1//EN\" \"http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd\">" + os.EOL);
+out.write("<svg version=\"1.1\" xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\">" + os.EOL);
 
 for (var key in topology.objects) {
-  out.write("  <g id=\"" + quote(key) + "\">" + os.EOL);
+  out.write("  <g id=\"object-" + quote(key) + "\">" + os.EOL);
   var object = topology.objects[key];
   if (object.type === "GeometryCollection") object.geometries.forEach(outputGeometry);
   else outputGeometry(object);
@@ -61,6 +64,6 @@ function quote(string) {
 
 function outputGeometry(geometry) {
   out.write("    <path ");
-  if (geometry.id != null) out.write("id=\"" + quote(geometry.id + "") + "\" ");
+  if (geometry.id != null) out.write("id=\"feature-" + quote(geometry.id + "") + "\" ");
   out.write("d=\"" + path(topojson.feature(topology, geometry)) + "\"></path>" + os.EOL);
 }
