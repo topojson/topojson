@@ -1,6 +1,6 @@
 {
   "name": "topojson",
-  "version": "1.6.8",
+  "version": "1.6.9",
   "description": "An extension to GeoJSON that encodes topology.",
   "keywords": [
     "geojson",
@@ -33,7 +33,8 @@
     "topojson": "./bin/topojson",
     "topojson-geojson": "./bin/topojson-geojson",
     "topojson-group": "./bin/topojson-group",
-    "topojson-merge": "./bin/topojson-merge"
+    "topojson-merge": "./bin/topojson-merge",
+    "topojson-svg": "./bin/topojson-svg"
   },
   "scripts": {
     "test": "vows; echo"
