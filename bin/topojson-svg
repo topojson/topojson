@@ -89,7 +89,8 @@ function quote(string) {
 }
 
 function outputGeometry(geometry) {
-  out.write("    <path ");
-  if (geometry.id != null) out.write("id=\"feature-" + quote(geometry.id + "") + "\" ");
-  out.write("d=\"" + path(topojson.feature(topology, geometry)) + "\"></path>" + os.EOL);
+  out.write("    <path");
+  if (geometry.id != null) out.write(" id=\"feature-" + quote(geometry.id + "") + "\"");
+  var d = path(topojson.feature(topology, geometry));
+  out.write((d == null ? "" : " d=\"" + d + "\"") + "></path>" + os.EOL);
 }
