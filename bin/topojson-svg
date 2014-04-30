@@ -12,12 +12,22 @@ var argv = optimist
 
 + "Version: " + topojson.version + "\n\n"
 
-+ "Converts a TopoJSON file to SVG.")
++ "Converts a TopoJSON file to SVG. Assumes the input is already projected\n"
++ "and simplified as needed; if not, use \033[1mtopojson\033[0m to process the TopoJSON\n"
++ "file first, and then pass the output to this program.")
 
     .options("o", {
       alias: "out",
       describe: "output SVG file name",
       default: "/dev/stdout"
+    })
+    .options("width", {
+      describe: "width of the output SVG",
+      default: null
+    })
+    .options("height", {
+      describe: "height of the output SVG",
+      default: null
     })
     .options("help", {
       describe: "display this helpful message",
@@ -41,10 +51,13 @@ var out = argv.o === "/dev/stdout"
     ? process.stdout
     : fs.createWriteStream(argv.o, "utf8");
 
-
 out.write("<?xml version=\"1.0\" encoding=\"utf-8\"?>" + os.EOL);
 out.write("<!DOCTYPE svg PUBLIC \"-//W3C//DTD SVG 1.1//EN\" \"http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd\">" + os.EOL);
-out.write("<svg version=\"1.1\" xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\">" + os.EOL);
+out.write("<svg version=\"1.1\" xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\""
+  + (argv.width == null ? "" : " width=\"" + +argv.width + "\"")
+  + (argv.height == null ? "" : " height=\"" + +argv.height + "\"")
+  + (argv.width == null || argv.height == null ? "" : " viewBox=\"0 0 " + +argv.width + " " + +argv.height + "\"")
+  + ">" + os.EOL);
 
 for (var key in topology.objects) {
   out.write("  <g id=\"object-" + quote(key) + "\">" + os.EOL);
