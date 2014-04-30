@@ -1,0 +1,66 @@
+#!/usr/bin/env node
+
+var fs = require("fs"),
+    os = require("os"),
+    rw = require("rw"),
+    d3 = require("d3"),
+    optimist = require("optimist"),
+    topojson = require("../");
+
+var argv = optimist
+    .usage("Usage: \033[1mtopojson-svg\033[0m [options] -- file\n\n"
+
++ "Version: " + topojson.version + "\n\n"
+
++ "Converts a TopoJSON file to SVG.")
+
+    .options("o", {
+      alias: "out",
+      describe: "output SVG file name",
+      default: "/dev/stdout"
+    })
+    .options("help", {
+      describe: "display this helpful message",
+      type: "boolean",
+      default: false
+    })
+    .check(function(argv) {
+      if (argv.help) return;
+      if (argv._.length > 1) throw new Error("at most one input file allowed");
+      if (!argv._.length) argv._ = ["/dev/stdin"];
+    })
+    .argv;
+
+if (argv.help) return optimist.showHelp();
+
+var topology = JSON.parse(rw.readSync(argv._[0], "utf8"));
+
+var path = d3.geo.path().projection(null);
+
+var out = argv.o === "/dev/stdout"
+    ? process.stdout
+    : fs.createWriteStream(argv.o, "utf8");
+
+out.write("<svg>" + os.EOL);
+
+for (var key in topology.objects) {
+  out.write("  <g id=\"" + quote(key) + "\">" + os.EOL);
+  var object = topology.objects[key];
+  if (object.type === "GeometryCollection") object.geometries.forEach(outputGeometry);
+  else outputGeometry(object);
+  out.write("  </g>" + os.EOL);
+}
+
+out.write("</svg>" + os.EOL);
+
+if (out !== process.stdout) fs.close();
+
+function quote(string) {
+  return string.replace(/"/g, "&quot;");
+}
+
+function outputGeometry(geometry) {
+  out.write("    <path ");
+  if (geometry.id != null) out.write("id=\"" + quote(geometry.id + "") + "\" ");
+  out.write("d=\"" + path(topojson.feature(topology, geometry)) + "\"></path>" + os.EOL);
+}
