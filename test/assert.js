@@ -10,9 +10,9 @@ assert.inDelta = function(actual, expected, delta, message) {
 };
 
 function inDelta(actual, expected, delta) {
-  if (Array.isArray(expected)) return inDeltaArray(actual, expected, delta);
-  if (typeof expected === "number") return inDeltaNumber(actual, expected, delta);
-  if (typeof expected === "object") return inDeltaObject(actual, expected, delta);
+  if (Array.isArray(expected)) return Array.isArray(actual) && inDeltaArray(actual, expected, delta);
+  if (typeof expected === "number") return typeof actual === "number" && inDeltaNumber(actual, expected, delta);
+  if (typeof expected === "object") return typeof actual === "object" && inDeltaObject(actual, expected, delta);
   return actual == expected;
 }
 

@@ -1,0 +1,23 @@
+{
+  "type": "Topology",
+  "objects": {
+    "properties": {
+      "type": "GeometryCollection",
+      "geometries": [
+        {
+          "type": null,
+          "id": "HELLO"
+        },
+        {
+          "type": null,
+          "id": "HELLO"
+        },
+        {
+          "type": null,
+          "id": "HELLO"
+        }
+      ]
+    }
+  },
+  "arcs": []
+}

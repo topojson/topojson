@@ -1,0 +1,32 @@
+{
+  "type": "Topology",
+  "objects": {
+    "properties": {
+      "type": "GeometryCollection",
+      "geometries": [
+        {
+          "type": null,
+          "properties": {
+            "number": 42,
+            "boolean": true,
+            "string": "hello"
+          }
+        },
+        {
+          "type": null,
+          "properties": {
+            "boolean": true,
+            "string": "hello"
+          }
+        },
+        {
+          "type": null,
+          "properties": {
+            "string": "hello"
+          }
+        }
+      ]
+    }
+  },
+  "arcs": []
+}

@@ -180,7 +180,7 @@ id = id == null
     : parsePropertyId(typeof id === "string" ? id.split(",") : id);
 
 // Create the property transform function.
-var propertyTransform = argv.p === true ? function(o, k, v) { o[k] = v; return true; }
+var propertyTransform = argv.p === true ? function(properties) { return properties; }
     : argv.p === false ? function() {}
     : parsePropertyTransform(argv.p);
 
@@ -324,12 +324,16 @@ function qualify(file) {
   };
 }
 
+function parsePropertyExpression(property) {
+  return new Function("properties", "with(properties) return " + property);
+}
+
 function parsePropertyId(properties) {
+  properties = properties.map(parsePropertyExpression);
   return function(d) {
-    if (d.properties) d = d.properties;
     var id;
-    properties.some(function(p) {
-      id = /^\+/.test(p) ? +d[p.substring(1)] : d[p];
+    if (d = d.properties) properties.some(function(p) {
+      try { id = p(d); } catch (e) { return; }
       if (id == null) return;
       else if (typeof id === "number") isNaN(id) && (id = null);
       else if (typeof id !== "string") id = id + "";
@@ -340,29 +344,30 @@ function parsePropertyId(properties) {
 }
 
 function parsePropertyTransform(properties) {
-  var transforms = {};
+  var expressions = {};
+
   properties.forEach(function(target) {
     var i = target.indexOf("="),
-        source = target,
-        number;
+        source = target;
 
     if (i >= 0) {
       source = target.substring(i + 1);
       target = target.substring(0, i);
+    } else if (/^\+/.test(source)) {
+      target = source.substring(1);
     }
 
-    if (number = /^\+/.test(source)) {
-      source = source.substring(1);
-      if (i < 0) target = source;
-    }
-
-    transforms[source] = number
-        ? function(properties, value) { properties[target] = +value; }
-        : function(properties, value) { properties[target] = value; };
+    expressions[target] = parsePropertyExpression(source);
   });
-  return function(properties, key, value) {
-    var transform = transforms[key];
-    return transform && value != null && (transform(properties, value), true);
+
+  return function(properties0) {
+    var properties1 = {};
+    for (var key in expressions) {
+      try {
+        properties1[key] = expressions[key](properties0);
+      } catch (ignore) {}
+    }
+    return properties1;
   };
 }
 

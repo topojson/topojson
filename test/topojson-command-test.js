@@ -51,6 +51,46 @@ suite.addBatch({
     + " multipolygon=test/geojson/empty-multipolygon.json"
     + " multipolygon2=test/geojson/empty-multipolygon2.json"
     + " polygon=test/geojson/empty-polygon.json"
+  ),
+
+  "Pass-through properties": testConversion(
+    "properties",
+    "--no-quantization"
+    + " --filter=none"
+    + " --properties"
+    + " -- properties=test/geojson/properties.json"
+  ),
+
+  "Computed property from coerced number": testConversion(
+    "properties-number",
+    "--no-quantization"
+    + " --filter=none"
+    + " --properties=+boolean"
+    + " -- properties=test/geojson/properties.json"
+  ),
+
+  "Computed property from expression": testConversion(
+    "properties-number",
+    "--no-quantization"
+    + " --filter=none"
+    + " --properties='boolean=boolean?1:null'"
+    + " -- properties=test/geojson/properties.json"
+  ),
+
+  "Computed id property from multiple candidates": testConversion(
+    "properties-id-fallback",
+    "--no-quantization"
+    + " --filter=none"
+    + " --id-property=number,boolean,string"
+    + " -- properties=test/geojson/properties.json"
+  ),
+
+  "Computed id property from expression": testConversion(
+    "properties-id-computed",
+    "--no-quantization"
+    + " --filter=none"
+    + " --id-property='string.toUpperCase()'"
+    + " -- properties=test/geojson/properties.json"
   )
 });
 

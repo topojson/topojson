@@ -34,9 +34,10 @@ suite.addBatch({
             coordinates: [0]
           }
         }
-      }, function(properties, key, value) {
-        properties.bar = value;
-        return true;
+      }, function(properties) {
+        return {
+          bar: properties.foo
+        };
       }).foo, {
         type: "Feature",
         properties: {"bar": 42},
