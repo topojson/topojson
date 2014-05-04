@@ -180,7 +180,7 @@ id = id == null
     : parsePropertyId(typeof id === "string" ? id.split(",") : id);
 
 // Create the property transform function.
-var propertyTransform = argv.p === true ? function(properties) { return properties; }
+var propertyTransform = argv.p === true ? joinExternalProperties
     : argv.p === false ? function() {}
     : parsePropertyTransform(argv.p);
 
@@ -215,7 +215,7 @@ function inputDsv(dsv) {
           delete row[argv.y];
           return {
             type: "Feature",
-            id: id(row),
+            id: id({properties: row}),
             properties: row,
             geometry: !x || !y || isNaN(x) || isNaN(y) ? null : {
               type: "Point",
@@ -306,9 +306,6 @@ function output(error) {
   // Remove empty (collapsed) features.
   if (argv["filter"] !== "none") topojson.filter(object, options);
 
-  // Bind with external properties.
-  if (argv.e) topojson.bind(object, externalProperties);
-
   // Delete the bbox if not desired.
   if (!argv["bbox"]) delete object.bbox;
 
@@ -325,14 +322,14 @@ function qualify(file) {
 }
 
 function parsePropertyExpression(property) {
-  return new Function("properties", "with(properties) return " + property);
+  return new Function("d", "with(d.properties) return " + property);
 }
 
 function parsePropertyId(properties) {
   properties = properties.map(parsePropertyExpression);
   return function(d) {
     var id;
-    if (d = d.properties) properties.some(function(p) {
+    properties.some(function(p) {
       try { id = p(d); } catch (e) { return; }
       if (id == null) return;
       else if (typeof id === "number") isNaN(id) && (id = null);
@@ -343,10 +340,10 @@ function parsePropertyId(properties) {
   };
 }
 
-function parsePropertyTransform(properties) {
-  var expressions = {};
+function parsePropertyTransform(expressions) {
+  var evaluators = {};
 
-  properties.forEach(function(target) {
+  expressions.forEach(function(target) {
     var i = target.indexOf("="),
         source = target;
 
@@ -357,18 +354,27 @@ function parsePropertyTransform(properties) {
       target = source.substring(1);
     }
 
-    expressions[target] = parsePropertyExpression(source);
+    evaluators[target] = parsePropertyExpression(source);
   });
 
-  return function(properties0) {
-    var properties1 = {};
-    for (var key in expressions) {
+  return function(object) {
+    var outputProperties = {};
+    object.properties = joinExternalProperties(object);
+    for (var key in evaluators) {
       try {
-        properties1[key] = expressions[key](properties0);
+        outputProperties[key] = evaluators[key](object);
       } catch (ignore) {}
     }
-    return properties1;
+    return outputProperties;
   };
+}
+
+function joinExternalProperties(object) {
+  var objectId = id(object),
+      objectExternals = objectId != null && externalProperties[objectId],
+      objectProperties = object.properties || {};
+  if (objectExternals) for (var key in objectExternals) objectProperties[key] = objectExternals[key];
+  return objectProperties;
 }
 
 function readExternalProperties(file) {
@@ -382,7 +388,8 @@ function readExternalProperties(file) {
         : d3.csv;
 
   type.parse(text).forEach(function(row) {
-    var i = id(row), properties = externalProperties[i] || (externalProperties[i] = {});
-    for (var key in row) if (key != "id") propertyTransform(properties, key, row[key]);
+    var i = id({properties: row}), properties = externalProperties[i];
+    if (properties) for (var key in row) properties[key] = row[key];
+    else externalProperties[i] = row;
   });
 }

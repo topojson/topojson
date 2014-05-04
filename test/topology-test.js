@@ -112,21 +112,21 @@ suite.addBatch({
 
     // But you can store properties on TopoJSON geometries, if you insist.
     "a properties transform may be specified to preserve and rename properties": function() {
-      var topology = topojson.topology({foo: {type: "Feature", id: "Foo", properties: {UNREASONABLY_LONG_NAME: "George"}, geometry: {type: "LineString", coordinates: [[.1, .2], [.3, .4]]}}}, {"property-transform": function(properties) { return properties; }});
+      var topology = topojson.topology({foo: {type: "Feature", id: "Foo", properties: {UNREASONABLY_LONG_NAME: "George"}, geometry: {type: "LineString", coordinates: [[.1, .2], [.3, .4]]}}}, {"property-transform": function(object) { return object.properties; }});
       assert.deepEqual(topology.objects.foo.properties, {UNREASONABLY_LONG_NAME: "George"});
-      var topology = topojson.topology({foo: {type: "Feature", id: "Foo", properties: {UNREASONABLY_LONG_NAME: "George"}, geometry: {type: "LineString", coordinates: [[.1, .2], [.3, .4]]}}}, {"property-transform": function(properties) { return {name: properties.UNREASONABLY_LONG_NAME}; }});
+      var topology = topojson.topology({foo: {type: "Feature", id: "Foo", properties: {UNREASONABLY_LONG_NAME: "George"}, geometry: {type: "LineString", coordinates: [[.1, .2], [.3, .4]]}}}, {"property-transform": function(object) { return {name: object.properties.UNREASONABLY_LONG_NAME}; }});
       assert.deepEqual(topology.objects.foo.properties, {name: "George"});
     },
     "a properties transform can apply to geometry collections": function() {
-      var topology = topojson.topology({foo: {type: "Feature", id: "Foo", properties: {UNREASONABLY_LONG_NAME: "George"}, geometry: {type: "GeometryCollection", geometries: [{type: "LineString", coordinates: [[.1, .2], [.3, .4]]}]}}}, {"property-transform": function(properties) { return {name: properties.UNREASONABLY_LONG_NAME}; }});
+      var topology = topojson.topology({foo: {type: "Feature", id: "Foo", properties: {UNREASONABLY_LONG_NAME: "George"}, geometry: {type: "GeometryCollection", geometries: [{type: "LineString", coordinates: [[.1, .2], [.3, .4]]}]}}}, {"property-transform": function(object) { return {name: object.properties.UNREASONABLY_LONG_NAME}; }});
       assert.deepEqual(topology.objects.foo.properties, {name: "George"});
     },
 
     // Unlike GeoJSON's feature.properties, the properties object is optional.
     "if no properties are specified, no properties are emitted": function() {
-      var topology = topojson.topology({foo: {type: "Feature", id: "Foo", properties: {name: "George", demeanor: "curious"}, geometry: {type: "LineString", coordinates: [[.1, .2], [.3, .4]]}}}, {"property-transform": function(properties) { return {name: properties.name}; }});
+      var topology = topojson.topology({foo: {type: "Feature", id: "Foo", properties: {name: "George", demeanor: "curious"}, geometry: {type: "LineString", coordinates: [[.1, .2], [.3, .4]]}}}, {"property-transform": function(object) { return {name: object.properties.name}; }});
       assert.deepEqual(topology.objects.foo.properties, {name: "George"});
-      var topology = topojson.topology({foo: {type: "Feature", id: "Foo", properties: {demeanor: "curious"}, geometry: {type: "LineString", coordinates: [[.1, .2], [.3, .4]]}}}, {"property-transform": function(properties) { return {}; }});
+      var topology = topojson.topology({foo: {type: "Feature", id: "Foo", properties: {demeanor: "curious"}, geometry: {type: "LineString", coordinates: [[.1, .2], [.3, .4]]}}}, {"property-transform": function(object) { return {}; }});
       assert.deepEqual(topology.objects.foo.properties);
     },
 
