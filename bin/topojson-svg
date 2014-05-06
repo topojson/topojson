@@ -82,7 +82,7 @@ for (var key in topology.objects) {
 
 out.write("</svg>" + os.EOL);
 
-if (out !== process.stdout) fs.close();
+if (out !== process.stdout) out.end();
 
 function quote(string) {
   return string.replace(/"/g, "&quot;");
