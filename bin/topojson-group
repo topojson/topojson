@@ -17,7 +17,7 @@ var argv = optimist
 
     .options("o", {
       alias: "out",
-      describe: "output HTML file name",
+      describe: "output TopoJSON file name",
       default: "/dev/stdout",
     })
     .options("p", {
