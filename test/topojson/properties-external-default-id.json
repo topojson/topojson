@@ -1,0 +1,22 @@
+{
+  "type": "Topology",
+  "objects": {
+    "properties": {
+      "type": "GeometryCollection",
+      "geometries": [
+        {
+          "type": null,
+          "id": 1,
+          "properties": {
+            "smörgåsbord": "kåldolmar"
+          }
+        },
+        {
+          "type": null,
+          "id": 2
+        }
+      ]
+    }
+  },
+  "arcs": []
+}
