@@ -172,16 +172,12 @@ var argv = optimist
 if (argv.help) return optimist.showHelp();
 
 var objects = {},
-    id = argv["id-property"],
-    rowId;
+    id = argv["id-property"];
 
-// Create property-to-identifier functions.
-if (id == null) {
-  id = rowId = function(d) { return d.id; };
-} else {
-  id = parsePropertyId(typeof id === "string" ? id.split(",") : id);
-  rowId = function(row) { return id({properties: row}); };
-}
+// Create a property-to-identifier function.
+id = id == null
+    ? function(d) { return d.id; }
+    : parsePropertyId(typeof id === "string" ? id.split(",") : id);
 
 // Create the property transform function.
 var propertyTransform = argv.p === true ? joinExternalProperties
@@ -219,7 +215,7 @@ function inputDsv(dsv) {
           delete row[argv.y];
           return {
             type: "Feature",
-            id: rowId(row),
+            id: id({id: row.id, properties: row}),
             properties: row,
             geometry: !x || !y || isNaN(x) || isNaN(y) ? null : {
               type: "Point",
@@ -338,7 +334,7 @@ function parsePropertyId(properties) {
       if (id == null) return;
       else if (typeof id === "number") isNaN(id) && (id = null);
       else if (typeof id !== "string") id = id + "";
-      return id;
+      return id != null;
     });
     return id;
   };
@@ -392,7 +388,7 @@ function readExternalProperties(file) {
         : d3.csv;
 
   type.parse(text).forEach(function(row) {
-    var i = rowId(row), properties = externalProperties[i];
+    var i = id({id: row.id, properties: row}), properties = externalProperties[i];
     if (properties) for (var key in row) properties[key] = row[key];
     else externalProperties[i] = row;
   });
