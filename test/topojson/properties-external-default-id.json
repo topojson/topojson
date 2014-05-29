@@ -13,7 +13,14 @@
         },
         {
           "type": null,
-          "id": 2
+          "id": 2,
+          "properties": {
+            "smörgåsbord": "fläskkorv"
+          }
+        },
+        {
+          "type": null,
+          "id": 3
         }
       ]
     }

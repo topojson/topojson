@@ -11,6 +11,11 @@
       "type": "Feature",
       "id": 2,
       "geometry": null
+    },
+    {
+      "type": "Feature",
+      "id": 3,
+      "geometry": null
     }
   ]
 }
