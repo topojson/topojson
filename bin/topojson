@@ -215,7 +215,7 @@ function inputDsv(dsv) {
           delete row[argv.y];
           return {
             type: "Feature",
-            id: id({properties: row}),
+            id: id({id: row.id, properties: row}),
             properties: row,
             geometry: !x || !y || isNaN(x) || isNaN(y) ? null : {
               type: "Point",
@@ -331,10 +331,8 @@ function parsePropertyId(properties) {
     var id;
     properties.some(function(p) {
       try { id = p(d); } catch (e) { return; }
-      if (id == null) return;
-      else if (typeof id === "number") isNaN(id) && (id = null);
-      else if (typeof id !== "string") id = id + "";
-      return id;
+      if (typeof id === "number") return !isNaN(id);
+      if (id != null) return id += "", true;
     });
     return id;
   };
@@ -388,7 +386,7 @@ function readExternalProperties(file) {
         : d3.csv;
 
   type.parse(text).forEach(function(row) {
-    var i = id({properties: row}), properties = externalProperties[i];
+    var i = id({id: row.id, properties: row}), properties = externalProperties[i];
     if (properties) for (var key in row) properties[key] = row[key];
     else externalProperties[i] = row;
   });
