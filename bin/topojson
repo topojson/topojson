@@ -331,10 +331,8 @@ function parsePropertyId(properties) {
     var id;
     properties.some(function(p) {
       try { id = p(d); } catch (e) { return; }
-      if (id == null) return;
-      else if (typeof id === "number") isNaN(id) && (id = null);
-      else if (typeof id !== "string") id = id + "";
-      return id != null;
+      if (typeof id === "number") return !isNaN(id);
+      if (id != null) return id += "", true;
     });
     return id;
   };
