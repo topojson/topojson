@@ -65,21 +65,26 @@ rw.writeSync(argv.o, JSON.stringify(topology), "utf8");
 
 function multi(geometries) {
   var type = geometries[0].type,
-      arcs = [];
+      array = [],
+      prop = "arcs";
 
   geometries.forEach(function(geometry) {
+    if (/Point$/).test(geometry.type) {
+      prop = "coordinates";
+    }
+
     if (/^Multi/.test(geometry.type)) {
-      geometry.arcs.forEach(function(arc) { arcs.push(arc); });
+      geometry[prop].forEach(function(arc) { array.push(arc); });
     } else {
-      arcs.push(geometry.arcs);
+      array.push(geometry[prop]);
     }
   });
 
   var geometry = {
     id: geometries[0].id,
     type: /^Multi/.test(type) ? type : "Multi" + type,
-    arcs: arcs
   };
+  geometry[prop] = array;
 
   if (argv.p) {
     var properties = mergeProperties();
