@@ -19,6 +19,7 @@ console.log(JSON.stringify({
     "url": "https://github.com/mbostock/topojson.git"
   },
   "main": "index.js",
+  "browser": "topojson.js",
   "dependencies": {
     "d3": "3",
     "d3-geo-projection": "0.2",
