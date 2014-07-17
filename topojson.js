@@ -1,6 +1,6 @@
 !function() {
   var topojson = {
-    version: "1.6.14",
+    version: "1.6.15",
     mesh: function(topology) { return object(topology, meshArcs.apply(this, arguments)); },
     meshArcs: meshArcs,
     merge: function(topology) { return object(topology, mergeArcs.apply(this, arguments)); },
@@ -349,14 +349,14 @@
   function presimplify(topology, triangleArea) {
     var absolute = transformAbsolute(topology.transform),
         relative = transformRelative(topology.transform),
-        heap = minAreaHeap(),
-        maxArea = 0,
-        triangle;
+        heap = minAreaHeap();
 
     if (!triangleArea) triangleArea = cartesianTriangleArea;
 
     topology.arcs.forEach(function(arc) {
-      var triangles = [];
+      var triangles = [],
+          maxArea = 0,
+          triangle;
 
       arc.forEach(absolute);
 
@@ -375,33 +375,31 @@
         triangle.previous = triangles[i - 1];
         triangle.next = triangles[i + 1];
       }
-    });
 
-    while (triangle = heap.pop()) {
-      var previous = triangle.previous,
-          next = triangle.next;
+      while (triangle = heap.pop()) {
+        var previous = triangle.previous,
+            next = triangle.next;
 
-      // If the area of the current point is less than that of the previous point
-      // to be eliminated, use the latter's area instead. This ensures that the
-      // current point cannot be eliminated without eliminating previously-
-      // eliminated points.
-      if (triangle[1][2] < maxArea) triangle[1][2] = maxArea;
-      else maxArea = triangle[1][2];
+        // If the area of the current point is less than that of the previous point
+        // to be eliminated, use the latter's area instead. This ensures that the
+        // current point cannot be eliminated without eliminating previously-
+        // eliminated points.
+        if (triangle[1][2] < maxArea) triangle[1][2] = maxArea;
+        else maxArea = triangle[1][2];
 
-      if (previous) {
-        previous.next = next;
-        previous[2] = triangle[2];
-        update(previous);
+        if (previous) {
+          previous.next = next;
+          previous[2] = triangle[2];
+          update(previous);
+        }
+
+        if (next) {
+          next.previous = previous;
+          next[0] = triangle[0];
+          update(next);
+        }
       }
 
-      if (next) {
-        next.previous = previous;
-        next[0] = triangle[0];
-        update(next);
-      }
-    }
-
-    topology.arcs.forEach(function(arc) {
       arc.forEach(relative);
     });
 

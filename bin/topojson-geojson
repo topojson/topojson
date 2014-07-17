@@ -43,7 +43,7 @@ var precision = Math.pow(10, argv.precision), round = isNaN(precision)
     : function(x) { return Math.round(x * precision) / precision; };
 
 // Convert TopoJSON back to GeoJSON.
-var topology = JSON.parse(rw.readSync(argv._[0], "utf8"));
+var topology = JSON.parse(rw.readFileSync(argv._[0], "utf8"));
 for (var key in topology.objects) {
   var object = topojson.feature(topology, topology.objects[key]);
 
@@ -61,5 +61,5 @@ for (var key in topology.objects) {
     }
   }).object(object);
 
-  rw.writeSync(path.join(argv.o, key + ".json"), JSON.stringify(object), "utf8");
+  rw.writeFileSync(path.join(argv.o, key + ".json"), JSON.stringify(object), "utf8");
 }

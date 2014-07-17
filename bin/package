@@ -19,12 +19,13 @@ console.log(JSON.stringify({
     "url": "https://github.com/mbostock/topojson.git"
   },
   "main": "index.js",
+  "browser": "topojson.js",
   "dependencies": {
     "d3": "3",
     "d3-geo-projection": "0.2",
     "optimist": "0.3",
     "queue-async": "1.0",
-    "rw": ">=0.0.4 <0.1",
+    "rw": "0.1",
     "shapefile": "0.3"
   },
   "devDependencies": {

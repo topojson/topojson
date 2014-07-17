@@ -203,7 +203,7 @@ q.await(output);
 function inputDsv(dsv) {
   return function(file, callback) {
     file = qualify(file);
-    rw.read(file.path, "utf8", function(error, text) {
+    rw.readFile(file.path, "utf8", function(error, text) {
       if (error) return callback(error);
 
       objects[file.name] = {
@@ -242,7 +242,7 @@ function inputShapefile(file, callback) {
 function inputJson(file, callback) {
   file = qualify(file);
 
-  var object = JSON.parse(rw.readSync(file.path, "utf8"));
+  var object = JSON.parse(rw.readFileSync(file.path, "utf8"));
 
   if (object.type === "Topology") {
     for (var key in object.objects) {
@@ -310,7 +310,7 @@ function output(error) {
   if (!argv["bbox"]) delete object.bbox;
 
   // Output JSON.
-  rw.writeSync(argv.o, JSON.stringify(object), "utf8");
+  rw.writeFileSync(argv.o, JSON.stringify(object), "utf8");
 }
 
 function qualify(file) {
@@ -376,7 +376,7 @@ function joinExternalProperties(object) {
 }
 
 function readExternalProperties(file) {
-  var text = rw.readSync(file, "utf8");
+  var text = rw.readFileSync(file, "utf8");
 
   // Infer the file type from the name.
   // If that doesn't work, look for a tab and hope for the best!
