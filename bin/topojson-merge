@@ -57,7 +57,7 @@ var argv = optimist
 
 if (argv.help) return optimist.showHelp();
 
-var topology = JSON.parse(rw.readSync(argv._[0], "utf8"));
+var topology = JSON.parse(rw.readFileSync(argv._[0], "utf8"));
 
 topology.objects[argv.oo] = argv.k ? {
   type: "GeometryCollection",
@@ -83,4 +83,4 @@ topology.objects[argv.oo] = argv.k ? {
 topojson.prune(topology, {verbose: true});
 
 // Output JSON.
-rw.writeSync(argv.o, JSON.stringify(topology), "utf8");
+rw.writeFileSync(argv.o, JSON.stringify(topology), "utf8");

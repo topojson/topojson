@@ -39,7 +39,7 @@ var argv = optimist
 
 if (argv.help) return optimist.showHelp();
 
-var topology = JSON.parse(rw.readSync(argv._[0], "utf8"));
+var topology = JSON.parse(rw.readFileSync(argv._[0], "utf8"));
 
 for (var key in topology.objects) {
   var object = topology.objects[key];
@@ -61,7 +61,7 @@ for (var key in topology.objects) {
 }
 
 // Output JSON.
-rw.writeSync(argv.o, JSON.stringify(topology), "utf8");
+rw.writeFileSync(argv.o, JSON.stringify(topology), "utf8");
 
 function multi(geometries) {
   var type = geometries[0].type,
