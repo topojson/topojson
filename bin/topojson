@@ -29,13 +29,13 @@ var argv = optimist
     })
     .options("q", {
       alias: "quantization",
-      describe: "convenience option for setting pre- and post-quantization",
+      describe: "convenience option for setting post-quantization",
       default: undefined
     })
     .options("q0", {
       alias: "pre-quantization",
       describe: "maximum number of differentiable points along either dimension",
-      default: 1e6
+      default: undefined
     })
     .options("q1", {
       alias: "post-quantization",
@@ -162,7 +162,8 @@ var argv = optimist
       if (argv.invert === "auto") argv.invert = !argv.projection;
       if (filterModes.indexOf(argv.filter) < 0) throw new Error("unknown --filter value: " + argv.filter);
       if (typeof argv.p === "string") argv.p = argv.p.split(",");
-      if (argv.q !== undefined) argv.q0 = argv.q1 = argv.q;
+      if (argv.q !== undefined) argv.q1 = argv.q;
+      if (argv.q0 === undefined) argv.q0 = argv._.length > 1 ? 1e6 : 0;
       argv.width = +argv.width;
       argv.height = +argv.height;
       argv.margin = +argv.margin;
