@@ -156,7 +156,7 @@ var argv = optimist
       if (+argv.s && +argv["simplify-proportion"]) throw new Error("--simplify and --simplify-proportion are exclusive");
       if (+argv["simplify-proportion"] < 0 || +argv["simplify-proportion"] >= 1) throw new Error("--simplify-proportion must be between 0 and 1");
       if (argv["allow-empty"]) argv.filter = "none";
-      if (argv.projection) argv.spherical = false, argv.cartesian = true, argv.projection = new Function("d3", "return " + argv.projection)(d3);
+      if (argv.projection) argv.spherical = false, argv.cartesian = true, argv.projection = new Function("require", "d3", "return " + argv.projection)(localRequire, d3);
       if (argv.cartesian && argv.spherical) throw new Error("--spherical and --cartesian are exclusive");
       if (argv.spherical && (+argv.width || +argv.height)) throw new Error("--width and --height requires Cartesian coordinates");
       if (argv.invert === "auto") argv.invert = !argv.projection;
@@ -390,4 +390,8 @@ function readExternalProperties(file) {
     if (properties) for (var key in row) properties[key] = row[key];
     else externalProperties[i] = row;
   });
+}
+
+function localRequire(module) {
+  return require(module.charAt(0) === "." ? path.resolve(process.cwd(), module) : module);
 }
