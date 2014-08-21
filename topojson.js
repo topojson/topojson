@@ -358,7 +358,14 @@
           maxArea = 0,
           triangle;
 
-      arc.forEach(absolute);
+      for (var i = 0, n = arc.length; i < n; ++i) {
+        var point = arc[i];
+        // Workaround for Chrome/V8 bug: create new array instance containing
+        // effective areas of Infinity (a float) to avoid getting stuck in smi
+        // mode.  The endpoints retain their infinite effective areas in the
+        // next step.
+        absolute(arc[i] = [point[0], point[1], Infinity], i);
+      }
 
       for (var i = 1, n = arc.length - 1; i < n; ++i) {
         triangle = arc.slice(i - 1, i + 2);
@@ -366,9 +373,6 @@
         triangles.push(triangle);
         heap.push(triangle);
       }
-
-      // Always keep the arc endpoints!
-      arc[0][2] = arc[n][2] = Infinity;
 
       for (var i = 0, n = triangles.length; i < n; ++i) {
         triangle = triangles[i];
