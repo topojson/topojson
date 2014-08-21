@@ -358,13 +358,13 @@
           maxArea = 0,
           triangle;
 
-      for (var i = 0, n = arc.length; i < n; ++i) {
-        var point = arc[i];
-        // Workaround for Chrome/V8 bug: create new array instance containing
-        // effective areas of Infinity (a float) to avoid getting stuck in smi
-        // mode.  The endpoints retain their infinite effective areas in the
-        // next step.
-        absolute(arc[i] = [point[0], point[1], Infinity], i);
+      // To store each point’s effective area, we create a new array rather than
+      // extending the passed-in point to workaround a Chrome/V8 bug (getting
+      // stuck in smi mode). For midpoints, the initial effective area of
+      // Infinity will be computed in the next step.
+      for (var i = 0, n = arc.length, p; i < n; ++i) {
+        p = arc[i];
+        absolute(arc[i] = [p[0], p[1], Infinity], i);
       }
 
       for (var i = 1, n = arc.length - 1; i < n; ++i) {
