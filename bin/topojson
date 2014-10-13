@@ -322,7 +322,7 @@ function qualify(file) {
 }
 
 function parsePropertyExpression(property) {
-  return new Function("d", "with(d.properties) return " + property);
+  return new Function("d", "with(d.properties) return (" + property + ")");
 }
 
 function parsePropertyId(properties) {
