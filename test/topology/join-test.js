@@ -207,6 +207,12 @@ suite.addBatch({
       }));
       assertSetEqual(junctions.values(), [[0, 0], [4, 0]]);
     },
+    "when a line ABCDBE self-intersects with its middle and ignoreSelfIntersections==false, there are no junctions": function() {
+      var junctions = join(extract({
+        abcdbe: {type: "LineString", coordinates: [[0, 0], [1, 0], [2, 0], [3, 0], [1, 0], [4, 0]]}
+      }, {ignoreSelfIntersections: false}));
+      assertSetEqual(junctions.values(), [[0, 0], [1, 0], [4, 0]]);
+    },
     "when a line ABACD self-intersects with its start, there are no junctions": function() {
       var junctions = join(extract({
         abacd: {type: "LineString", coordinates: [[0, 0], [1, 0], [0, 0], [3, 0], [4, 0]]}

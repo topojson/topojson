@@ -66,6 +66,11 @@ var argv = optimist
       type: "boolean",
       default: true
     })
+    .options("ignore-self-intersections", {
+      describe: "do not create junctions at self intersections",
+      type: "boolean",
+      default: true
+    })
     .options("stitch-poles", {
       describe: "splice antimeridian cuts for polygons that encompass a pole",
       type: "boolean",
@@ -262,6 +267,7 @@ function output(error) {
     "pre-quantization": +argv.q0,
     "post-quantization": +argv.q1,
     "coordinate-system": argv.spherical ? "spherical" : argv.cartesian ? "cartesian" : "auto",
+    "ignore-self-intersections": argv["ignore-self-intersections"],
     "stitch-poles": argv["stitch-poles"],
     "id": id,
     "property-transform": propertyTransform,

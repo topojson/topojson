@@ -527,6 +527,46 @@ suite.addBatch({
         }
       });
     },
+    "when a line arc ABCDBE self-intersects and ignoreSelfIntersections==false, the arc is split in three": function() {
+      var topology = index({
+        foo: {
+          type: "LineString",
+          coordinates: [[0, 0], [1, 0], [2, 0], [3, 0], [1, 0], [4, 0]]
+        }
+      }, {ignoreSelfIntersections: false});
+      assert.deepEqual(topology, {
+        type: "Topology",
+        arcs: [
+          [[0, 0], [1, 0]], [[1, 0], [2, 0], [3, 0], [1, 0]], [[1, 0], [4, 0]]
+        ],
+        objects: {
+          foo: {
+            type: "LineString",
+            arcs: [0, 1, 2]
+          }
+        }
+      });
+    },
+    "when a ring arc ABCDBA self-intersects and ignoreSelfIntersections==false, the arc is split in two": function() {
+      var topology = index({
+        foo: {
+          type: "Polygon",
+          coordinates: [[[0, 0], [1, 0], [2, 0], [3, 0], [1, 0], [0, 0]]]
+        }
+      }, {ignoreSelfIntersections: false});
+      assert.deepEqual(topology, {
+        type: "Topology",
+        arcs: [
+          [[1, 0], [2, 0], [3, 0], [1, 0]], [[1, 0], [0, 0], [1, 0]]
+        ],
+        objects: {
+          foo: {
+            type: "Polygon",
+            arcs: [[0, 1]]
+          }
+        }
+      });
+    },
     "when an old arc ABCDBE self-intersects and shares a point B, the old arc has multiple cuts": function() {
       var topology = index({
         foo: {

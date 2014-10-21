@@ -271,6 +271,14 @@ suite.addBatch({
         abcdbe: {type: "LineString", arcs: {0: 0, 1: 5}}
       });
     },
+    "when a line ABCDBE self-intersects with its middle and ignoreSelfIntersections==false, it is not cut": function() {
+      var topology = dedup(cut(extract({
+        abcdbe: {type: "LineString", coordinates: [[0, 0], [1, 0], [2, 0], [3, 0], [1, 0], [4, 0]]}
+      }, {ignoreSelfIntersections: false})));
+      assert.deepEqual(topology.objects, {
+        abcdbe: {type: "LineString", arcs: {0: 0, 1: 1, next: {0: 1, 1:4, next: {0: 4, 1: 5}}}}
+      });
+    },
     "when a line ABACD self-intersects with its start, it is cut into ABA-ACD": function() {
       var topology = dedup(cut(extract({
         abacd: {type: "LineString", coordinates: [[0, 0], [1, 0], [0, 0], [3, 0], [4, 0]]}
