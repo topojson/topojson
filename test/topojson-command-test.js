@@ -108,7 +108,7 @@ function testConversion(output, options) {
   return {
     topic: function() {
       var callback = this.callback;
-      child.exec("bin/topojson " + options, function(error, stdout, stderr) {
+      child.exec("bin/topojson " + options + " | cat", function(error, stdout, stderr) {
         callback(error, error ? null : JSON.parse(stdout));
       });
     },
