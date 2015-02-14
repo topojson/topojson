@@ -42,7 +42,7 @@ suite.addBatch({
 
 function testConversion(output, options) {
   if (!options) options = "";
-  var tmpdir = os.tmpdir() + tmpprefix + (++testId).toString(16);
+  var tmpdir = path.join(os.tmpdir(), tmpprefix + (++testId).toString(16));
   fs.mkdirSync(tmpdir);
   return {
     topic: function() {
