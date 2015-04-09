@@ -13,7 +13,7 @@ require("d3-geo-projection")(d3);
 var filterModes = ["none", "small", "small-detached"];
 
 var argv = optimist
-    .usage("Usage: \033[1mtopojson\033[0m [options] [file …]\n\n"
+    .usage("Usage: \033[1mtopojson\033[0m [options] -- [file …]\n\n"
 
 + "Version: " + topojson.version + "\n\n"
 
