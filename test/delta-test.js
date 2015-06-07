@@ -27,6 +27,17 @@ suite.addBatch({
       }).arcs, [
         [[0, 0], [9999, 0], [0, 0], [-9999, 9999], [0, -9999]]
       ]);
+    },
+    "preserves additional positition elements": function() {
+      assert.deepEqual(delta({
+        type: "Topology",
+        arcs: [
+          [[0, 0, 1], [9999, 0, 2], [9999, 0, 3], [0, 9999, 4], [0, 0, 5, false]]
+        ],
+        objects: {}
+      }).arcs, [
+        [[0, 0, 1], [9999, 0, 2], [0, 0, 3], [-9999, 9999, 4], [0, -9999, 5, false]]
+      ]);
     }
   }
 });
