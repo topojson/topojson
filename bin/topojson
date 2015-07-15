@@ -77,7 +77,7 @@ var argv = optimist
       default: "small-detached"
     })
     .options("allow-empty", {
-      describe: "deprecated; use --filter=none intead",
+      describe: "deprecated; use --filter=none instead",
       type: "boolean",
       default: false
     })
