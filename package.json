@@ -39,5 +39,6 @@
   },
   "scripts": {
     "test": "vows; echo"
-  }
+  },
+  "license": "BSD"
 }
