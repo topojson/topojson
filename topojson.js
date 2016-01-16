@@ -1,6 +1,6 @@
 !function() {
   var topojson = {
-    version: "1.6.19",
+    version: "1.6.20",
     mesh: function(topology) { return object(topology, meshArcs.apply(this, arguments)); },
     meshArcs: meshArcs,
     merge: function(topology) { return object(topology, mergeArcs.apply(this, arguments)); },
@@ -180,7 +180,7 @@
     return {
       type: "MultiPolygon",
       arcs: components.map(function(polygons) {
-        var arcs = [];
+        var arcs = [], n;
 
         // Extract the exterior (unique) arcs.
         polygons.forEach(function(polygon) {
@@ -414,7 +414,7 @@
     }
 
     return topology;
-  };
+  }
 
   function cartesianRingArea(ring) {
     var i = -1,
@@ -429,7 +429,7 @@
       area += a[0] * b[1] - a[1] * b[0];
     }
 
-    return area * .5;
+    return area / 2;
   }
 
   function cartesianTriangleArea(triangle) {
