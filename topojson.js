@@ -528,7 +528,14 @@
 
   function noop() {}
 
-  if (typeof define === "function" && define.amd) define(topojson);
-  else if (typeof module === "object" && module.exports) module.exports = topojson;
-  else this.topojson = topojson;
+  if (typeof define === "function" && define.amd) {
+      define("topojson", [], function() {
+          return topojson;
+      });
+  }
+
+  if (typeof module === "object" && module.exports) module.exports = topojson;
+  if (typeof window === "object") window.topojson = topojson;
+
+  return topojson;
 }();
