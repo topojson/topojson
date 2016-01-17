@@ -530,5 +530,5 @@
 
   if (typeof define === "function" && define.amd) define(topojson);
   else if (typeof module === "object" && module.exports) module.exports = topojson;
-  else this.topojson = topojson;
+  this.topojson = topojson;
 }();
