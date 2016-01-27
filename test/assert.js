@@ -1,13 +1,12 @@
-var tape = require("tape");
+var assert = require("assert");
 
-tape.Test.prototype.inDelta = function(actual, expected, delta, message) {
+assert = module.exports = Object.create(assert);
+
+assert.inDelta = function(actual, expected, delta, message) {
   if (arguments.length < 3) delta = 1e-6;
-  this._assert(inDelta(actual, expected, delta), {
-    message: "should be in delta",
-    operator: "inDelta",
-    actual: actual,
-    expected: expected
-  });
+  if (!inDelta(actual, expected, delta)) {
+    assert.fail(actual, expected, message || "expected {actual} to be in within *" + delta + "* of {expected}", null, assert.inDelta);
+  }
 };
 
 function inDelta(actual, expected, delta) {
