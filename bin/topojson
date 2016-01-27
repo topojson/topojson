@@ -5,7 +5,7 @@ var path = require("path"),
     d3 = require("d3"),
     optimist = require("optimist"),
     shapefile = require("shapefile"),
-    queue = require("queue-async"),
+    queue = require("d3-queue"),
     topojson = require("../");
 
 require("d3-geo-projection")(d3);

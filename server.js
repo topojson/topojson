@@ -1,4 +1,4 @@
-var topojson = module.exports = require("./topojson");
+var topojson = module.exports = require("./build/topojson");
 topojson.topology = require("./lib/topojson/topology");
 topojson.simplify = require("./lib/topojson/simplify");
 topojson.clockwise = require("./lib/topojson/clockwise");

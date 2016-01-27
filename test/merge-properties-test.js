@@ -1,74 +1,73 @@
-var vows = require("vows"),
-    assert = require("assert"),
+var tape = require("tape"),
     mergeProperties = require("../lib/topojson/merge-properties");
 
-var suite = vows.describe("merge-properties");
-
-suite.addBatch({
-  "merge-properties": {
-
-    "when no objects are merged, does not define the properties object": function() {
-      var properties = mergeProperties();
-      assert.deepEqual(properties.apply({}), {});
-    },
-
-    "when only empty properties are merged, does not define the properties object": function() {
-      var properties = mergeProperties();
-      properties.merge({properties: null});
-      properties.merge({properties: undefined});
-      properties.merge({});
-      assert.deepEqual(properties.apply({}), {});
-    },
-
-    "when only inconsistent properties are merged, does not define the properties object": function() {
-      var properties = mergeProperties();
-      properties.merge({properties: {a: 1}});
-      properties.merge({properties: {b: 1}});
-      assert.deepEqual(properties.apply({}), {});
-    },
-
-    "only consistent properties are merged": function() {
-      var properties = mergeProperties();
-      properties.merge({properties: {a: 1, c: 2}});
-      properties.merge({properties: {b: 1, c: 2}});
-      assert.deepEqual(properties.apply({}), {properties: {c: 2}});
-    },
-
-    "merging with empty properties clears any previously-merged properties": function() {
-      var properties = mergeProperties();
-      properties.merge({properties: {a: 1, c: 2}});
-      properties.merge({properties: {b: 1, c: 2}});
-      properties.merge({properties: {}});
-      assert.deepEqual(properties.apply({}), {});
-    },
-
-    "merging with null properties clears any previously-merged properties": function() {
-      var properties = mergeProperties();
-      properties.merge({properties: {a: 1, c: 2}});
-      properties.merge({properties: {b: 1, c: 2}});
-      properties.merge({properties: null});
-      assert.deepEqual(properties.apply({}), {});
-    },
-
-    "merging with undefined properties clears any previously-merged properties": function() {
-      var properties = mergeProperties();
-      properties.merge({properties: {a: 1, c: 2}});
-      properties.merge({properties: {b: 1, c: 2}});
-      properties.merge({});
-      assert.deepEqual(properties.apply({}), {});
-    },
-
-    "overwrites the object’s properties": function() {
-      var properties = mergeProperties();
-      properties.merge({properties: {b: 2}});
-      assert.deepEqual(properties.apply({properties: {a: 1}}), {properties: {b: 2}});
-    },
-
-    "if the merged properties are empty, deletes the object’s properties": function() {
-      var properties = mergeProperties();
-      assert.deepEqual(properties.apply({properties: {a: 1}}), {});
-    }
-  }
+tape("merge-properties when no objects are merged, does not define the properties object", function(test) {
+  var properties = mergeProperties();
+  test.deepEqual(properties.apply({}), {});
+  test.end();
 });
 
-suite.export(module);
+tape("merge-properties when only empty properties are merged, does not define the properties object", function(test) {
+  var properties = mergeProperties();
+  properties.merge({properties: null});
+  properties.merge({properties: undefined});
+  properties.merge({});
+  test.deepEqual(properties.apply({}), {});
+  test.end();
+});
+
+tape("merge-properties when only inconsistent properties are merged, does not define the properties object", function(test) {
+  var properties = mergeProperties();
+  properties.merge({properties: {a: 1}});
+  properties.merge({properties: {b: 1}});
+  test.deepEqual(properties.apply({}), {});
+  test.end();
+});
+
+tape("merge-properties only consistent properties are merged", function(test) {
+  var properties = mergeProperties();
+  properties.merge({properties: {a: 1, c: 2}});
+  properties.merge({properties: {b: 1, c: 2}});
+  test.deepEqual(properties.apply({}), {properties: {c: 2}});
+  test.end();
+});
+
+tape("merge-properties merging with empty properties clears any previously-merged properties", function(test) {
+  var properties = mergeProperties();
+  properties.merge({properties: {a: 1, c: 2}});
+  properties.merge({properties: {b: 1, c: 2}});
+  properties.merge({properties: {}});
+  test.deepEqual(properties.apply({}), {});
+  test.end();
+});
+
+tape("merge-properties merging with null properties clears any previously-merged properties", function(test) {
+  var properties = mergeProperties();
+  properties.merge({properties: {a: 1, c: 2}});
+  properties.merge({properties: {b: 1, c: 2}});
+  properties.merge({properties: null});
+  test.deepEqual(properties.apply({}), {});
+  test.end();
+});
+
+tape("merge-properties merging with undefined properties clears any previously-merged properties", function(test) {
+  var properties = mergeProperties();
+  properties.merge({properties: {a: 1, c: 2}});
+  properties.merge({properties: {b: 1, c: 2}});
+  properties.merge({});
+  test.deepEqual(properties.apply({}), {});
+  test.end();
+});
+
+tape("merge-properties overwrites the object’s properties", function(test) {
+  var properties = mergeProperties();
+  properties.merge({properties: {b: 2}});
+  test.deepEqual(properties.apply({properties: {a: 1}}), {properties: {b: 2}});
+  test.end();
+});
+
+tape("merge-properties if the merged properties are empty, deletes the object’s properties", function(test) {
+  var properties = mergeProperties();
+  test.deepEqual(properties.apply({properties: {a: 1}}), {});
+  test.end();
+});
