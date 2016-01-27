@@ -1,6 +1,10 @@
-{
+#!/usr/bin/env node
+
+var topojson = require("../topojson");
+
+console.log(JSON.stringify({
   "name": "topojson",
-  "version": "1.6.20",
+  "version": topojson.version,
   "description": "An extension to GeoJSON that encodes topology.",
   "keywords": [
     "geojson",
@@ -40,4 +44,4 @@
   "scripts": {
     "test": "vows; echo"
   }
-}
+}, null, 2));

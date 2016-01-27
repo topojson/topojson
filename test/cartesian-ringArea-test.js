@@ -1,12 +1,21 @@
-var tape = require("tape"),
+var vows = require("vows"),
+    assert = require("assert"),
     cartesian = require("../lib/topojson/cartesian");
 
-tape("cartesian.ringArea clockwise area is positive", function(test) {
-  test.ok(cartesian.ringArea([[0, 0], [1, 0], [1, 1], [0, 1], [0, 0]]) > 0);
-  test.end();
+var suite = vows.describe("topojson.cartesian.ringArea");
+
+suite.addBatch({
+  "ringArea": {
+    topic: function() {
+      return cartesian.ringArea;
+    },
+    "clockwise area is positive": function(area) {
+      assert.ok(area([[0, 0], [1, 0], [1, 1], [0, 1], [0, 0]]) > 0);
+    },
+    "counterclockwise area is negative": function(area) {
+      assert.ok(area([[0, 0], [0, 1], [1, 1], [1, 0], [0, 0]]) < 0);
+    }
+  }
 });
 
-tape("cartesian.ringArea counterclockwise area is negative", function(test) {
-  test.ok(cartesian.ringArea([[0, 0], [0, 1], [1, 1], [1, 0], [0, 0]]) < 0);
-  test.end();
-});
+suite.export(module);
