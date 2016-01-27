@@ -31,7 +31,7 @@
     "pretest": "mkdir -p build && node -e 'process.stdout.write(\"var version = \\\"\" + require(\"./package.json\").version + \"\\\"; export * from \\\"../client\\\"; export {version};\");' > build/bundle.js && rollup -f umd -u topojson -n topojson -o build/topojson.js -- build/bundle.js",
     "test": "faucet `find test -name '*-test.js'` && eslint client.js src",
     "prepublish": "npm run test && uglifyjs build/topojson.js -c -m -o build/topojson.min.js && rm -f build/topojson.zip && zip -j build/topojson.zip -- LICENSE README.md build/topojson.js build/topojson.min.js",
-    "postpublish": "VERSION=`node -e 'console.log(require(\"./package.json\").version)'`; cp -v LICENSE build/topojson.js ../topojson-bower && cd ../topojson-bower && git commit -am \"Release $VERSION.\" && git tag -am \"Release $VERSION.\" v${VERSION} && git push"
+    "postpublish": "VERSION=`node -e 'console.log(require(\"./package.json\").version)'`; cp -v LICENSE build/topojson.js ../topojson-bower && cd ../topojson-bower && git commit -am \"Release $VERSION.\" && git tag -am \"Release $VERSION.\" v${VERSION} && git push && git push --tags"
   },
   "dependencies": {
     "d3": "3",
