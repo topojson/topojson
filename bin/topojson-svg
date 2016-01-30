@@ -33,6 +33,11 @@ var argv = optimist
       describe: "number of digits after the decimal place to output",
       default: undefined
     })
+    .options("p", {
+      alias: "properties",
+      describe: "feature properties to preserve; no name preserves all properties",
+      default: false
+    })
     .options("help", {
       describe: "display this helpful message",
       type: "boolean",
@@ -42,6 +47,7 @@ var argv = optimist
       if (argv.help) return;
       if (argv._.length > 1) throw new Error("at most one input file allowed");
       if (!argv._.length) argv._ = ["/dev/stdin"];
+      if (typeof argv.p === "string") argv.p = argv.p.split(",");
     })
     .argv;
 
@@ -91,6 +97,17 @@ function quote(string) {
 function outputGeometry(geometry) {
   out.write("    <path");
   if (geometry.id != null) out.write(" id=\"feature-" + quote(geometry.id + "") + "\"");
+  var props = geometry.properties;
+  if (props && argv.p) {
+    for (var key in props) {
+      if (argv.p !== false && argv.p.indexOf(key) >= 0) {
+        var val = props[key];
+        if (val != null) {
+          out.write(" data-" + key + '="' + quote(val) + '"');
+        }
+      }
+    }
+  }
   var d = path(topojson.feature(topology, geometry));
   out.write((d == null ? "" : " d=\"" + d + "\"") + "></path>" + os.EOL);
 }
