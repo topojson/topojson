@@ -2,7 +2,7 @@
 
 var fs = require("fs"),
     os = require("os"),
-    rw = require("rw"),
+    rw = require("rw").dash,
     d3 = require("d3"),
     optimist = require("optimist"),
     topojson = require("../");
@@ -19,7 +19,7 @@ var argv = optimist
     .options("o", {
       alias: "out",
       describe: "output SVG file name",
-      default: "/dev/stdout"
+      default: "-"
     })
     .options("width", {
       describe: "width of the output SVG",
@@ -41,7 +41,7 @@ var argv = optimist
     .check(function(argv) {
       if (argv.help) return;
       if (argv._.length > 1) throw new Error("at most one input file allowed");
-      if (!argv._.length) argv._ = ["/dev/stdin"];
+      if (!argv._.length) argv._ = ["-"];
     })
     .argv;
 
@@ -60,7 +60,7 @@ var path = d3.geo.path().projection(isNaN(precision) ? null : d3.geo.transform({
   }
 }));
 
-var out = argv.o === "/dev/stdout"
+var out = (argv.o === "-" || argv.o === "/dev/stdout")
     ? process.stdout
     : fs.createWriteStream(argv.o, "utf8");
 

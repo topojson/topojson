@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 var path = require("path"),
-    rw = require("rw"),
+    rw = require("rw").dash,
     optimist = require("optimist"),
     type = require("../lib/topojson/type"),
     topojson = require("../");
@@ -32,7 +32,7 @@ var argv = optimist
     .check(function(argv) {
       if (argv.help) return;
       if (argv._.length > 1) throw new Error("at most one input file allowed");
-      if (!argv._.length) argv._ = ["/dev/stdin"];
+      if (!argv._.length) argv._ = ["-"];
     })
     .argv;
 

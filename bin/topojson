@@ -1,11 +1,11 @@
 #!/usr/bin/env node
 
 var path = require("path"),
-    rw = require("rw"),
+    rw = require("rw").dash,
     d3 = require("d3"),
     optimist = require("optimist"),
     shapefile = require("shapefile"),
-    queue = require("d3-queue"),
+    queue = require("d3-queue").queue,
     topojson = require("../");
 
 require("d3-geo-projection")(d3);
@@ -25,7 +25,7 @@ var argv = optimist
     .options("o", {
       alias: "out",
       describe: "output TopoJSON file name",
-      default: "/dev/stdout"
+      default: "-"
     })
     .options("q", {
       alias: "quantization",
@@ -152,7 +152,7 @@ var argv = optimist
     .check(function(argv) {
       if (argv.help) return;
       if (argv.version) return console.log(topojson.version), process.exit(0);
-      if (!argv._.length) argv._ = ["/dev/stdin"];
+      if (!argv._.length) argv._ = ["-"];
       if (+argv.s && +argv["simplify-proportion"]) throw new Error("--simplify and --simplify-proportion are exclusive");
       if (+argv["simplify-proportion"] < 0 || +argv["simplify-proportion"] >= 1) throw new Error("--simplify-proportion must be between 0 and 1");
       if (argv["allow-empty"]) argv.filter = "none";
