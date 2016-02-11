@@ -151,7 +151,7 @@ var argv = optimist
     })
     .check(function(argv) {
       if (argv.help) return;
-      if (argv.version) return console.log(topojson.version), process.exit(0);
+      if (argv.version) return process.stdout.write(topojson.version + "\n"), process.exit(0);
       if (!argv._.length) argv._ = ["-"];
       if (+argv.s && +argv["simplify-proportion"]) throw new Error("--simplify and --simplify-proportion are exclusive");
       if (+argv["simplify-proportion"] < 0 || +argv["simplify-proportion"] >= 1) throw new Error("--simplify-proportion must be between 0 and 1");
@@ -256,7 +256,8 @@ function inputJson(file, callback) {
 }
 
 function output(error) {
-  if (error) return console.trace(error);
+  if (error) throw error;
+
   var options = {
     "verbose": true,
     "pre-quantization": +argv.q0,
