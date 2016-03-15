@@ -282,7 +282,7 @@ function output(error) {
   }
 
   // Convert GeoJSON to TopoJSON.
-  var object = topojson.topology(objects, options);
+  var object = topojson.topology(objects, options); // sets options["coordinate-system"] if "auto"
 
   // Clear the input objects hash to allow garbage collection.
   objects = null;
@@ -291,10 +291,11 @@ function output(error) {
   if (argv.width || argv.height) {
     if (options["coordinate-system"] !== "cartesian") throw new Error("--width and --height require Cartesian coordinates");
     topojson.scale(object, {
-      width: argv.width,
-      height: argv.height,
-      margin: argv.margin,
-      invert: argv.invert
+      "verbose": true,
+      "width": argv.width,
+      "height": argv.height,
+      "margin": argv.margin,
+      "invert": argv.invert
     });
   }
 
@@ -323,7 +324,7 @@ function qualify(file) {
 }
 
 function parsePropertyExpression(property) {
-  return new Function("d", "with(d.properties) return " + property);
+  return new Function("d", "with(d.properties) return (" + property + ")");
 }
 
 function parsePropertyId(properties) {
