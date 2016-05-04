@@ -23,8 +23,7 @@ export default function(topology, triangleArea) {
     // Infinity will be computed in the next step.
     for (i = 0, n = arc.length; i < n; ++i) {
       p = arc[i];
-      arc[i] = [p[0], p[1], Infinity, p[0], p[1]]
-      absolute(arc[i], i);
+      absolute(arc[i] = [p[0], p[1], Infinity], i);
     }
 
     for (i = 1, n = arc.length - 1; i < n; ++i) {
@@ -64,10 +63,7 @@ export default function(topology, triangleArea) {
       }
     }
 
-    for (i = 0, n = arc.length, p; i < n; ++i) {
-      p = arc[i];
-      arc[i] = [p[3], p[4], p[2]]
-    }
+    arc.forEach(relative);
   });
 
   function update(triangle) {
