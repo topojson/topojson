@@ -25,8 +25,8 @@ export function relative(transform) {
       dy = transform.translate[1];
   return function(point, i) {
     if (!i) x0 = y0 = 0;
-    var x1 = (point[0] - dx) / kx | 0,
-        y1 = (point[1] - dy) / ky | 0;
+    var x1 = Math.round((point[0] - dx) / kx),
+        y1 = Math.round((point[1] - dy) / ky);
     point[0] = x1 - x0;
     point[1] = y1 - y0;
     x0 = x1;
