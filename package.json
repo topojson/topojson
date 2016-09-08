@@ -42,7 +42,8 @@
     "shapefile": "0.3"
   },
   "devDependencies": {
-    "rollup": "0.26",
+    "eslint": "3",
+    "rollup": "0.34",
     "tape": "4",
     "uglify-js": "2",
     "us-atlas": "0.0",
