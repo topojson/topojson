@@ -8,4 +8,12 @@ export {mesh, meshArcs, merge, mergeArcs, feature, neighbors, presimplify}
 
 // Note: this is only here to help out folks who used
 // to rely on doing import topojson from 'topojson'.
-export default {mesh, meshArcs, merge, mergeArcs, feature, neighbors, presimplify}
+export default {
+	mesh: mesh,
+	meshArcs: meshArcs,
+	merge: merge,
+	mergeArcs: mergeArcs,
+	feature: feature,
+	neighbors: neighbors,
+	presimplify: presimplify
+}
