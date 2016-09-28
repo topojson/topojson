@@ -1,5 +1,11 @@
-export {default as mesh, meshArcs} from "./src/mesh";
-export {default as merge, mergeArcs} from "./src/merge";
-export {default as feature} from "./src/feature";
-export {default as neighbors} from "./src/neighbors";
-export {default as presimplify} from "./src/presimplify";
+import mesh, {meshArcs} from "./src/mesh";
+import merge, {mergeArcs} from "./src/merge";
+import feature from "./src/feature";
+import neighbors from "./src/neighbors";
+import presimplify from "./src/presimplify";
+
+export {mesh, meshArcs, merge, mergeArcs, feature, neighbors, presimplify}
+
+// Note: this is only here to help out folks who used
+// to rely on doing import topojson from 'topojson'.
+export default {mesh, meshArcs, merge, mergeArcs, feature, neighbors, presimplify}
