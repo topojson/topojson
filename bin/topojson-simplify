@@ -13,6 +13,8 @@ commander
     .option("-P, --planar-quantile <value>", "minimum planar triangle area (quantile)")
     // TODO .option("-s, --spherical-area <value>", "minimum spherical excess (absolute)")
     // TODO .option("-S, --spherical-quantile <value>", "minimum spherical excess (quantile)")
+    .option("-f, --filter-detached", "remove small, detached rings (islands) after simplifying", false)
+    .option("-F, --filter-all", "remove small rings (slivers) after simplifying", false)
     .parse(process.argv);
 
 if (commander.args.length < 1) commander.args[0] = "-";
@@ -40,18 +42,28 @@ function read(file) {
 }
 
 function write(topology) {
-  if (+commander.planarArea > 0) {
+  var system = "planar", // TODO spherical
+      minimumArea = +commander.planarArea;
+  topojson.presimplify(topology, {
+    "coordinate-system": system
+  });
+  if (!(minimumArea > 0) && (minimumArea = +commander.planarQuantile) > 0) {
+    minimumArea = topojson.quantile(topology, minimumArea);
+    console.warn("equivalent planar area: " + minimumArea);
+  }
+  if (minimumArea > 0) {
     topojson.simplify(topology, {
-      "coordinate-system": "planar",
-      "minimum-area": +commander.planarArea
-    });
-  } else if (+commander.planarQuantile > 0) {
-    topojson.simplifyQuantile(topology, {
-      "coordinate-system": "planar",
-      "minimum-quantile": +commander.planarQuantile
+      "coordinate-system": system,
+      "minimum-area": minimumArea
     });
   }
-  topojson.filter(topology); // TODO filter options
+  if (commander.filterAll || commander.filterDetached) {
+    topojson.filter(topology, {
+      "coordinate-system": system,
+      "minimum-area": minimumArea,
+      "preserve-attached": !commander.filterAll
+    });
+  }
   out.write(JSON.stringify(topology));
   out[out === process.stdout ? "write" : "end"]("\n");
 }
