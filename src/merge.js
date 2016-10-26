@@ -1,4 +1,4 @@
-import {ring as ringArea} from "./area";
+import {ringArea} from "./coordinate-system/planar";
 import {object} from "./feature";
 import stitchArcs from "./stitchArcs";
 

@@ -1,0 +1,57 @@
+#!/usr/bin/env node
+
+var fs = require("fs"),
+    path = require("path"),
+    commander = require("commander"),
+    topojson = require("../dist/topojson-server");
+
+commander
+    .version(require("../package.json").version)
+    .usage("[options] <file>")
+    .option("-o, --out <file>", "output file name; defaults to “-” for stdout", "-")
+    .option("-p, --planar-area <value>", "minimum planar triangle area (absolute)")
+    .option("-P, --planar-quantile <value>", "minimum planar triangle area (quantile)")
+    // TODO .option("-s, --spherical-area <value>", "minimum spherical excess (absolute)")
+    // TODO .option("-S, --spherical-quantile <value>", "minimum spherical excess (quantile)")
+    .parse(process.argv);
+
+if (commander.args.length < 1) commander.args[0] = "-";
+
+var out = commander.out === "-" ? process.stdout : fs.createWriteStream(commander.out);
+
+out.on("error", function(error) {
+  if (error.code === "EPIPE" || error.errno === "EPIPE") {
+    process.exit(0);
+  }
+});
+
+read(commander.args[0]).then(write);
+
+function read(file) {
+  return new Promise(function(resolve, reject) {
+    var chunks = [], stream = file === "-"
+        ? (process.stdin.setEncoding(commander.encoding), process.stdin)
+        : fs.createReadStream(file, {encoding: commander.encoding});
+    stream
+        .on("data", function(chunk) { chunks.push(chunk); })
+        .on("end", function() { resolve(JSON.parse(chunks.join(""))); })
+        .on("error", reject);
+  });
+}
+
+function write(topology) {
+  if (+commander.planarArea > 0) {
+    topojson.simplify(topology, {
+      "coordinate-system": "planar",
+      "minimum-area": +commander.planarArea
+    });
+  } else if (+commander.planarQuantile > 0) {
+    topojson.simplifyQuantile(topology, {
+      "coordinate-system": "planar",
+      "minimum-quantile": +commander.planarQuantile
+    });
+  }
+  topojson.filter(topology); // TODO filter options
+  out.write(JSON.stringify(topology));
+  out[out === process.stdout ? "write" : "end"]("\n");
+}

@@ -1,9 +1,11 @@
-export function triangle(triangle) {
+export var absoluteArea = Math.abs;
+
+export function triangleArea(triangle) {
   var a = triangle[0], b = triangle[1], c = triangle[2];
   return Math.abs((a[0] - c[0]) * (b[1] - a[1]) - (a[0] - b[0]) * (c[1] - a[1]));
 }
 
-export function ring(ring) {
+export function ringArea(ring) {
   var i = -1,
       n = ring.length,
       a,
@@ -18,3 +20,9 @@ export function ring(ring) {
 
   return area / 2;
 }
+
+export default {
+  triangleArea: triangleArea,
+  ringArea: ringArea,
+  absoluteArea: absoluteArea
+};

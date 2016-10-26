@@ -20,7 +20,8 @@
     "url": "https://github.com/mbostock/topojson.git"
   },
   "bin": {
-    "topojson": "./bin/topojson"
+    "topojson": "./bin/topojson",
+    "topojson-simplify": "./bin/topojson-simplify"
   },
   "scripts": {
     "pretest": "rm -rf dist && mkdir dist && rollup --banner \"$(preamble)\" -f umd -n topojson -o dist/topojson.js -- client.js && rollup --banner \"$(preamble)\" -f umd -n topojson -o dist/topojson-server.js -- index.js",

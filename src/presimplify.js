@@ -1,13 +1,16 @@
-import {triangle as cartesianTriangleArea} from "./area";
+import coordinateSystem from "./coordinate-system/index";
+import planar from "./coordinate-system/planar";
 import {absolute as transformAbsolute, relative as transformRelative} from "./transform";
-import minAreaHeap from "./minAreaHeap";
+import minHeap from "./minHeap";
 
-export default function(topology, triangleArea) {
-  var absolute = transformAbsolute(topology.transform),
+export default function(topology, options) {
+  var system = planar,
+      absolute = transformAbsolute(topology.transform),
       relative = transformRelative(topology.transform),
-      heap = minAreaHeap();
+      heap = minHeap();
 
-  if (!triangleArea) triangleArea = cartesianTriangleArea;
+  if (options)
+    "coordinate-system" in options && (system = coordinateSystem(options["coordinate-system"]));
 
   topology.arcs.forEach(function(arc) {
     var triangles = [],
@@ -17,10 +20,10 @@ export default function(topology, triangleArea) {
         n,
         p;
 
-    // To store each point’s effective area, we create a new array rather than
-    // extending the passed-in point to workaround a Chrome/V8 bug (getting
-    // stuck in smi mode). For midpoints, the initial effective area of
-    // Infinity will be computed in the next step.
+    // To store each point’s area, we create a new array rather than extending
+    // the passed-in point to workaround a Chrome/V8 bug (getting stuck in smi
+    // mode). For midpoints, the initial area of Infinity will be computed in
+    // the next step.
     for (i = 0, n = arc.length; i < n; ++i) {
       p = arc[i];
       absolute(arc[i] = [p[0], p[1], Infinity], i);
@@ -28,7 +31,7 @@ export default function(topology, triangleArea) {
 
     for (i = 1, n = arc.length - 1; i < n; ++i) {
       triangle = arc.slice(i - 1, i + 2);
-      triangle[1][2] = triangleArea(triangle);
+      triangle[1][2] = system.triangleArea(triangle);
       triangles.push(triangle);
       heap.push(triangle);
     }
@@ -43,10 +46,10 @@ export default function(topology, triangleArea) {
       var previous = triangle.previous,
           next = triangle.next;
 
-      // If the area of the current point is less than that of the previous point
-      // to be eliminated, use the latter's area instead. This ensures that the
-      // current point cannot be eliminated without eliminating previously-
-      // eliminated points.
+      // If the area of the current point is less than that of the previous
+      // point to be eliminated, use the latter’s area instead. This ensures
+      // that the current point cannot be eliminated without eliminating
+      // previously-eliminated points.
       if (triangle[1][2] < maxArea) triangle[1][2] = maxArea;
       else maxArea = triangle[1][2];
 
@@ -68,7 +71,7 @@ export default function(topology, triangleArea) {
 
   function update(triangle) {
     heap.remove(triangle);
-    triangle[1][2] = triangleArea(triangle);
+    triangle[1][2] = system.triangleArea(triangle);
     heap.push(triangle);
   }
 
