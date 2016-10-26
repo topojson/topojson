@@ -44,21 +44,16 @@ function read(specifier) {
 
 function readNewlineDelimitedObject(stream) {
   return new Promise(function(resolve, reject) {
-    var collection;
+    var objects = [];
     readline.createInterface({
       input: stream,
       output: null
     }).on("line", function(line) {
-      var object = JSON.parse(line);
-      if (collection) {
-        if (object.type === "Feature") collection.features.push(object);
-        else collection.geometries.push(object);
-      } else {
-        if (object.type === "Feature") collection = {type: "FeatureCollection", features: [object]};
-        else collection = {type: "GeometryCollection", geometries: [object]};
-      }
+      objects.push(JSON.parse(line));
     }).on("close", function() {
-      resolve(collection);
+      resolve(objects.length === 0 || objects[0].type === "Feature"
+          ? {type: "FeatureCollection", features: objects}
+          : {type: "GeometryCollection", geometries: objects});
     }).on("error", reject);
   });
 }
