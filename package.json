@@ -29,8 +29,7 @@
     "postpublish": "VERSION=`node -e 'console.log(require(\"./package.json\").version)'`; git push && git push --tags && cp -v README.md LICENSE dist/topojson.js dist/topojson.min.js ../topojson-bower && cd ../topojson-bower && git add README.md LICENSE topojson.js topojson.min.js && git commit -m \"Release $VERSION.\" && git tag -am \"Release $VERSION.\" v${VERSION} && git push && git push --tags && cd ../topojson && cp dist/topojson.js ../d3.github.com/topojson.v2.js && cp dist/topojson.min.js ../d3.github.com/topojson.v2.min.js && cd ../d3.github.com && git add topojson.v2.js topojson.v2.min.js && git commit -m \"topojson ${VERSION}\" && git push && cd - && zip -j dist/topojson.zip -- LICENSE README.md dist/topojson.js dist/topojson.min.js dist/topojson-server.js dist/topojson-server.min.js"
   },
   "dependencies": {
-    "commander": "2",
-    "rw": "1"
+    "commander": "2"
   },
   "devDependencies": {
     "eslint": "3",

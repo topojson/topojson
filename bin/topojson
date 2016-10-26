@@ -2,6 +2,7 @@
 
 var fs = require("fs"),
     path = require("path"),
+    readline = require("readline"),
     commander = require("commander"),
     topojson = require("../dist/topojson-server");
 
@@ -9,6 +10,7 @@ commander
     .version(require("../package.json").version)
     .usage("[options] <name:file>…")
     .option("-o, --out <file>", "output file name; defaults to “-” for stdout", "-")
+    .option("-n, --newline-delimited", "accept newline-delimited JSON")
     .option("-q, --quantization <count>", "pre-quantization parameter; 0 disables quantization", 0)
     .option("--encoding <encoding>", "character encoding", "utf8")
     .parse(process.argv);
@@ -34,13 +36,39 @@ function read(specifier) {
     process.exit(1);
   }
   objects[name] = undefined;
+  return (commander.newlineDelimited ? readNewlineDelimitedObject : readObject)(file === "-"
+      ? (process.stdin.setEncoding(commander.encoding), process.stdin)
+      : fs.createReadStream(file, {encoding: commander.encoding}))
+      .then(function(object) { objects[name] = object; });
+}
+
+function readNewlineDelimitedObject(stream) {
   return new Promise(function(resolve, reject) {
-    var chunks = [], stream = file === "-"
-        ? (process.stdin.setEncoding(commander.encoding), process.stdin)
-        : fs.createReadStream(file, {encoding: commander.encoding});
+    var collection;
+    readline.createInterface({
+      input: stream,
+      output: null
+    }).on("line", function(line) {
+      var object = JSON.parse(line);
+      if (collection) {
+        if (object.type === "Feature") collection.features.push(object);
+        else collection.geometries.push(object);
+      } else {
+        if (object.type === "Feature") collection = {type: "FeatureCollection", features: [object]};
+        else collection = {type: "GeometryCollection", geometries: [object]};
+      }
+    }).on("close", function() {
+      resolve(collection);
+    }).on("error", reject);
+  });
+}
+
+function readObject(stream) {
+  return new Promise(function(resolve, reject) {
+    var chunks = [];
     stream
         .on("data", function(chunk) { chunks.push(chunk); })
-        .on("end", function() { objects[name] = JSON.parse(chunks.join("")); resolve(); })
+        .on("end", function() { resolve(JSON.parse(chunks.join(""))); })
         .on("error", reject);
   });
 }
