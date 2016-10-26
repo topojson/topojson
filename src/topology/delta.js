@@ -1,7 +1,7 @@
 // Given a TopoJSON topology in absolute (quantized) coordinates,
 // converts to fixed-point delta encoding.
 // This is a destructive operation that modifies the given topology!
-module.exports = function(topology) {
+export default function(topology) {
   var arcs = topology.arcs,
       i = -1,
       n = arcs.length;
@@ -26,4 +26,4 @@ module.exports = function(topology) {
   }
 
   return topology;
-};
+}

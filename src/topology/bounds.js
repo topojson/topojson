@@ -1,6 +1,5 @@
-
 // Computes the bounding box of the specified hash of GeoJSON objects.
-module.exports = function(objects) {
+export default function(objects) {
   var x0 = Infinity,
       y0 = Infinity,
       x1 = -Infinity,
@@ -42,4 +41,4 @@ module.exports = function(objects) {
   }
 
   return [x0, y0, x1, y1];
-};
+}

@@ -1,7 +1,7 @@
-var hashset = require("./hashset"),
-    hashmap = require("./hashmap"),
-    hashPoint = require("./point-hash"),
-    equalPoint = require("./point-equal");
+import hashset from "./hashset";
+import hashmap from "./hashmap";
+import hashPoint from "./point-hash";
+import equalPoint from "./point-equal";
 
 // Given an extracted (pre-)topology, identifies all of the junctions. These are
 // the points at which arcs (lines or rings) will need to be cut so that each
@@ -17,7 +17,7 @@ var hashset = require("./hashset"),
 // and last point {B,C}. For a line, the first and last point are always
 // considered junctions, even if the line is closed; this ensures that a closed
 // line is never rotated.
-module.exports = function(topology) {
+export default function(topology) {
   var coordinates = topology.coordinates,
       lines = topology.lines,
       rings = topology.rings,
@@ -26,19 +26,22 @@ module.exports = function(topology) {
       leftByIndex = new Int32Array(coordinates.length),
       rightByIndex = new Int32Array(coordinates.length),
       junctionByIndex = new Int8Array(coordinates.length),
-      junctionCount = 0; // upper bound on number of junctions
+      junctionCount = 0, // upper bound on number of junctions
+      i, n,
+      previousIndex,
+      currentIndex,
+      nextIndex;
 
-  for (var i = 0, n = coordinates.length; i < n; ++i) {
+  for (i = 0, n = coordinates.length; i < n; ++i) {
     visitedByIndex[i] = leftByIndex[i] = rightByIndex[i] = -1;
   }
 
-  for (var i = 0, n = lines.length; i < n; ++i) {
+  for (i = 0, n = lines.length; i < n; ++i) {
     var line = lines[i],
         lineStart = line[0],
-        lineEnd = line[1],
-        previousIndex,
-        currentIndex = indexes[lineStart],
-        nextIndex = indexes[++lineStart];
+        lineEnd = line[1];
+    currentIndex = indexes[lineStart];
+    nextIndex = indexes[++lineStart];
     ++junctionCount, junctionByIndex[currentIndex] = 1; // start
     while (++lineStart <= lineEnd) {
       sequence(i, previousIndex = currentIndex, currentIndex = nextIndex, nextIndex = indexes[lineStart]);
@@ -46,17 +49,17 @@ module.exports = function(topology) {
     ++junctionCount, junctionByIndex[nextIndex] = 1; // end
   }
 
-  for (var i = 0, n = coordinates.length; i < n; ++i) {
+  for (i = 0, n = coordinates.length; i < n; ++i) {
     visitedByIndex[i] = -1;
   }
 
-  for (var i = 0, n = rings.length; i < n; ++i) {
+  for (i = 0, n = rings.length; i < n; ++i) {
     var ring = rings[i],
         ringStart = ring[0] + 1,
-        ringEnd = ring[1],
-        previousIndex = indexes[ringEnd - 1],
-        currentIndex = indexes[ringStart - 1],
-        nextIndex = indexes[ringStart];
+        ringEnd = ring[1];
+    previousIndex = indexes[ringEnd - 1];
+    currentIndex = indexes[ringStart - 1];
+    nextIndex = indexes[ringStart];
     sequence(i, previousIndex, currentIndex, nextIndex);
     while (++ringStart <= ringEnd) {
       sequence(i, previousIndex = currentIndex, currentIndex = nextIndex, nextIndex = indexes[ringStart]);
@@ -100,14 +103,14 @@ module.exports = function(topology) {
 
   visitedByIndex = leftByIndex = rightByIndex = null;
 
-  var junctionByPoint = hashset(junctionCount * 1.4, hashPoint, equalPoint);
+  var junctionByPoint = hashset(junctionCount * 1.4, hashPoint, equalPoint), j;
 
   // Convert back to a standard hashset by point for caller convenience.
-  for (var i = 0, n = coordinates.length, j; i < n; ++i) {
+  for (i = 0, n = coordinates.length; i < n; ++i) {
     if (junctionByIndex[j = indexes[i]]) {
       junctionByPoint.add(coordinates[j]);
     }
   }
 
   return junctionByPoint;
-};
+}

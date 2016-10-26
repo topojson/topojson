@@ -1,12 +1,11 @@
-module.exports = function(size, hash, equal, type, empty) {
+export default function(size, hash, equal, type, empty) {
   if (arguments.length === 3) {
     type = Array;
     empty = null;
   }
 
   var store = new type(size = 1 << Math.max(4, Math.ceil(Math.log(size) / Math.LN2))),
-      mask = size - 1,
-      free = size;
+      mask = size - 1;
 
   for (var i = 0; i < size; ++i) {
     store[i] = empty;
@@ -22,7 +21,6 @@ module.exports = function(size, hash, equal, type, empty) {
       match = store[index = (index + 1) & mask];
     }
     store[index] = value;
-    --free;
     return true;
   }
 
@@ -52,4 +50,4 @@ module.exports = function(size, hash, equal, type, empty) {
     has: has,
     values: values
   };
-};
+}

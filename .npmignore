@@ -1,4 +1,4 @@
 *.sublime-*
-build/*.zip
+dist/*.zip
 examples/
 test/

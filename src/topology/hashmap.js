@@ -1,4 +1,4 @@
-module.exports = function(size, hash, equal, keyType, keyEmpty, valueType) {
+export default function(size, hash, equal, keyType, keyEmpty, valueType) {
   if (arguments.length === 3) {
     keyType = valueType = Array;
     keyEmpty = null;
@@ -6,8 +6,7 @@ module.exports = function(size, hash, equal, keyType, keyEmpty, valueType) {
 
   var keystore = new keyType(size = 1 << Math.max(4, Math.ceil(Math.log(size) / Math.LN2))),
       valstore = new valueType(size),
-      mask = size - 1,
-      free = size;
+      mask = size - 1;
 
   for (var i = 0; i < size; ++i) {
     keystore[i] = keyEmpty;
@@ -24,7 +23,6 @@ module.exports = function(size, hash, equal, keyType, keyEmpty, valueType) {
     }
     keystore[index] = key;
     valstore[index] = value;
-    --free;
     return value;
   }
 
@@ -39,7 +37,6 @@ module.exports = function(size, hash, equal, keyType, keyEmpty, valueType) {
     }
     keystore[index] = key;
     valstore[index] = value;
-    --free;
     return value;
   }
 
@@ -70,4 +67,4 @@ module.exports = function(size, hash, equal, keyType, keyEmpty, valueType) {
     get: get,
     keys: keys
   };
-};
+}

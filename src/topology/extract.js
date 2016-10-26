@@ -15,7 +15,7 @@
 // with an equivalent `arcs` array that, for each line (for line string
 // geometries) or ring (for polygon geometries), points to one of the above
 // lines or rings.
-module.exports = function(objects) {
+export default function(objects) {
   var index = -1,
       lines = [],
       rings = [],
@@ -62,4 +62,4 @@ module.exports = function(objects) {
     rings: rings,
     objects: objects
   };
-};
+}

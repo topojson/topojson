@@ -1,18 +1,24 @@
-var hashmap = require("./hashmap"),
-    extract = require("./extract"),
-    cut = require("./cut"),
-    dedup = require("./dedup");
+import bounds from "./bounds";
+import cut from "./cut";
+import dedup from "./dedup";
+import delta from "./delta";
+import extract from "./extract";
+import geometry from "./geometry";
+import hashmap from "./hashmap";
+import quantize from "./quantize";
 
-// Constructs the TopoJSON Topology for the specified hash of geometries.
+// Constructs the TopoJSON Topology for the specified hash of features.
 // Each object in the specified hash must be a GeoJSON object,
 // meaning FeatureCollection, a Feature or a geometry object.
-module.exports = function(objects) {
-  var topology = dedup(cut(extract(objects))),
+export default function(objects, quantization) {
+  var bbox = bounds(geometry(objects)),
+      transform = quantization > 0 && quantize(objects, bbox, quantization),
+      topology = dedup(cut(extract(objects))),
       coordinates = topology.coordinates,
       indexByArc = hashmap(topology.arcs.length * 1.4, hashArc, equalArc);
 
   objects = topology.objects; // for garbage collection
-
+  topology.bbox = bbox;
   topology.arcs = topology.arcs.map(function(arc, i) {
     indexByArc.set(arc, i);
     return coordinates.slice(arc[0], arc[1] + 1);
@@ -50,8 +56,13 @@ module.exports = function(objects) {
     indexGeometry(objects[key]);
   }
 
+  if (transform) {
+    topology.transform = transform;
+    delta(topology);
+  }
+
   return topology;
-};
+}
 
 function hashArc(arc) {
   var i = arc[0], j = arc[1], t;

@@ -1,28 +1,30 @@
-var join = require("./join");
+import join from "./join";
 
 // Given an extracted (pre-)topology, cuts (or rotates) arcs so that all shared
 // point sequences are identified. The topology can then be subsequently deduped
 // to remove exact duplicate arcs.
-module.exports = function(topology) {
+export default function(topology) {
   var junctions = join(topology),
       coordinates = topology.coordinates,
       lines = topology.lines,
-      rings = topology.rings;
+      rings = topology.rings,
+      next,
+      i, n;
 
-  for (var i = 0, n = lines.length; i < n; ++i) {
+  for (i = 0, n = lines.length; i < n; ++i) {
     var line = lines[i],
         lineMid = line[0],
         lineEnd = line[1];
     while (++lineMid < lineEnd) {
       if (junctions.has(coordinates[lineMid])) {
-        var next = {0: lineMid, 1: line[1]};
+        next = {0: lineMid, 1: line[1]};
         line[1] = lineMid;
         line = line.next = next;
       }
     }
   }
 
-  for (var i = 0, n = rings.length; i < n; ++i) {
+  for (i = 0, n = rings.length; i < n; ++i) {
     var ring = rings[i],
         ringStart = ring[0],
         ringMid = ringStart,
@@ -31,7 +33,7 @@ module.exports = function(topology) {
     while (++ringMid < ringEnd) {
       if (junctions.has(coordinates[ringMid])) {
         if (ringFixed) {
-          var next = {0: ringMid, 1: ring[1]};
+          next = {0: ringMid, 1: ring[1]};
           ring[1] = ringMid;
           ring = ring.next = next;
         } else { // For the first junction, we can rotate rather than cut.
@@ -45,7 +47,7 @@ module.exports = function(topology) {
   }
 
   return topology;
-};
+}
 
 function rotateArray(array, start, end, offset) {
   reverse(array, start, end);
