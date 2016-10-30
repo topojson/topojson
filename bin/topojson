@@ -12,7 +12,6 @@ commander
     .option("-o, --out <file>", "output file name; defaults to “-” for stdout", "-")
     .option("-n, --newline-delimited", "accept newline-delimited JSON")
     .option("-q, --quantization <count>", "pre-quantization parameter; 0 disables quantization", 0)
-    .option("--encoding <encoding>", "character encoding", "utf8")
     .parse(process.argv);
 
 if (commander.args.length < 1) commander.args[0] = "-";
@@ -37,8 +36,7 @@ function read(specifier) {
   }
   objects[name] = undefined;
   return (commander.newlineDelimited ? readNewlineDelimitedObject : readObject)(file === "-"
-      ? (process.stdin.setEncoding(commander.encoding), process.stdin)
-      : fs.createReadStream(file, {encoding: commander.encoding}))
+      ? process.stdin : fs.createReadStream(file))
       .then(function(object) { objects[name] = object; });
 }
 
