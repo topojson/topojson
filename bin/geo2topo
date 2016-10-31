@@ -108,7 +108,7 @@ function readObject(stream) {
     var data = [];
     stream
         .on("data", function(d) { data.push(d); })
-        .on("end", function() { resolve(JSON.parse(Buffer.concat(data).toString())); })
+        .on("end", function() { resolve(JSON.parse(Buffer.concat(data))); })
         .on("error", reject);
   });
 }
