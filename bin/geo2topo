@@ -105,10 +105,10 @@ function readNewlineDelimitedObject(stream) {
 
 function readObject(stream) {
   return new Promise(function(resolve, reject) {
-    var chunks = [];
+    var data = [];
     stream
-        .on("data", function(chunk) { chunks.push(chunk); })
-        .on("end", function() { resolve(JSON.parse(chunks.join(""))); })
+        .on("data", function(d) { data.push(d); })
+        .on("end", function() { resolve(JSON.parse(Buffer.concat(data).toString())); })
         .on("error", reject);
   });
 }
