@@ -28,7 +28,7 @@ var topology = topojson.topology({foo: geojson});
 
 <a name="topology" href="#topology">#</a> topojson.<b>topology</b>(<i>objects</i>[, <i>quantization</i>])
 
-…
+… This is a destructive operation!
 
 ## Command-Line Reference
 
