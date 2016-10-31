@@ -1,5 +1,6 @@
 {
   "type": "Topology",
+  "bbox": [0, 0, 10, 10],
   "transform": {
     "scale": [0.001000100010001, 0.001000100010001],
     "translate": [0, 0]

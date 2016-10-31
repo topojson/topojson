@@ -40,5 +40,5 @@ export default function(objects) {
     boundGeometry(objects[key]);
   }
 
-  return [x0, y0, x1, y1];
+  return x1 >= x0 && y1 >= y0 ? [x0, y0, x1, y1] : undefined;
 }

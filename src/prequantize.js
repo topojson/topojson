@@ -3,12 +3,12 @@ export default function(objects, bbox, n) {
       y0 = bbox[1],
       x1 = bbox[2],
       y1 = bbox[3],
-      kx = x1 - x0 ? n / (x1 - x0) : 1,
-      ky = y1 - y0 ? n / (y1 - y0) : 1;
+      kx = x1 - x0 ? (n - 1) / (x1 - x0) : 1,
+      ky = y1 - y0 ? (n - 1) / (y1 - y0) : 1;
 
   function quantizePoint(coordinates) {
-    coordinates[0] = Math.floor((coordinates[0] - x0) * kx);
-    coordinates[1] = Math.floor((coordinates[1] - y0) * ky);
+    coordinates[0] = Math.round((coordinates[0] - x0) * kx);
+    coordinates[1] = Math.round((coordinates[1] - y0) * ky);
     return coordinates;
   }
 
@@ -87,6 +87,6 @@ export default function(objects, bbox, n) {
 
   return {
     scale: [1 / kx, 1 / ky],
-    translate: [x0 + (x1 - x0) / (2 * n), y0 + (y1 - x0) / (2 * n)]
+    translate: [x0, y0]
   };
 }

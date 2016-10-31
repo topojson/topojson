@@ -1,33 +1,31 @@
 {
   "name": "topojson",
   "version": "1.6.27",
-  "description": "An extension to GeoJSON that encodes topology.",
+  "description": "Convert GeoJSON to TopoJSON for smaller files and the power of topology!",
   "keywords": [
     "topojson",
     "geojson"
   ],
-  "homepage": "https://github.com/mbostock/topojson",
+  "homepage": "https://github.com/topojson/topojson",
   "license": "BSD-3-Clause",
   "author": {
     "name": "Mike Bostock",
-    "url": "http://bost.ocks.org/mike"
+    "url": "https://bost.ocks.org/mike"
   },
-  "main": "dist/topojson-server.js",
+  "main": "dist/topojson.js",
   "module": "index",
-  "browser": "dist/topojson.js",
   "repository": {
     "type": "git",
-    "url": "https://github.com/mbostock/topojson.git"
+    "url": "https://github.com/topojson/topojson.git"
   },
   "bin": {
-    "topojson": "./bin/topojson",
-    "topojson-simplify": "./bin/topojson-simplify"
+    "geo2topo": "bin/geo2topo"
   },
   "scripts": {
-    "pretest": "rm -rf dist && mkdir dist && rollup --banner \"$(preamble)\" -f umd -n topojson -o dist/topojson.js -- client.js && rollup --banner \"$(preamble)\" -f umd -n topojson -o dist/topojson-server.js -- index.js",
-    "test": "tape 'test/**/*-test.js' && eslint index.js client.js src",
-    "prepublish": "npm run test && uglifyjs dist/topojson.js -c -m -o dist/topojson.min.js && uglifyjs dist/topojson-server.js -c -m -o dist/topojson-server.min.js",
-    "postpublish": "VERSION=`node -e 'console.log(require(\"./package.json\").version)'`; git push && git push --tags && cp -v README.md LICENSE dist/topojson.js dist/topojson.min.js ../topojson-bower && cd ../topojson-bower && git add README.md LICENSE topojson.js topojson.min.js && git commit -m \"Release $VERSION.\" && git tag -am \"Release $VERSION.\" v${VERSION} && git push && git push --tags && cd ../topojson && cp dist/topojson.js ../d3.github.com/topojson.v2.js && cp dist/topojson.min.js ../d3.github.com/topojson.v2.min.js && cd ../d3.github.com && git add topojson.v2.js topojson.v2.min.js && git commit -m \"topojson ${VERSION}\" && git push && cd - && zip -j dist/topojson.zip -- LICENSE README.md dist/topojson.js dist/topojson.min.js dist/topojson-server.js dist/topojson-server.min.js"
+    "pretest": "rm -rf dist && mkdir dist && rollup --banner \"$(preamble)\" -f umd -n topojson -o dist/topojson.js -- index.js",
+    "test": "tape 'test/**/*-test.js' && eslint index.js src",
+    "prepublish": "npm run test && uglifyjs dist/topojson.js -c -m -o dist/topojson.min.js",
+    "postpublish": "VERSION=`node -e 'console.log(require(\"./package.json\").version)'`; git push && git push --tags && zip -j dist/topojson.zip -- LICENSE README.md dist/topojson.js dist/topojson.min.js"
   },
   "dependencies": {
     "commander": "2"
@@ -37,6 +35,7 @@
     "package-preamble": "0.0",
     "rollup": "0.36",
     "tape": "4",
+    "topojson-client": "2",
     "uglify-js": "2",
     "us-atlas": "0.0",
     "world-atlas": "0.0"

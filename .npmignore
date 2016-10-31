@@ -1,4 +1,3 @@
 *.sublime-*
 dist/*.zip
-examples/
 test/

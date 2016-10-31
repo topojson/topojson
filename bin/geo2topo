@@ -4,7 +4,7 @@ var fs = require("fs"),
     path = require("path"),
     readline = require("readline"),
     commander = require("commander"),
-    topojson = require("../dist/topojson-server");
+    topojson = require("../");
 
 commander
     .version(require("../package.json").version)
@@ -15,6 +15,8 @@ commander
     .parse(process.argv);
 
 if (commander.args.length < 1) commander.args[0] = "-";
+
+var nullType = {}, nullObject = {type: nullType};
 
 var objects = {}, out = commander.out === "-" ? process.stdout : fs.createWriteStream(commander.out);
 
@@ -31,7 +33,9 @@ function read(specifier) {
       file = i >= 0 ? specifier.slice(i + 1) : specifier,
       name = i >= 0 ? specifier.slice(0, i) : path.basename(specifier, path.extname(specifier));
   if (name in objects) {
-    console.error("error: object “" + name + "” is not unique");
+    console.error();
+    console.error("  error: object “" + name + "” is not unique");
+    console.error();
     process.exit(1);
   }
   objects[name] = undefined;
@@ -42,16 +46,59 @@ function read(specifier) {
 
 function readNewlineDelimitedObject(stream) {
   return new Promise(function(resolve, reject) {
-    var objects = [];
+    var collection;
     readline.createInterface({
       input: stream,
       output: null
     }).on("line", function(line) {
-      objects.push(JSON.parse(line));
+      var object = JSON.parse(line);
+      if (object == null) object = nullObject;
+      switch (object.type) {
+        case "Feature": {
+          if (collection) {
+            if (collection.type !== "FeatureCollection") {
+              console.error();
+              console.error("  error: expected geometry, not Feature");
+              console.error();
+              process.exit(1);
+            }
+            collection.features.push(object);
+          } else {
+            collection = {type: "FeatureCollection", features: [object]};
+          }
+          break;
+        }
+        case nullType:
+        case "GeometryCollection":
+        case "MultiLineString":
+        case "LineString":
+        case "Polygon":
+        case "MultiPolygon":
+        case "Point":
+        case "MultiPoint": {
+          if (collection) {
+            if (collection.type !== "GeometryCollection") {
+              console.error();
+              console.error("  error: expected Feature, not " + object.type);
+              console.error();
+              process.exit(1);
+            }
+            collection.geometries.push(object);
+          } else {
+            collection = {type: "GeometryCollection", geometries: [object]};
+          }
+          break;
+        }
+        default: {
+          console.error();
+          console.error("  error: expected Feature or geometry, not " + object.type);
+          console.error();
+          process.exit(1);
+          break;
+        }
+      }
     }).on("close", function() {
-      resolve(objects.length === 0 || objects[0].type === "Feature"
-          ? {type: "FeatureCollection", features: objects}
-          : {type: "GeometryCollection", geometries: objects});
+      resolve(collection || {type: "FeatureCollection", features: []});
     }).on("error", reject);
   });
 }

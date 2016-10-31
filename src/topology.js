@@ -4,15 +4,15 @@ import dedup from "./dedup";
 import delta from "./delta";
 import extract from "./extract";
 import geometry from "./geometry";
-import hashmap from "./hashmap";
-import quantize from "./quantize";
+import hashmap from "./hash/hashmap";
+import prequantize from "./prequantize";
 
 // Constructs the TopoJSON Topology for the specified hash of features.
 // Each object in the specified hash must be a GeoJSON object,
 // meaning FeatureCollection, a Feature or a geometry object.
 export default function(objects, quantization) {
   var bbox = bounds(geometry(objects)),
-      transform = quantization > 0 && quantize(objects, bbox, quantization),
+      transform = quantization > 0 && bbox && prequantize(objects, bbox, quantization),
       topology = dedup(cut(extract(objects))),
       coordinates = topology.coordinates,
       indexByArc = hashmap(topology.arcs.length * 1.4, hashArc, equalArc);

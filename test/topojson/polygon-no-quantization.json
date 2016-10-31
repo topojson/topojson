@@ -1,5 +1,6 @@
 {
   "type": "Topology",
+  "bbox": [0, 0, 10, 10],
   "objects": {
     "polygon": {
       "type": "Polygon",
