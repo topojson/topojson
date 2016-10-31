@@ -105,6 +105,14 @@ tape("topology converting a feature to a geometry preserves its id", function(te
   test.end();
 });
 
+tape("topology converting a feature to a geometry preserves its bbox", function(test) {
+  var topology = topojson.topology({foo: {type: "Feature", bbox: [0, 0, 10, 10], properties: {}, geometry: {type: "LineString", coordinates: [[.1, .2], [.3, .4]]}}});
+  test.deepEqual(topology.objects.foo.bbox, [0, 0, 10, 10]);
+  var topology = topojson.topology({foo: {type: "Feature", properties: {}, geometry: {type: "LineString", bbox: [0, 0, 10, 10], coordinates: [[.1, .2], [.3, .4]]}}});
+  test.deepEqual(topology.objects.foo.bbox, [0, 0, 10, 10]);
+  test.end();
+});
+
 tape("topology converting a feature to a geometry preserves its properties", function(test) {
   var topology = topojson.topology({foo: {type: "Feature", id: "Foo", properties: {name: "George"}, geometry: {type: "LineString", coordinates: [[.1, .2], [.3, .4]]}}});
   test.deepEqual(topology.objects.foo.properties, {name: "George"});

@@ -21,6 +21,7 @@ function geomifyFeature(feature) {
     feature.type = geometry.type;
     if (geometry.geometries) feature.geometries = geometry.geometries;
     else if (geometry.coordinates) feature.coordinates = geometry.coordinates;
+    if (geometry.bbox) feature.bbox = geometry.bbox;
   }
   delete feature.geometry;
   return feature;
