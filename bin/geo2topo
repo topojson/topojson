@@ -9,6 +9,7 @@ var fs = require("fs"),
 commander
     .version(require("../package.json").version)
     .usage("[options] <name:file>…")
+    .description("Converts GeoJSON features to TopoJSON objects.")
     .option("-o, --out <file>", "output file name; defaults to “-” for stdout", "-")
     .option("-n, --newline-delimited", "accept newline-delimited JSON")
     .option("-q, --quantization <count>", "pre-quantization parameter; 0 disables quantization", 0)
@@ -16,17 +17,12 @@ commander
 
 if (commander.args.length < 1) commander.args[0] = "-";
 
-var nullType = {}, nullObject = {type: nullType};
+var nullType = {},
+    nullObject = {type: nullType},
+    objects = {},
+    out = (commander.out === "-" ? process.stdout : fs.createWriteStream(commander.out)).on("error", handleEpipe);
 
-var objects = {}, out = commander.out === "-" ? process.stdout : fs.createWriteStream(commander.out);
-
-out.on("error", function(error) {
-  if (error.code === "EPIPE" || error.errno === "EPIPE") {
-    process.exit(0);
-  }
-});
-
-Promise.all(commander.args.map(read)).then(write);
+Promise.all(commander.args.map(read)).then(write).catch(abort);
 
 function read(specifier) {
   var i = specifier.indexOf("="),
@@ -116,4 +112,14 @@ function readObject(stream) {
 function write() {
   out.write(JSON.stringify(topojson.topology(objects, +commander.quantization)));
   out[out === process.stdout ? "write" : "end"]("\n");
+}
+
+function handleEpipe(error) {
+  if (error.code === "EPIPE" || error.errno === "EPIPE") {
+    process.exit(0);
+  }
+}
+
+function abort(error) {
+  console.error(error.stack);
 }
