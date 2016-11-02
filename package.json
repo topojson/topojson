@@ -1,6 +1,9 @@
 {
   "name": "topojson",
-  "version": "1.6.27",
+  "version": "2.0.0-alpha.1",
+  "publishConfig": {
+    "tag": "next"
+  },
   "description": "Convert GeoJSON to TopoJSON for smaller files and the power of topology!",
   "keywords": [
     "topojson",
