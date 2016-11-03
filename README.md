@@ -34,6 +34,8 @@ If a *quantization* parameter is specified, the input geometry is quantized prio
 
 ## Command-Line Reference
 
+### geo2topo
+
 <a name="geo2topo" href="#geo2topo">#</a> <b>geo2topo</b> [<i>options…</i>] &lt;<i>name</i>=<i>file</i>&gt;… [<>](https://github.com/topojson/topojson/blob/master/bin/geo2topo "Source")
 
 Converts one or more GeoJSON objects to an output topology. For example, to convert the us-states.json GeoJSON FeatureCollection to a TopologyJSON topology with the “states” object in us.json:
