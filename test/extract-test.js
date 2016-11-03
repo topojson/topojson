@@ -1,5 +1,6 @@
 var tape = require("tape"),
-    extract = require("../../lib/topojson/topology/extract");
+    internals = require("../build/topojson-internals"),
+    extract = internals.extract;
 
 tape("extract copies coordinates sequentially into a buffer", function(test) {
   var topology = extract({

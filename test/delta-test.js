@@ -1,5 +1,6 @@
 var tape = require("tape"),
-    delta = require("../lib/topojson/delta");
+    internals = require("../build/topojson-internals"),
+    delta = internals.delta;
 
 tape("delta converts arcs to delta encoding", function(test) {
   test.deepEqual(delta({

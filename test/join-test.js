@@ -1,6 +1,7 @@
 var tape = require("tape"),
-    extract = require("../../lib/topojson/topology/extract"),
-    join = require("../../lib/topojson/topology/join");
+    internals = require("../build/topojson-internals"),
+    extract = internals.extract,
+    join = internals.join;
 
 tape("join the returned hashmap has true for junction points", function(test) {
   var junctions = join(extract({

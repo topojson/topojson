@@ -1,5 +1,6 @@
 var tape = require("tape"),
-    hashset = require("../../lib/topojson/topology/hashset");
+    internals = require("../../build/topojson-internals"),
+    hashset = internals.hashset;
 
 tape("hashset can add an object", function(test) {
   var map = hashset(10, hash, equals),

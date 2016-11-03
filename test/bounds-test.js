@@ -1,5 +1,6 @@
 var tape = require("tape"),
-    bounds = require("../lib/topojson/bounds");
+    internals = require("../build/topojson-internals"),
+    bounds = internals.bounds;
 
 tape("bounds computes the bounding box", function(test) {
   test.deepEqual(bounds({

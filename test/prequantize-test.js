@@ -1,7 +1,8 @@
 var tape = require("tape"),
-    quantize = require("../lib/topojson/pre-quantize");
+    internals = require("../build/topojson-internals"),
+    quantize = internals.prequantize;
 
-tape("pre-quantize returns the quantization transform", function(test) {
+tape("prequantize returns the quantization transform", function(test) {
   test.deepEqual(quantize({}, [0, 0, 1, 1], 1e4), {
     scale: [1 / 9999, 1 / 9999],
     translate: [0, 0]
@@ -9,7 +10,7 @@ tape("pre-quantize returns the quantization transform", function(test) {
   test.end();
 });
 
-tape("pre-quantize converts coordinates to fixed precision", function(test) {
+tape("prequantize converts coordinates to fixed precision", function(test) {
   var objects = {
     foo: {
       type: "LineString",
@@ -21,7 +22,7 @@ tape("pre-quantize converts coordinates to fixed precision", function(test) {
   test.end();
 });
 
-tape("pre-quantize observes the quantization parameter", function(test) {
+tape("prequantize observes the quantization parameter", function(test) {
   var objects = {
     foo: {
       type: "LineString",
@@ -33,7 +34,7 @@ tape("pre-quantize observes the quantization parameter", function(test) {
   test.end();
 });
 
-tape("pre-quantize observes the bounding box", function(test) {
+tape("prequantize observes the bounding box", function(test) {
   var objects = {
     foo: {
       type: "LineString",
@@ -45,7 +46,7 @@ tape("pre-quantize observes the bounding box", function(test) {
   test.end();
 });
 
-tape("pre-quantize applies to points as well as arcs", function(test) {
+tape("prequantize applies to points as well as arcs", function(test) {
   var objects = {
     foo: {
       type: "MultiPoint",
@@ -57,7 +58,7 @@ tape("pre-quantize applies to points as well as arcs", function(test) {
   test.end();
 });
 
-tape("pre-quantize skips coincident points in lines", function(test) {
+tape("prequantize skips coincident points in lines", function(test) {
   var objects = {
     foo: {
       type: "LineString",
@@ -69,7 +70,7 @@ tape("pre-quantize skips coincident points in lines", function(test) {
   test.end();
 });
 
-tape("pre-quantize skips coincident points in polygons", function(test) {
+tape("prequantize skips coincident points in polygons", function(test) {
   var objects = {
     foo: {
       type: "Polygon",
@@ -81,7 +82,7 @@ tape("pre-quantize skips coincident points in polygons", function(test) {
   test.end();
 });
 
-tape("pre-quantize does not skip coincident points in points", function(test) {
+tape("prequantize does not skip coincident points in points", function(test) {
   var objects = {
     foo: {
       type: "MultiPoint",
@@ -93,7 +94,7 @@ tape("pre-quantize does not skip coincident points in points", function(test) {
   test.end();
 });
 
-tape("pre-quantize includes closing point in degenerate lines", function(test) {
+tape("prequantize includes closing point in degenerate lines", function(test) {
   var objects = {
     foo: {
       type: "LineString",
@@ -105,7 +106,7 @@ tape("pre-quantize includes closing point in degenerate lines", function(test) {
   test.end();
 });
 
-tape("pre-quantize includes closing point in degenerate polygons", function(test) {
+tape("prequantize includes closing point in degenerate polygons", function(test) {
   var objects = {
     foo: {
       type: "Polygon",

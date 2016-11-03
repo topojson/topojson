@@ -1,5 +1,6 @@
 var tape = require("tape"),
-    hashmap = require("../../lib/topojson/topology/hashmap");
+    internals = require("../../build/topojson-internals"),
+    hashmap = internals.hashmap;
 
 tape("hashmap can get an object by key", function(test) {
   var map = hashmap(10, hash, equals),

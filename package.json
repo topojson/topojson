@@ -25,7 +25,7 @@
     "geo2topo": "bin/geo2topo"
   },
   "scripts": {
-    "pretest": "rm -rf dist && mkdir dist && rollup --banner \"$(preamble)\" -f umd -n topojson -o dist/topojson.js -- index.js",
+    "pretest": "rm -rf dist && mkdir dist && rollup --banner \"$(preamble)\" -f umd -n topojson -o dist/topojson.js -- index.js && rollup -f cjs -o build/topojson-internals.js -- test/internals.js",
     "test": "tape 'test/**/*-test.js' && eslint index.js src",
     "prepublish": "npm run test && uglifyjs dist/topojson.js -c -m -o dist/topojson.min.js",
     "postpublish": "git push && git push --tags && zip -j dist/topojson.zip -- LICENSE.md README.md dist/topojson.js dist/topojson.min.js"

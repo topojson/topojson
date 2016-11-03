@@ -1,8 +1,9 @@
 var tape = require("tape"),
-    geomify = require("../lib/topojson/geomify");
+    internals = require("../build/topojson-internals"),
+    geometry = internals.geometry;
 
-tape("geomify replaces LineString Feature with LineString Geometry", function(test) {
-  test.deepEqual(geomify({
+tape("geometry replaces LineString Feature with LineString Geometry", function(test) {
+  test.deepEqual(geometry({
     foo: {
       type: "Feature",
       geometry: {
@@ -19,8 +20,8 @@ tape("geomify replaces LineString Feature with LineString Geometry", function(te
   test.end();
 });
 
-tape("geomify replaces GeometryCollection Feature with GeometryCollection", function(test) {
-  test.deepEqual(geomify({
+tape("geometry replaces GeometryCollection Feature with GeometryCollection", function(test) {
+  test.deepEqual(geometry({
     foo: {
       type: "Feature",
       geometry: {
@@ -43,8 +44,8 @@ tape("geomify replaces GeometryCollection Feature with GeometryCollection", func
   test.end();
 });
 
-tape("geomify replaces FeatureCollection with GeometryCollection", function(test) {
-  test.deepEqual(geomify({
+tape("geometry replaces FeatureCollection with GeometryCollection", function(test) {
+  test.deepEqual(geometry({
     foo: {
       type: "FeatureCollection",
       features: [{
@@ -67,8 +68,8 @@ tape("geomify replaces FeatureCollection with GeometryCollection", function(test
   test.end();
 });
 
-tape("geomify replaces Feature with null Geometry with null-type Geometry", function(test) {
-  test.deepEqual(geomify({
+tape("geometry replaces Feature with null Geometry with null-type Geometry", function(test) {
+  test.deepEqual(geometry({
     foo: {
       type: "Feature",
       geometry: null
@@ -81,8 +82,8 @@ tape("geomify replaces Feature with null Geometry with null-type Geometry", func
   test.end();
 });
 
-tape("geomify replaces top-level null Geometry with null-type Geometry", function(test) {
-  test.deepEqual(geomify({
+tape("geometry replaces top-level null Geometry with null-type Geometry", function(test) {
+  test.deepEqual(geometry({
     foo: null
   }), {
     foo: {
@@ -92,8 +93,8 @@ tape("geomify replaces top-level null Geometry with null-type Geometry", functio
   test.end();
 });
 
-tape("geomify replaces null Geometry in GeometryCollection with null-type Geometry", function(test) {
-  test.deepEqual(geomify({
+tape("geometry replaces null Geometry in GeometryCollection with null-type Geometry", function(test) {
+  test.deepEqual(geometry({
     foo: {
       type: "GeometryCollection",
       geometries: [null]
@@ -109,8 +110,8 @@ tape("geomify replaces null Geometry in GeometryCollection with null-type Geomet
   test.end();
 });
 
-tape("geomify preserves id", function(test) {
-  test.deepEqual(geomify({
+tape("geometry preserves id", function(test) {
+  test.deepEqual(geometry({
     foo: {
       id: "foo",
       type: "Feature",
@@ -129,8 +130,8 @@ tape("geomify preserves id", function(test) {
   test.end();
 });
 
-tape("geomify preserves properties", function(test) {
-  test.deepEqual(geomify({
+tape("geometry preserves properties", function(test) {
+  test.deepEqual(geometry({
     foo: {
       properties: {
         "foo": 42
@@ -153,8 +154,8 @@ tape("geomify preserves properties", function(test) {
   test.end();
 });
 
-tape("geomify does not delete empty properties", function(test) {
-  test.deepEqual(geomify({
+tape("geometry does not delete empty properties", function(test) {
+  test.deepEqual(geometry({
     foo: {
       properties: {},
       type: "Feature",
@@ -173,8 +174,8 @@ tape("geomify does not delete empty properties", function(test) {
   test.end();
 });
 
-tape("geomify converts singular multipoints to points", function(test) {
-  test.deepEqual(geomify({
+tape("geometry converts singular multipoints to points", function(test) {
+  test.deepEqual(geometry({
     foo: {
       type: "MultiPoint",
       coordinates: [[0, 0]]
@@ -188,8 +189,8 @@ tape("geomify converts singular multipoints to points", function(test) {
   test.end();
 });
 
-tape("geomify converts empty multipoints to null", function(test) {
-  test.deepEqual(geomify({
+tape("geometry converts empty multipoints to null", function(test) {
+  test.deepEqual(geometry({
     foo: {
       type: "MultiPoint",
       coordinates: []
@@ -202,8 +203,8 @@ tape("geomify converts empty multipoints to null", function(test) {
   test.end();
 });
 
-tape("geomify converts singular multilines to lines", function(test) {
-  test.deepEqual(geomify({
+tape("geometry converts singular multilines to lines", function(test) {
+  test.deepEqual(geometry({
     foo: {
       type: "MultiLineString",
       coordinates: [[[0, 0], [0, 1]]]
@@ -217,8 +218,8 @@ tape("geomify converts singular multilines to lines", function(test) {
   test.end();
 });
 
-tape("geomify converts empty lines to null", function(test) {
-  test.deepEqual(geomify({
+tape("geometry converts empty lines to null", function(test) {
+  test.deepEqual(geometry({
     foo: {
       type: "LineString",
       coordinates: []
@@ -231,8 +232,8 @@ tape("geomify converts empty lines to null", function(test) {
   test.end();
 });
 
-tape("geomify converts empty multilines to null", function(test) {
-  test.deepEqual(geomify({
+tape("geometry converts empty multilines to null", function(test) {
+  test.deepEqual(geometry({
     foo: {
       type: "MultiLineString",
       coordinates: []
@@ -252,8 +253,8 @@ tape("geomify converts empty multilines to null", function(test) {
   test.end();
 });
 
-tape("geomify strips empty rings in polygons", function(test) {
-  test.deepEqual(geomify({
+tape("geometry strips empty rings in polygons", function(test) {
+  test.deepEqual(geometry({
     foo: {
       type: "Polygon",
       coordinates: [[[0, 0], [1, 0], [1, 1], [0, 0]], []]
@@ -267,8 +268,8 @@ tape("geomify strips empty rings in polygons", function(test) {
   test.end();
 });
 
-tape("geomify strips empty lines in multilines", function(test) {
-  test.deepEqual(geomify({
+tape("geometry strips empty lines in multilines", function(test) {
+  test.deepEqual(geometry({
     foo: {
       type: "MultiLineString",
       coordinates: [[[0, 0], [1, 0], [1, 1], [0, 0]], [], [[0, 0], [1, 0]]]
@@ -282,8 +283,8 @@ tape("geomify strips empty lines in multilines", function(test) {
   test.end();
 });
 
-tape("geomify converts empty polygons to null", function(test) {
-  test.deepEqual(geomify({
+tape("geometry converts empty polygons to null", function(test) {
+  test.deepEqual(geometry({
     foo: {
       type: "Polygon",
       coordinates: []
@@ -303,8 +304,8 @@ tape("geomify converts empty polygons to null", function(test) {
   test.end();
 });
 
-tape("geomify strips empty polygons in multipolygons", function(test) {
-  test.deepEqual(geomify({
+tape("geometry strips empty polygons in multipolygons", function(test) {
+  test.deepEqual(geometry({
     foo: {
       type: "MultiPolygon",
       coordinates: [[[[0, 0], [1, 0], [1, 1], [0, 0]], []], [], [[]]]
@@ -318,8 +319,8 @@ tape("geomify strips empty polygons in multipolygons", function(test) {
   test.end();
 });
 
-tape("geomify converts singular multipolygons to polygons", function(test) {
-  test.deepEqual(geomify({
+tape("geometry converts singular multipolygons to polygons", function(test) {
+  test.deepEqual(geometry({
     foo: {
       type: "MultiPolygon",
       coordinates: [[[[0, 0], [0, 1], [1, 0], [0, 0]]]]
