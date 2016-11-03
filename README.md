@@ -48,6 +48,8 @@ For convenience, you can omit the object name and specify only the file *name*; 
 geo2topo states.json > us.json
 ```
 
+See also [topo2geo](https://github.com/topojson/topojson-client/blob/master/README.md#topo2geo).
+
 <a name="geo2topo_help" href="#geo2topo_help">#</a> geo2topo <b>-h</b>
 <br><a href="#geo2topo_help">#</a> geo2topo <b>--help</b>
 
