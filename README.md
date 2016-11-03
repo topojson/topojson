@@ -28,11 +28,13 @@ var topology = topojson.topology({foo: geojson});
 
 <a name="topology" href="#topology">#</a> topojson.<b>topology</b>(<i>objects</i>[, <i>quantization</i>])
 
-… This is a destructive operation!
+Converts the specified [GeoJSON *objects*](http://geojson.org/geojson-spec.html#geojson-objects) to TopoJSON. The input *objects* are modified **in-place** and should not be referenced after calling this method; this is a destructive operation!
+
+If a *quantization* parameter is specified, the input geometry is quantized prior to computing the topology, and the returned topology is quantized, and its arcs are [delta-encoded](https://github.com/topojson/topojson-specification/blob/master/README.md#213-arcs). Quantization is recommended to improve the quality of the topology if the input geometry is messy (*i.e.*, small floating point error means that adjacent boundaries do not have identical values); typical values are powers of ten, such as 1e4, 1e5 or 1e6. See also [topojson.quantize](https://github.com/topojson/topojson-client/blob/master/README.md#quantize) to quantize a topology after it has been constructed, without altering the topological relationships.
 
 ## Command-Line Reference
 
-<a name="geo2topo" href="#geo2topo">#</a> <b>geo2topo</b> [<i>options…</i>] &lt;name=file&gt;… [<>](https://github.com/topojson/topojson/blob/master/bin/geo2topo "Source")
+<a name="geo2topo" href="#geo2topo">#</a> <b>geo2topo</b> [<i>options…</i>] &lt;<i>name</i>=<i>file</i>&gt;… [<>](https://github.com/topojson/topojson/blob/master/bin/geo2topo "Source")
 
 Converts one or more GeoJSON objects to an output topology. For example, to convert the us-states-10m.json GeoJSON FeatureCollection to a TopologyJSON topology with the “states” object in us-10m.json:
 
