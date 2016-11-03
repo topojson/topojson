@@ -36,16 +36,16 @@ If a *quantization* parameter is specified, the input geometry is quantized prio
 
 <a name="geo2topo" href="#geo2topo">#</a> <b>geo2topo</b> [<i>options…</i>] &lt;<i>name</i>=<i>file</i>&gt;… [<>](https://github.com/topojson/topojson/blob/master/bin/geo2topo "Source")
 
-Converts one or more GeoJSON objects to an output topology. For example, to convert the us-states-10m.json GeoJSON FeatureCollection to a TopologyJSON topology with the “states” object in us-10m.json:
+Converts one or more GeoJSON objects to an output topology. For example, to convert the us-states.json GeoJSON FeatureCollection to a TopologyJSON topology with the “states” object in us.json:
 
 ```
-geo2topo states=us-states-10m.json > us-10m.json
+geo2topo states=us-states.json > us.json
 ```
 
-For convenience, you can omit the object name and specify only the file *name*; the object name will be the basename of the file, with the directory and extension removed. For example, to convert the states.json GeoJSON FeatureCollection to a TopologyJSON topology with the “states” object in us-10m.json:
+For convenience, you can omit the object name and specify only the file *name*; the object name will be the basename of the file, with the directory and extension removed. For example, to convert the states.json GeoJSON FeatureCollection to a TopologyJSON topology with the “states” object in us.json:
 
 ```
-geo2topo states.json > us-10m.json
+geo2topo states.json > us.json
 ```
 
 <a name="geo2topo_help" href="#geo2topo_help">#</a> geo2topo <b>-h</b>
@@ -74,7 +74,7 @@ Specify the input TopoJSON file name. Defaults to “-” for stdin.
 List the names of the objects in the input topology, and then exit. For example, this:
 
 ```
-geo2topo -l < us-10m.json
+geo2topo -l < us.json
 ```
 
 Will output this:
@@ -82,5 +82,5 @@ Will output this:
 ```
 counties
 states
-land
+nation
 ```
