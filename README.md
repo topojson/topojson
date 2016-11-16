@@ -9,6 +9,12 @@ To further reduce file size, TopoJSON can use quantized delta-encoding for integ
 
 As a result, TopoJSON is substantially more compact than GeoJSON, frequently offering a reduction of 80% or more even without simplification. Yet encoding topology also has numerous useful applications for maps and visualization above! It allows [topology-preserving shape simplification](https://github.com/topojson/topojson-simplify), which ensures that adjacent features remain connected after simplification; this applies even across feature collections, such as simultaneous consistent simplification of state and county boundaries. Topology can also be used for [Dorling](http://www.ncgia.ucsb.edu/projects/Cartogram_Central/types.html) or [hexagonal cartograms](http://pitchinteractive.com/latest/tilegrams-more-human-maps/), as well as other techniques that need shared boundary information such as [automatic map coloring](https://bl.ocks.org/4188334).
 
+See also:
+
+* [topojson-client](https://github.com/topojson/topojson-client)
+* [topojson-simplify](https://github.com/topojson/topojson-simplify)
+* [topojson-specification](https://github.com/topojson/topojson-specification)
+
 ## Installing
 
 If you use NPM, `npm install topojson`. Otherwise, download the [latest release](https://github.com/topojson/topojson/releases/latest). You can also load directly from [unpkg](https://unpkg.com). AMD, CommonJS, and vanilla environments are supported. In vanilla, a `topojson` global is exported:
