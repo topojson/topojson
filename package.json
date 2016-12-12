@@ -1,7 +1,7 @@
 {
   "name": "topojson",
-  "version": "2.0.0",
-  "description": "Convert GeoJSON to TopoJSON for smaller files and the power of topology!",
+  "version": "2.1.0",
+  "description": "An extension to GeoJSON that encodes topology.",
   "keywords": [
     "topojson",
     "geojson"
@@ -12,30 +12,38 @@
     "name": "Mike Bostock",
     "url": "https://bost.ocks.org/mike"
   },
-  "main": "dist/topojson.js",
+  "main": "dist/topojson.node.js",
+  "browser": "dist/topojson.js",
   "module": "index",
+  "jsnext:main": "index",
   "repository": {
     "type": "git",
     "url": "https://github.com/topojson/topojson.git"
   },
   "bin": {
-    "geo2topo": "bin/geo2topo"
+    "geo2topo": "node_modules/topojson-server/bin/geo2topo",
+    "toposimplify": "node_modules/topojson-simplify/bin/toposimplify",
+    "topo2geo": "node_modules/topojson-client/bin/topo2geo",
+    "topomerge": "node_modules/topojson-client/bin/topomerge",
+    "topoquantize": "node_modules/topojson-client/bin/topoquantize"
   },
   "scripts": {
-    "pretest": "rm -rf dist && mkdir dist && rollup --banner \"$(preamble)\" -f umd -n topojson -o dist/topojson.js -- index.js && rollup -f cjs -o build/topojson-internals.js -- test/internals.js",
-    "test": "tape 'test/**/*-test.js' && eslint index.js src",
-    "prepublish": "npm run test && uglifyjs --preamble \"$(preamble)\" -cm -o dist/topojson.min.js -- dist/topojson.js",
-    "postpublish": "git push && git push --tags && zip -j dist/topojson.zip -- LICENSE.md README.md dist/topojson.js dist/topojson.min.js"
-  },
-  "dependencies": {
-    "commander": "2"
+    "pretest": "rm -rf dist && mkdir dist && node rollup.node",
+    "test": "tape 'test/**/*-test.js'",
+    "prepublish": "npm run test && rollup -c --banner \"$(preamble)\" -f umd -n topojson -o dist/topojson.js -- index.js && uglifyjs --preamble \"$(preamble)\" dist/topojson.js -c negate_iife=false -m -o dist/topojson.min.js",
+    "postpublish": "VERSION=`node -e 'console.log(require(\"./package.json\").version)'`; git push && git push --tags && cp -v README.md LICENSE.md dist/topojson.js dist/topojson.min.js ../topojson-bower && cd ../topojson-bower && git add README.md LICENSE.md topojson.js topojson.min.js && git commit -m \"Release $VERSION.\" && git tag -am \"Release $VERSION.\" v${VERSION} && git push && git push --tags && cd - && cp dist/topojson.js ../d3.github.com/topojson.v2.js && cp dist/topojson.min.js ../d3.github.com/topojson.v2.min.js && cd ../d3.github.com && git add topojson.v2.js topojson.v2.min.js && git commit -m \"topojson ${VERSION}\" && git push && cd - && zip -j dist/topojson.zip -- LICENSE.md README.md dist/topojson.js dist/topojson.min.js"
   },
   "devDependencies": {
-    "eslint": "3",
     "package-preamble": "0.0",
     "rollup": "0.36",
+    "rollup-plugin-ascii": "0.0",
+    "rollup-plugin-node-resolve": "2",
     "tape": "4",
-    "topojson-client": "2",
     "uglify-js": "2"
+  },
+  "dependencies": {
+    "topojson-client": "2.1.0",
+    "topojson-server": "2.0.0",
+    "topojson-simplify": "2.0.0"
   }
 }

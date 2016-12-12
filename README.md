@@ -9,12 +9,6 @@ To further reduce file size, TopoJSON can use quantized delta-encoding for integ
 
 As a result, TopoJSON is substantially more compact than GeoJSON, frequently offering a reduction of 80% or more even without simplification. Yet encoding topology also has numerous useful applications for maps and visualization above! It allows [topology-preserving shape simplification](https://github.com/topojson/topojson-simplify), which ensures that adjacent features remain connected after simplification; this applies even across feature collections, such as simultaneous consistent simplification of state and county boundaries. Topology can also be used for [Dorling](http://www.ncgia.ucsb.edu/projects/Cartogram_Central/types.html) or [hexagonal cartograms](http://pitchinteractive.com/latest/tilegrams-more-human-maps/), as well as other techniques that need shared boundary information such as [automatic map coloring](https://bl.ocks.org/4188334).
 
-See also:
-
-* [topojson-client](https://github.com/topojson/topojson-client)
-* [topojson-simplify](https://github.com/topojson/topojson-simplify)
-* [topojson-specification](https://github.com/topojson/topojson-specification)
-
 ## Installing
 
 If you use NPM, `npm install topojson`. Otherwise, download the [latest release](https://github.com/topojson/topojson/releases/latest). You can also load directly from [unpkg](https://unpkg.com). AMD, CommonJS, and vanilla environments are supported. In vanilla, a `topojson` global is exported:
@@ -32,65 +26,40 @@ var topology = topojson.topology({foo: geojson});
 
 ## API Reference
 
-<a name="topology" href="#topology">#</a> topojson.<b>topology</b>(<i>objects</i>[, <i>quantization</i>])
+### Generation (topojson-server)
 
-Converts the specified [GeoJSON *objects*](http://geojson.org/geojson-spec.html#geojson-objects) to TopoJSON. The input *objects* are modified **in-place** and should not be referenced after calling this method; this is a destructive operation!
+* [topojson.topology](https://github.com/topojson/topojson-server/blob/master/README.md#topology) - convert GeoJSON to TopoJSON.
 
-If a *quantization* parameter is specified, the input geometry is quantized prior to computing the topology, and the returned topology is quantized, and its arcs are [delta-encoded](https://github.com/topojson/topojson-specification/blob/master/README.md#213-arcs). Quantization is recommended to improve the quality of the topology if the input geometry is messy (*i.e.*, small floating point error means that adjacent boundaries do not have identical values); typical values are powers of ten, such as 1e4, 1e5 or 1e6. See also [topojson.quantize](https://github.com/topojson/topojson-client/blob/master/README.md#quantize) to quantize a topology after it has been constructed, without altering the topological relationships.
+### Simplification (topojson-simplify)
+
+* [topojson.presimplify](https://github.com/topojson/topojson-simplify/blob/master/README.md#presimplify) - prepare TopoJSON for simplification.
+* [topojson.simplify](https://github.com/topojson/topojson-simplify/blob/master/README.md#simplify) - simplify geometry by removing coordinates.
+* [topojson.quantile](https://github.com/topojson/topojson-simplify/blob/master/README.md#quantile) - compute a simplification threshold.
+* [topojson.filter](https://github.com/topojson/topojson-simplify/blob/master/README.md#filter) - remove rings from a topology.
+* [topojson.filterAttached](https://github.com/topojson/topojson-simplify/blob/master/README.md#filterAttached) - remove detached rings.
+* [topojson.filterWeight](https://github.com/topojson/topojson-simplify/blob/master/README.md#filterWeight) - remove small rings.
+* [topojson.planarRingArea](https://github.com/topojson/topojson-simplify/blob/master/README.md#planarRingArea) - compute the planar area of a ring.
+* [topojson.planarTriangleArea](https://github.com/topojson/topojson-simplify/blob/master/README.md#planarTriangleArea) - compute the planar area of a triangle.
+* [topojson.sphericalRingArea](https://github.com/topojson/topojson-simplify/blob/master/README.md#sphericalRingArea) - compute the spherical area of a ring.
+* [topojson.sphericalTriangleArea](https://github.com/topojson/topojson-simplify/blob/master/README.md#sphericalTriangleArea) - compute the spherical area of a triangle.
+
+### Manipulation (topojson-client)
+
+* [topojson.feature](https://github.com/topojson/topojson-client/blob/master/README.md#feature) - convert TopoJSON to GeoJSON.
+* [topojson.merge](https://github.com/topojson/topojson-client/blob/master/README.md#merge) - merge TopoJSON geometry and convert to GeoJSON polygons.
+* [topojson.mergeArcs](https://github.com/topojson/topojson-client/blob/master/README.md#mergeArcs) - merge TopoJSON geometry to form polygons.
+* [topojson.mesh](https://github.com/topojson/topojson-client/blob/master/README.md#mesh) - mesh TopoJSON geometry and convert to GeoJSON lines.
+* [topojson.meshArcs](https://github.com/topojson/topojson-client/blob/master/README.md#meshArcs) - mesh TopoJSON geometry to form lines.
+* [topojson.neighbors](https://github.com/topojson/topojson-client/blob/master/README.md#neighbors) - compute adjacent features.
+* [topojson.bbox](https://github.com/topojson/topojson-client/blob/master/README.md#bbox) - compute the bounding box of a topology.
+* [topojson.quantize](https://github.com/topojson/topojson-client/blob/master/README.md#quantize) - round coordinates, reducing precision.
+* [topojson.transform](https://github.com/topojson/topojson-client/blob/master/README.md#transform) - remove delta-encoding and apply a transform.
+* [topojson.untransform](https://github.com/topojson/topojson-client/blob/master/README.md#untransform) - apply delta-encoding and remove a transform.
 
 ## Command-Line Reference
 
-### geo2topo
-
-<a name="geo2topo" href="#geo2topo">#</a> <b>geo2topo</b> [<i>options…</i>] &lt;<i>name</i>=<i>file</i>&gt;… [<>](https://github.com/topojson/topojson/blob/master/bin/geo2topo "Source")
-
-Converts one or more GeoJSON objects to an output topology. For example, to convert the us-states.json GeoJSON FeatureCollection to a TopologyJSON topology with the “states” object in us.json:
-
-```
-geo2topo states=us-states.json > us.json
-```
-
-For convenience, you can omit the object name and specify only the file *name*; the object name will be the basename of the file, with the directory and extension removed. For example, to convert the states.json GeoJSON FeatureCollection to a TopologyJSON topology with the “states” object in us.json:
-
-```
-geo2topo states.json > us.json
-```
-
-See also [topo2geo](https://github.com/topojson/topojson-client/blob/master/README.md#topo2geo).
-
-<a name="geo2topo_help" href="#geo2topo_help">#</a> geo2topo <b>-h</b>
-<br><a href="#geo2topo_help">#</a> geo2topo <b>--help</b>
-
-Output usage information.
-
-<a name="geo2topo_version" href="#geo2topo_version">#</a> geo2topo <b>-V</b>
-<br><a href="#geo2topo_version">#</a> geo2topo <b>--version</b>
-
-Output the version number.
-
-<a name="geo2topo_newline_delimited" href="#geo2topo_newline_delimited">#</a> geo2topo <b>-n</b>
-<br><a href="#geo2topo_newline_delimited">#</a> geo2topo <b>--newline-delimited</b>
-
-Output [newline-delimited JSON](http://ndjson.org/), with one feature per line.
-
-<a name="geo2topo_in" href="#geo2topo_in">#</a> geo2topo <b>-i</b> <i>file</i>
-<br><a href="#geo2topo_in">#</a> geo2topo <b>--in</b> <i>file</i>
-
-Specify the input TopoJSON file name. Defaults to “-” for stdin.
-
-<a name="geo2topo_list" href="#geo2topo_list">#</a> geo2topo <b>-l</b>
-<br><a href="#geo2topo_list">#</a> geo2topo <b>--list</b>
-
-List the names of the objects in the input topology, and then exit. For example, this:
-
-```
-geo2topo -l < us.json
-```
-
-Will output this:
-
-```
-counties
-states
-nation
-```
+* [geo2topo](https://github.com/topojson/topojson-server/blob/master/README.md#geo2topo) - convert GeoJSON to TopoJSON.
+* [toposimplify](https://github.com/topojson/topojson-simplify/blob/master/README.md#toposimplify) - simplify TopoJSON, removing coordinates.
+* [topo2geo](https://github.com/topojson/topojson-client/blob/master/README.md#topo2geo) - convert TopoJSON to GeoJSON.
+* [topomerge](https://github.com/topojson/topojson-client/blob/master/README.md#topomerge) - merge TopoJSON geometry, and optionally filter.
+* [topoquantize](https://github.com/topojson/topojson-client/blob/master/README.md#topoquantize) - round TopoJSON, reducing precision.
