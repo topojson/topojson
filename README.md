@@ -11,10 +11,10 @@ As a result, TopoJSON is substantially more compact than GeoJSON, frequently off
 
 ## Installing
 
-If you use NPM, `npm install topojson`. Otherwise, download the [latest release](https://github.com/topojson/topojson/releases/latest). You can also load directly from [unpkg](https://unpkg.com). AMD, CommonJS, and vanilla environments are supported. In vanilla, a `topojson` global is exported:
+If you use NPM, `npm install topojson`. Otherwise, download the [latest release](https://github.com/topojson/topojson/releases/latest). You can also load directly from [d3js.org](https://d3js.org) as a [standalone library](https://d3js.org/topojson.v2.min.js). AMD, CommonJS, and vanilla environments are supported. In vanilla, a `topojson` global is exported:
 
 ```html
-<script src="https://unpkg.com/topojson@2"></script>
+<script src="https://d3js.org/topojson.v2.min.js"></script>
 <script>
 
 var topology = topojson.topology({foo: geojson});
