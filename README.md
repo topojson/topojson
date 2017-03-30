@@ -26,12 +26,12 @@ var topology = topojson.topology({foo: geojson});
 
 ## API Reference
 
-### Generation ([topojson-server](https://github.com/topojson/topojson-server))
+### [Generation (topojson-server)](https://github.com/topojson/topojson-server)
 
 * [topojson.topology](https://github.com/topojson/topojson-server/blob/master/README.md#topology) - convert GeoJSON to TopoJSON.
 * [geo2topo](https://github.com/topojson/topojson-server/blob/master/README.md#geo2topo) - convert GeoJSON to TopoJSON.
 
-### Simplification ([topojson-simplify](https://github.com/topojson/topojson-simplify))
+### [Simplification (topojson-simplify)](https://github.com/topojson/topojson-simplify)
 
 * [topojson.presimplify](https://github.com/topojson/topojson-simplify/blob/master/README.md#presimplify) - prepare TopoJSON for simplification.
 * [topojson.simplify](https://github.com/topojson/topojson-simplify/blob/master/README.md#simplify) - simplify geometry by removing coordinates.
@@ -45,7 +45,7 @@ var topology = topojson.topology({foo: geojson});
 * [topojson.sphericalTriangleArea](https://github.com/topojson/topojson-simplify/blob/master/README.md#sphericalTriangleArea) - compute the spherical area of a triangle.
 * [toposimplify](https://github.com/topojson/topojson-simplify/blob/master/README.md#toposimplify) - simplify TopoJSON, removing coordinates.
 
-### Manipulation ([topojson-client](https://github.com/topojson/topojson-client))
+### [Manipulation (topojson-client)](https://github.com/topojson/topojson-client)
 
 * [topojson.feature](https://github.com/topojson/topojson-client/blob/master/README.md#feature) - convert TopoJSON to GeoJSON.
 * [topojson.merge](https://github.com/topojson/topojson-client/blob/master/README.md#merge) - merge TopoJSON geometry and convert to GeoJSON polygons.
