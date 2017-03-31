@@ -11,10 +11,10 @@ As a result, TopoJSON is substantially more compact than GeoJSON, frequently off
 
 ## Installing
 
-If you use NPM, `npm install topojson`. Otherwise, download the [latest release](https://github.com/topojson/topojson/releases/latest). You can also load directly from [d3js.org](https://d3js.org) as a [standalone library](https://d3js.org/topojson.v2.min.js). AMD, CommonJS, and vanilla environments are supported. In vanilla, a `topojson` global is exported:
+If you use NPM, `npm install topojson`. Otherwise, download the [latest release](https://github.com/topojson/topojson/releases/latest). You can also load directly from [d3js.org](https://d3js.org) as a [standalone library](https://unpkg.com/topojson@3). AMD, CommonJS, and vanilla environments are supported. In vanilla, a `topojson` global is exported:
 
 ```html
-<script src="https://d3js.org/topojson.v2.min.js"></script>
+<script src="https://unpkg.com/topojson@3"></script>
 <script>
 
 var topology = topojson.topology({foo: geojson});
@@ -26,11 +26,12 @@ var topology = topojson.topology({foo: geojson});
 
 ## API Reference
 
-### Generation (topojson-server)
+### [Generation (topojson-server)](https://github.com/topojson/topojson-server)
 
 * [topojson.topology](https://github.com/topojson/topojson-server/blob/master/README.md#topology) - convert GeoJSON to TopoJSON.
+* [geo2topo](https://github.com/topojson/topojson-server/blob/master/README.md#geo2topo) - convert GeoJSON to TopoJSON.
 
-### Simplification (topojson-simplify)
+### [Simplification (topojson-simplify)](https://github.com/topojson/topojson-simplify)
 
 * [topojson.presimplify](https://github.com/topojson/topojson-simplify/blob/master/README.md#presimplify) - prepare TopoJSON for simplification.
 * [topojson.simplify](https://github.com/topojson/topojson-simplify/blob/master/README.md#simplify) - simplify geometry by removing coordinates.
@@ -42,8 +43,9 @@ var topology = topojson.topology({foo: geojson});
 * [topojson.planarTriangleArea](https://github.com/topojson/topojson-simplify/blob/master/README.md#planarTriangleArea) - compute the planar area of a triangle.
 * [topojson.sphericalRingArea](https://github.com/topojson/topojson-simplify/blob/master/README.md#sphericalRingArea) - compute the spherical area of a ring.
 * [topojson.sphericalTriangleArea](https://github.com/topojson/topojson-simplify/blob/master/README.md#sphericalTriangleArea) - compute the spherical area of a triangle.
+* [toposimplify](https://github.com/topojson/topojson-simplify/blob/master/README.md#toposimplify) - simplify TopoJSON, removing coordinates.
 
-### Manipulation (topojson-client)
+### [Manipulation (topojson-client)](https://github.com/topojson/topojson-client)
 
 * [topojson.feature](https://github.com/topojson/topojson-client/blob/master/README.md#feature) - convert TopoJSON to GeoJSON.
 * [topojson.merge](https://github.com/topojson/topojson-client/blob/master/README.md#merge) - merge TopoJSON geometry and convert to GeoJSON polygons.
@@ -55,11 +57,6 @@ var topology = topojson.topology({foo: geojson});
 * [topojson.quantize](https://github.com/topojson/topojson-client/blob/master/README.md#quantize) - round coordinates, reducing precision.
 * [topojson.transform](https://github.com/topojson/topojson-client/blob/master/README.md#transform) - remove delta-encoding and apply a transform.
 * [topojson.untransform](https://github.com/topojson/topojson-client/blob/master/README.md#untransform) - apply delta-encoding and remove a transform.
-
-## Command-Line Reference
-
-* [geo2topo](https://github.com/topojson/topojson-server/blob/master/README.md#geo2topo) - convert GeoJSON to TopoJSON.
-* [toposimplify](https://github.com/topojson/topojson-simplify/blob/master/README.md#toposimplify) - simplify TopoJSON, removing coordinates.
 * [topo2geo](https://github.com/topojson/topojson-client/blob/master/README.md#topo2geo) - convert TopoJSON to GeoJSON.
 * [topomerge](https://github.com/topojson/topojson-client/blob/master/README.md#topomerge) - merge TopoJSON geometry, and optionally filter.
 * [topoquantize](https://github.com/topojson/topojson-client/blob/master/README.md#topoquantize) - round TopoJSON, reducing precision.
