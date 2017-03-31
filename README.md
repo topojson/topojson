@@ -38,6 +38,7 @@ var topology = topojson.topology({foo: geojson});
 * [topojson.quantile](https://github.com/topojson/topojson-simplify/blob/master/README.md#quantile) - compute a simplification threshold.
 * [topojson.filter](https://github.com/topojson/topojson-simplify/blob/master/README.md#filter) - remove rings from a topology.
 * [topojson.filterAttached](https://github.com/topojson/topojson-simplify/blob/master/README.md#filterAttached) - remove detached rings.
+* [topojson.filterAttachedWeight](https://github.com/topojson/topojson-simplify/blob/master/README.md#filterAttachedWeight) - remove small detached rings.
 * [topojson.filterWeight](https://github.com/topojson/topojson-simplify/blob/master/README.md#filterWeight) - remove small rings.
 * [topojson.planarRingArea](https://github.com/topojson/topojson-simplify/blob/master/README.md#planarRingArea) - compute the planar area of a ring.
 * [topojson.planarTriangleArea](https://github.com/topojson/topojson-simplify/blob/master/README.md#planarTriangleArea) - compute the planar area of a triangle.
