@@ -3,12 +3,14 @@ var fs = require("fs"),
     dependencies = require("./package.json").dependencies;
 
 rollup.rollup({
-  entry: "index.js",
+  input: "index.js",
   external: Object.keys(dependencies)
 }).then(function(bundle) {
-  var code = bundle.generate({
+  return bundle.generate({
     format: "cjs"
-  }).code;
+  });
+}).then(function(bundle) {
+  var code = bundle.code;
   return new Promise(function(resolve, reject) {
     fs.writeFile("dist/topojson.node.js", code, "utf8", function(error) {
       if (error) return reject(error);
